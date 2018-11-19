@@ -1,0 +1,16 @@
+
+Do FileOps.$doesfileexist(icConfigFile) Returns lbFound
+If lbFound
+	Do loFileOps.$openfile(icConfigFile) Returns lbFileIsOpen
+	If lbFileIsOpen
+		Do loFileOps.$readcharacter(kUniTypeUTF8,lcContents) Returns lbReadOK
+		Do loFileOps.$closefile() Returns loFileOps.$closefile()     ;; Returnｓ nothing
+		Do method ParseConfig (lcContents) Returns lrConfigFile
+	Else
+		Do $Error(con('could not open config file (',icConfigFile,')'))
+	End If
+Else
+	;  Do $Error(con('config file ',pApplications.name,' not found'))     ;; lcVersionFile - including path makes message too long
+End If
+
+Quit method lrConfigFile

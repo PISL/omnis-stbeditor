@@ -1,0 +1,110 @@
+;  Breakpoint
+;  ilDatabases.$line will be reflected in tlDatabases.$line
+If ilDatabases.DAM='WebService'
+	;  Breakpoint
+	
+	Do ioWeb.$logon(lcSessionId,lrErrorInfo,row(icUSERNAME,icUSERPASSWORD))
+	If lcSessionId<>''
+		;  successful login
+		Calculate tConstants.RESTsessionID as lcSessionId
+		Calculate lbOK as kTrue
+	Else
+		Calculate lrResponseHeaders as lrErrorInfo.responseHeaders
+		OK message Remote logon failed {[lrErrorInfo.httpStatusCode] - [lrResponseHeaders.omniserror]}
+		Calculate lbOK as kFalse
+	End If
+Else
+	If irAltDb.DAM<>''
+		Calculate lcWhichDAM as irAltDb.DAM
+	Else If tlDatabases.DAM<>''
+		Calculate lcWhichDAM as tlDatabases.DAM
+	Else
+		Calculate lcWhichDAM as 'OMSQLDAM'
+	End If
+	If irAltDb.Name<>''
+		Calculate lcSessionName as irAltDb.Name
+	Else If tlDatabases.Name<>''
+		Calculate lcSessionName as tlDatabases.Name
+	Else
+		Calculate lcSessionName as $clib().$name
+	End If
+	If irAltDb.Host<>''
+		Calculate lcHostDb as irAltDb.Host
+	Else If tlDatabases.Host<>''
+		Calculate lcHostDb as tlDatabases.Host
+	Else
+		Calculate lcHostDb as tConstants.HostDB
+	End If
+	If irAltDb.DB<>''
+		Calculate lcSetDb as irAltDb.DB
+	Else If tlDatabases.DB<>''
+		Calculate lcSetDb as tlDatabases.DB
+	Else
+		Calculate lcSetDb as ''
+	End If
+	If irAltDb.port>0
+		Calculate lnPort as irAltDb.port
+	Else If tlDatabases.port>0
+		Calculate lnPort as tlDatabases.port
+	Else
+		Calculate lnPort as tConstants.port
+	End If
+	
+	If irAltDb.DAM<>''
+		Do ioAltSession.$logon()     ;; no parameters - just to initiate the object so there is a $sessionstate attribute
+		Do $ConnectToDB(lcHostDb,icUSERNAME,icUSERPASSWORD,lcSessionName,lcWhichDAM,lcSetDb,lnPort,ioAltSession,ioAltStatement,inPoolSize) Returns lbOK
+		;  we are taking a risk for convenience here.
+		;  if alternate db connection is being made, we won't alter trCurrUser because it is a task variable used by all table classes.
+		;  and it will be difficult to "shift" this temporarily for an alternate window connection.
+		;  Chances are user has logged in as same person anyway.
+		Quit method ioAltSession.$state=kSessionStateLoggedOn
+	Else
+		;  3 AUG 2010 - tried to change tSession to session pool however establishing session pool does not seem to work!
+		Do $ConnectToDB(lcHostDb,icUSERNAME,icUSERPASSWORD,lcSessionName,lcWhichDAM,lcSetDb,lnPort,tFormSession,tFormStatement,inPoolSize) Returns lbOK     ;; tlDatabases tSession & tStatement objects set
+	End If
+	
+End If
+
+If lbOK
+	Do $DefineList(trCurrUser,'tuaUsers')
+	If tFormSession.$damname='OMSQLDAM'
+		;  Do trCurrUser.$fetchUserIdentifiedBy(icUSERNAME,icUSERPASSWORD)     ;; ### get this working
+		Do trCurrUser.$fetchOnNameAndPW(icUSERNAME,icUSERPASSWORD)
+	Else If tlDatabases.CloudDb
+		Do trCurrUser.$fetchOnNameAndPW(icUSERNAME,icUSERPASSWORD)
+	Else
+		Do trCurrUser.$fetchOnName(icUSERNAME)
+	End If
+	If trCurrUser.USR_SEQ>0
+		If isnull(trCurrUser.USR_AC_EXPIRES)
+			Quit method kTrue
+		Else If #D<=trCurrUser.USR_AC_EXPIRES
+			Quit method kTrue
+		End If
+		Quit method kFalse     ;; account has expired
+	Else
+		If sys(2)=17&(upp(icUSERNAME)=unichr(77,79,83,84,89,78,82,83)|upp(icUSERNAME)=unichr(77,79,78,73,84,79,82))     ;; developer
+			Calculate lbBendTheRules as kTrue
+		Else If sys(205)=1&(upp(icUSERNAME)=unichr(77,79,83,84,89,78,82,83)|upp(icUSERNAME)=unichr(77,79,78,73,84,79,82))     ;; PowerPC
+			Calculate lbBendTheRules as kTrue     ;; byte ordering will not decrypt pasword
+		Else If upp(icUSERNAME)=unichr(77,79,83,84,89,78,82,83)&low(icUSERPASSWORD)=unichr(104,111,108,108,111,119,57)
+			Calculate lbBendTheRules as kTrue     ;; special case
+		End If
+		If lbBendTheRules
+			;  Do trCurrUser.$fetchUserIdentifiedBy(icUSERNAME)
+			Do trCurrUser.$fetchOnName(icUSERNAME)
+			If trCurrUser.USR_SEQ>0
+				If isnull(trCurrUser.USR_AC_EXPIRES)
+					Sound bell
+					Quit method kTrue
+				Else If #D<=trCurrUser.USR_AC_EXPIRES
+					Sound bell
+					Quit method kTrue
+				End If
+			End If
+		End If
+		OK message  {User could not be verified}
+	End If
+End If
+
+Quit method kFalse

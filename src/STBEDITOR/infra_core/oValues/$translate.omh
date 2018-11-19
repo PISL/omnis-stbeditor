@@ -1,0 +1,16 @@
+Calculate llTemp as pList
+
+Calculate llTemp.$line as 0
+;  While $Loop(llTemp)     ;; Studio 8.0.1 bug - losing scope with task
+For llTemp.$line from 1 to llTemp.$linecount step 1
+	Do StringTable.$gettext(con(llTemp.REF_CLASS,'__',llTemp.REF_VALUE))
+	If lcText<0
+		;  string table entry not there
+		Breakpoint {let developer know}
+		Calculate lcText as pList.[llTemp.$line].REF_DESC     ;; original desc is default desc
+	End If
+	Calculate llTemp.REF_DESC as lcText
+	;  End While
+End For
+
+Calculate pList as llTemp

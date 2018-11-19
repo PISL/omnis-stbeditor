@@ -1,0 +1,203 @@
+{
+	"classtype": "kWindow",
+	"internalversion": 6,
+	"designtaskname": "Startup_Task",
+	"nextident": 1037,
+	"lastgroupident": 0,
+	"cvardefs": [
+		{
+			"name": "fvlUsers",
+			"order": 3,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		}
+	],
+	"ivardefs": [
+		{
+			"name": "ibTimerInitialised",
+			"order": 11,
+			"type": "kBoolean",
+			"subtype": 0,
+			"sublen": 0,
+			"initval": "kFalse"
+		},
+		{
+			"name": "icHeading",
+			"order": 12,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100
+		},
+		{
+			"name": "icPasswdEncrypted",
+			"order": 4,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 20
+		},
+		{
+			"name": "icPasswdMashed",
+			"order": 3,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 30
+		},
+		{
+			"name": "icPasswordChar",
+			"order": 9,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 1
+		},
+		{
+			"name": "icUSERNAME",
+			"order": 1,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 30
+		},
+		{
+			"name": "icUSERPASSWORD",
+			"order": 2,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 30
+		},
+		{
+			"name": "ilDatabases",
+			"order": 13,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "inPoolSize",
+			"order": 14,
+			"type": "kInteger",
+			"subtype": "kShortint",
+			"sublen": 0
+		},
+		{
+			"name": "ioAltSession",
+			"order": 6,
+			"type": "kObject",
+			"subtype": ".OMSQLDAM.OMSQLSESS",
+			"sublen": 0,
+			"desc": "needs to have subtype set to a DAM session so that the $sessionstate attribute has a value.  The returning session could be an oracle or postgres session"
+		},
+		{
+			"name": "ioAltStatement",
+			"order": 7,
+			"type": "kObject",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ioWeb",
+			"order": 15,
+			"type": "kObject",
+			"subtype": "oWebClient",
+			"sublen": 0
+		},
+		{
+			"name": "irAltDb",
+			"order": 5,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "irefCallingObj",
+			"order": 8,
+			"type": "kItemref",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "oTimerForPasswordChar",
+			"order": 10,
+			"type": "kObject",
+			"subtype": "oPasswordTimer",
+			"sublen": 0
+		}
+	],
+	"properties": {
+		"aligntogrid": false,
+		"alpha": 255,
+		"backcolor": "RGB(238,238,238)",
+		"backgroundskin": 0,
+		"backgroundskinalign": "kPALtopLeft",
+		"backgroundtheme": "kBGThemeNone",
+		"backpattern": 1,
+		"bringinfront": false,
+		"clickbehind": false,
+		"closebox": false,
+		"collectperformancedata": false,
+		"componenticon": 0,
+		"componenttype": "kCompStoreHidden",
+		"contextmenu": "",
+		"createdate": "2017-05-03 12:02:21",
+		"desc": "Logon Window for 'normal' users",
+		"dockingedge": "kBorderPlain",
+		"dropmode": "kAcceptNone",
+		"edgefloat": "kEFnone",
+		"editor": "",
+		"editordata": "",
+		"effect": "kBorderNone",
+		"enablemenuandtoolbars": false,
+		"external": false,
+		"forecolor": "RGB(192,192,192)",
+		"growbox": false,
+		"hasmenus": false,
+		"hasstatusbar": false,
+		"height": 240,
+		"helpbutton": false,
+		"helpfile": 0,
+		"horzgrid": 16,
+		"horzscroll": false,
+		"inheritedorder": 1,
+		"issubwindow": false,
+		"issupercomponent": false,
+		"keepclicks": true,
+		"left": 45,
+		"menuedge": "kBorderPlain",
+		"menunames": "",
+		"minimizebox": false,
+		"minimizeiconid": 2006,
+		"moddate": "2018-03-09 16:23:25",
+		"modelessdata": false,
+		"showascheckedout": false,
+		"showcommands": false,
+		"showgrid": false,
+		"showtitle": false,
+		"sizetogrid": false,
+		"startfield": 0,
+		"statusbarpos": "kSBPosBottom",
+		"statusedge": "kBorderPlain",
+		"style": "kSimple",
+		"title": {
+			"type": 0,
+			"calc": "W_brokin"
+		},
+		"toolbarnames": "",
+		"toolbaroptions": "kTBOptionNone",
+		"toolbarpos": "kDockingAreaNone",
+		"top": 30,
+		"userinfo": "Copyright Platform Independent Systems Ltd 1998-2007",
+		"usesheets": false,
+		"version": "2",
+		"vertgrid": 16,
+		"vertscroll": false,
+		"width": 330,
+		"zoombox": false
+	},
+	"statusbar": {
+		"properties": {
+			"fieldstyle": "",
+			"font": 1,
+			"fontsize": 0,
+			"helppane": 0
+		}
+	}
+}

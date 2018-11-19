@@ -1,0 +1,72 @@
+Switch sys(6)
+	Case 'X','M'
+		Do $runapplescript('do shell script "ifconfig en0 ether"',lcResponse,lcErrorText) Returns lnExecuteErrorCode
+		Calculate lcMACAdd as right(lcResponse,(len(lcResponse)-(pos('ether ',lcResponse)+5)))
+		Calculate lcMACAdd as left(lcMACAdd,pos(' ',lcMACAdd)-1)
+		
+	Case 'U'     ;; Linux
+		;  code copied from Omnis Technote TNLI0005     ;; then modified to suit rsm's style
+		;  N.B. it is untested!
+		Breakpoint {not tested}
+		
+		Calculate lcScript as con('#!/bin/bash',kLf,'PATH=$PATH:/sbin',kLf,"ifconfig eth0 | grep 'Hardware' | awk '{ print $5 }'",kLf)
+		Calculate lcScriptfile as '/tmp/get_mac_adress.sh'
+		Do loFileOps.$createfile(lcScriptfile)
+		Do loFileOps.$writefile(lcScript)
+		Do loFileOps.$closefile()
+		Calculate lcCommand as con('chmod 700 ',lcScriptfile)
+		Launch program [lcCommand]
+		;  ; make it executable
+		Launch program [lcScriptfile] Returns lcResponse (Do not quit Omnis)
+		Calculate lcMACAdd as left(lcResponse,17)
+		;  ; drop any erroneous chars after the address
+		Do FileOps.$deletefile(lcScriptfile)
+		
+	Default     ;; Windows
+		;  Breakpoint
+		Calculate lcOutputFilePath as con(icUpdaterResourcesFolder,'netdata.txt')
+		Do FileOps.$doesfileexist(lcOutputFilePath) Returns lbFileExists
+		If not(lbFileExists)
+			;  the problem with this technique is that once the ipconfig has been run, then it wont run again
+			;  in 99.99% of the time this would be fine... so we will stick with it for now
+			Calculate lcCommand as con('ipconfig /all >"',lcOutputFilePath,'"')
+			Start program minimized {cmd.exe /C [lcCommand]}
+			;  pause while program runs?     ;; no... loop until output file exists
+			Calculate ldtStopTime as dadd(kSecond,10,#T)     ;; or time limit is reached
+			Calculate lbFileExists as kFalse
+			While not(lbFileExists)&#T<=ldtStopTime     ;; as soon as file exists, or time limit is reached (removed "or loop count reached 255"  [lnCountLoop<255]  ), the loop will stop
+				Calculate lnCountLoop as lnCountLoop+1     ;; back door method to get out
+				Do FileOps.$doesfileexist(lcOutputFilePath) Returns lbFileExists
+			End While
+		End If
+		If lbFileExists
+			;  now read file
+			Do loFileOps.$openfile(lcOutputFilePath) Returns lnFileOpsStatus
+			If lnFileOpsStatus=0|lnFileOpsStatus=1
+				Do loFileOps.$readcharacter(kUniTypeAnsiLatin1,lcResponse)
+				Do loFileOps.$closefile()
+			End If
+			;  if we delete this file, the ipconfig will run each time this method is called
+			;  Do FileOps.$deletefile(lcOutputFilePath)
+		Else
+			;  do it the old fashioned way that flashes a window on screen
+			Launch program "ipconfig" "-all" Returns lcResponse (Do not quit Omnis)
+		End If
+		
+		;  locate Physical address - n.b. this is language specific and not international
+		;  regular expression Phy.*Addr will capture more languages than just english
+		Calculate lnStartPos as rxpos("Phy.*Addr",lcResponse,kFalse,kFalse,lnMatchLength)
+		If lnStartPos=0
+			Calculate lnStartPos as rxpos("Phy.*Adr",lcResponse,kFalse,kFalse,lnMatchLength)     ;; german
+		End If
+		Calculate lcStartAddress as mid(lcResponse,lnStartPos,255)
+		;  from ":" onwards is begining of MAC address
+		Calculate lcStartAddress as mid(lcStartAddress,pos(':',lcStartAddress)+1,255)
+		;  until end of line, marked by kCr
+		Calculate lcMACAdd as mid(lcStartAddress,1,pos(kCr,lcStartAddress)-1)
+		;  trim extraneous spaces
+		Calculate lcMACAdd as trim(lcMACAdd)
+		
+End Switch
+
+Quit method lcMACAdd

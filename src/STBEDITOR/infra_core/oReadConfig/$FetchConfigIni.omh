@@ -1,0 +1,17 @@
+;  replaces oConfig.$ReadConfig/ParseConfig
+Do $DefineList(ilConfigList,'tIniCfg')
+Do ilConfigList.$setSession(ioSessionIni,ioStatementIni)
+Do ilConfigList.$fetch_all()
+Do ilConfigList.$sort($ref.CFG_NO,0,$ref.CFG_SEQ,0)
+
+Calculate ilConfigList.$line as 0
+While $Loop(ilConfigList)
+	If ilConfigList.CFG_VALUE<>''
+		Calculate lcColName as con(ilConfigList.CFG_NO,ilConfigList.CFG_KEY)
+		Do lrConfigFile.$cols.$add(lcColName,kCharacter,kSimplechar,50)
+		Calculate lrConfigFile.[lcColName] as ilConfigList.CFG_VALUE
+		
+	End If
+End While
+
+Quit method lrConfigFile

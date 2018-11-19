@@ -1,0 +1,10 @@
+;  calls to RESTful services appear to be stripping spaces from MEC IDs that are composed entirely of numeric characters
+;  so we take the MECID and if length <> 19 (16 chars in groups of 4), reformat with spaces
+If len(pcMECID)<>19
+	Calculate pcMECID as replaceall(pcMECID,' ','')     ;; strip all spaces
+	If len(pcMECID)<>16     ;; it has been converted to an integer and leading zeroes have been stripped
+		Calculate pcMECID as con(mid('0000000000000000',1,16-len(pcMECID)),pcMECID)
+	End If
+	Calculate pcMECID as con(mid(pcMECID,1,4),' ',mid(pcMECID,5,4),' ',mid(pcMECID,9,4),' ',mid(pcMECID,13))     ;; add the spaces back in correctly
+End If
+Quit method pcMECID

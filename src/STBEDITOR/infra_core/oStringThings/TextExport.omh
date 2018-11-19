@@ -1,0 +1,14 @@
+If pFormat='HTML'
+	If pcContent<>''
+		Text: {[pcCellBegin][pcContent][pcCellEnd]}
+	Else
+		Text: {[pcCellBegin]&nbsp;[pcCellEnd]}
+	End If
+Else If pFormat='XML'
+Else
+	If pnColCount=1
+		Text: {[pcContent]}
+	Else
+		Text: {[pcDelimiter][pcContent]}
+	End If
+End If

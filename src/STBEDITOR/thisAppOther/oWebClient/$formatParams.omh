@@ -1,0 +1,16 @@
+Do $itasks.[$clib().$name].$returnKey(tConstants.ExternalIP) Returns lcTheKey
+Do oUnfoldParams.$initkey(lcTheKey)     ;; was encstr(lcTheKey)
+
+If len(pCharacter)     ;; new code to avoid the weird errors when the hex string length > 8153
+	Do oUnfoldParams.$encryptchar(pCharacter,kTrue) Returns lbinReturn
+	
+Else
+	Calculate lbinReturn as pBinary
+	If ibEncryptInternally
+		Do oUnfoldParams.$encrypt(lbinReturn) Returns lbinReturn
+		Do oUnfoldParams.$encrypt(lbinReturn) Returns lbinReturn
+	End If
+	
+End If
+
+Quit method lbinReturn

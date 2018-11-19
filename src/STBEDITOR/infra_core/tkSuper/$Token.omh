@@ -1,0 +1,37 @@
+If pos(pDelimiter,pString)>0
+	If len(pDelimiter)=1
+		Repeat
+			Calculate lnCurrentTokenNo as lnCurrentTokenNo+1
+			
+			Calculate lcCurrentToken as strtok(nam(pString),pDelimiter)
+		Until lnCurrentTokenNo=pTokenNo|pString=''
+		If lnCurrentTokenNo=pTokenNo
+			Quit method lcCurrentToken
+		Else If pTokenNo=32767|pTokenNo=-1
+			Quit method lcCurrentToken
+		End If
+		
+	Else If len(pDelimiter)>1
+		Repeat
+			Calculate lnCurrentTokenNo as lnCurrentTokenNo+1
+			
+			Calculate lnPos as pos(pDelimiter,pString)
+			Calculate lcCurrentToken as mid(pString,1,lnPos-1)
+			Calculate pString as mid(pString,len(lcCurrentToken)+len(pDelimiter)+1,9999999999)
+		Until lnCurrentTokenNo=pTokenNo|pString=''
+		If lnCurrentTokenNo=pTokenNo
+			Quit method lcCurrentToken
+		Else If pTokenNo=32767|pTokenNo=-1
+			Quit method lcCurrentToken
+		End If
+		
+	End If
+Else
+	If pTokenNo=1
+		Quit method pString
+	Else If pTokenNo=32767|pTokenNo=-1
+		Quit method pString
+	End If
+End If
+
+Quit method ''

@@ -1,0 +1,24 @@
+
+;  Finds the table that contains pColumn
+;  rsm 8 mar 2003     ;; adding support for "combined key join" where a single column is not sufficient for a join
+If pos(' ',pcColumn)
+	Calculate pcColumn as mid(pcColumn,1,pos(' ',pcColumn)-1)
+End If
+;  rsm 25 may 2005     ;; adding support for "mandatory out key joins"
+If pos('(+)',pcColumn)
+	Calculate pcColumn as mid(pcColumn,1,pos('(+)',pcColumn)-1)
+End If
+
+If ilColumns.$linecount=0
+	Do method BuildColumns
+End If
+Do ilColumns.$search($ref.COLUMN=upp(pcColumn),1,0,0,0) Returns lbFound
+If not(lbFound)
+	If left(pcColumn,1)=kDq|left(pcColumn,1)=kSq|left(pcColumn,1)='@'
+		;  ignore this as it is part of a literal string in link to a REFERENCE table     ;; or a bound instance variable
+	Else
+		Breakpoint {[pcColumn] not found}
+	End If
+End If
+
+Quit method ilColumns.TABLE

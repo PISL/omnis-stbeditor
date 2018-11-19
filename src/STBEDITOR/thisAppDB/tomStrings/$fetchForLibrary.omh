@@ -1,0 +1,41 @@
+;  If tlDatabases.DAM='WebService'
+;  pass parameters to web service
+;  Do ioWeb.$callFetch($cinst,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pcLibName),$cinst.$type,0,$cinst.ilRESTextensions))
+;  Calculate lrWebResponse as ioWeb.irResponse
+;  If lrWebResponse.httpStatusCode=200
+;  the result should be in this object     ;; however there may be a SQL error
+;  If irErrorSQL.NativeErrorText<>''
+;  Quit method kFalse
+;  End If
+;  Quit method kTrue
+;  Else
+;  Quit method kFalse
+;  End If
+;  End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Calculate pcLibName as upp(pcLibName)
+
+Begin statement (Carriage return)
+Sta: {select [$cinst.$selectnames()]}
+Sta: {from  [$cinst.$servertablenames()]}
+Sta: {join [lrGroup.$servertablenames] on OMG_SEQ = OMS_OMG_REF}
+Sta: {join [lrLink.$servertablenames] on OLG_OMG_REF = OMG_SEQ}
+Sta: {join [lrLibrary.$servertablenames] on OML_SEQ = OLG_OML_REF}
+Sta: {where OML_NAME = @[pcLibName]}
+Sta: {order by STRINGID}
+End statement
+
+Do $cinst.$executesqlandfetch() Returns lbOK
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lbOK

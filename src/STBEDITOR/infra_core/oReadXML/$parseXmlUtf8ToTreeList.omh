@@ -1,0 +1,8 @@
+;  rmm_wsl: generate the tree and text for display in the log
+Calculate loXML.$parservalidates as kFalse
+Do loXML.$loadbinary(pRawXML,icError) Returns lbOK
+If lbOK
+	Do loXML.$savetree(pTreeXML,icError,kTrue) Returns lbOK
+End If
+
+Quit method lbOK

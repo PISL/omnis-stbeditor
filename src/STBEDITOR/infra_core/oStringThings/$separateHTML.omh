@@ -1,0 +1,172 @@
+;  break down HTML into separate lines and prepare for google translation
+
+Do llText.$cols.$add('original',kCharacter,kSimplechar,1000000)
+Do llText.$cols.$add('whitespace',kInteger,k32bitint)
+Do llText.$cols.$add('lastMark',kCharacter,kSimplechar,100)
+Do llText.$cols.$add('previousToLastMark',kCharacter,kSimplechar,100)
+Do llText.$cols.$add('transLength',kInteger,k32bitint)
+Do llText.$cols.$add('allTag',kBoolean)
+Do llText.$cols.$add('markBlock',kBoolean)
+Do llText.$cols.$add('whiteString',kCharacter,kSimplechar,100)
+
+Do llText.$cols.$add('escapedText',kCharacter,kSimplechar,1000000)
+Do llText.$cols.$add('escapedLength',kInteger,k32bitint)
+
+If pnMaxBlock<255
+	Breakpoint
+	Quit method
+End If
+
+If pbStripLfCr
+	;  Calculate pHTMLin as replaceall(pHTMLin,con(kLf,kCr),kCr)
+	;  Calculate pHTMLin as replaceall(pHTMLin,con(kCr,kLf),kCr)
+	Calculate pHTMLin as replaceall(pHTMLin,kLf,'')
+End If
+
+While pHTMLin<>''
+	Do llText.$add()
+	Calculate llText.$line as llText.$linecount
+	Calculate llText.original as strtok(nam(pHTMLin),kCr)
+	
+	;  detect white space from beginning of line
+	For lnWhitePos from 1 to len(llText.original) step 1
+		Calculate lcChar as mid(llText.original,lnWhitePos,1)
+		If lcChar=' '
+			Calculate llText.whiteString as con(llText.whiteString,lcChar)
+			;  continue
+		Else If lcChar=kLf
+			Calculate llText.whiteString as con(llText.whiteString,lcChar)
+			;  continue
+		Else If lcChar=kTab
+			Calculate llText.whiteString as con(llText.whiteString,lcChar)
+			;  continue
+		Else
+			;  a printable character
+			Break to end of loop
+		End If
+	End For
+	
+	Calculate llText.whitespace as lnWhitePos-1
+	
+	;  ok - white pos is now non-white pos
+	Calculate lbTagCouldExist as kTrue
+	Calculate lbTagExists as kFalse
+	Calculate lbParsingBegun as kFalse
+	Calculate lnTagLength as 0
+	Calculate lnRemoveFromEnd as 0
+	
+	;  now process line from end going backwards
+	For lnWhitePos from len(llText.original) to 1 step -1
+		Calculate lcChar as mid(llText.original,lnWhitePos,1)
+		;  detect white space at end and remove in due course
+		If lcChar=' '&not(lbParsingBegun)
+			Calculate lnRemoveFromEnd as lnRemoveFromEnd+1     ;; ;  continue
+		Else If lcChar=kLf&not(lbParsingBegun)
+			Calculate lnRemoveFromEnd as lnRemoveFromEnd+1     ;; ;  continue
+		Else If lcChar=kTab&not(lbParsingBegun)
+			Calculate lnRemoveFromEnd as lnRemoveFromEnd+1     ;; ;  continue
+		Else
+			;  a printable character
+			If not(lbTagExists)
+				Calculate lbParsingBegun as kTrue
+				If lcChar='>'
+					Calculate lbTagExists as kTrue
+				Else
+					Calculate lbTagCouldExist as kFalse
+					Break to end of loop
+				End If
+			Else
+				Calculate lnTagLength as lnTagLength+1     ;; this omits the trailing > detected below
+				If lcChar='<'
+					;  start of tag
+					Calculate lnTagLength as lnTagLength+1     ;; add the trailing >
+					If lnRemoveFromEnd>0
+						Calculate llText.original as mid(llText.original,1,len(llText.original)-lnRemoveFromEnd)
+					End If
+					
+					Calculate llText.transLength as len(llText.original)-llText.whitespace
+					Calculate llText.allTag as lnTagLength=len(llText.original)-llText.whitespace
+					If not(llText.allTag)
+						;  see if the content ends in a non alphanumeric character
+						Calculate llText.lastMark as right(llText.original,lnTagLength)
+						;  is there a full stop, question mark or comma that will help us resurrect the layout after teh translation?
+						Calculate llText.previousToLastMark as right(llText.original,lnTagLength+10)     ;; last part + 10 chars
+						Calculate llText.previousToLastMark as left(llText.previousToLastMark,10)     ;; drop end tag
+						For lnPos from len(llText.previousToLastMark) to 1 step -1
+							;  we are about to break loop so we can use lcChar again
+							Calculate lcChar as mid(llText.previousToLastMark,lnPos,1)
+							If pos(upp(lcChar),'ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890 ')
+								;  then there is no worthy previousToLastMark
+								Calculate llText.previousToLastMark as ''
+								Break to end of loop
+							Else
+								;  some sort of punctuation I hope!
+								Calculate llText.previousToLastMark as lcChar
+							End If
+						End For
+					End If
+					Break to end of loop
+				End If
+			End If
+		End If
+	End For
+	
+	If not(lbTagCouldExist)
+		If lnRemoveFromEnd>0
+			Calculate llText.original as left(llText.original,len(llText.original)-lnRemoveFromEnd)
+		End If
+		
+		Calculate llText.transLength as len(llText.original)-llText.whitespace
+		If pos(upp(lcChar),'ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890 ')
+			;  mid sentence - do nothing
+		Else
+			;  some sort of punctuation I hope!
+			Calculate llText.previousToLastMark as lcChar
+		End If
+	End If
+	
+	;  add the section mark for ease of reconstituting after translation
+	Calculate llText.original as con(llText.original,'§')
+	
+	;  text needs to be escaped to form part of RESTful call
+	Calculate llText.escapedText as mid(llText.original,llText.whitespace+1)
+	Do OWEB.$escapeuritext(llText.escapedText) Returns llText.escapedText
+	Calculate llText.escapedLength as len(llText.escapedText)
+End While
+
+;  now mark the list with blocks of text that do not exceed pnMaxBlock (1800) characters
+Calculate lnTestLength as 0
+Calculate llText.$line as 0
+While $Loop(llText)
+	;  track the latest previousToLastMark
+	If pbBlockOnSentenceOnly
+		If pos(llText.previousToLastMark,'?.!')     ;; proper end of sentence in english
+			Calculate lnLineWithLastMark as llText.$line
+		End If
+	Else
+		If llText.previousToLastMark<>''     ;; any non alphanumeric character
+			Calculate lnLineWithLastMark as llText.$line
+		End If
+	End If
+	
+	;  trace length of strings until pnMaxChars is exceeded     ;; then refer back to last lnLineWithLastMark
+	;  Calculate lnTestLength as lnTestLength+llText.transLength     ;; +llText.whitespace
+	Calculate lnTestLength as lnTestLength+llText.escapedLength
+	If lnTestLength>pnMaxBlock
+		If lnLineWithLastMark>0
+			;  we have a last mark line
+			Calculate llText.[lnLineWithLastMark].markBlock as kTrue
+			Calculate llText.$line as lnLineWithLastMark
+			Calculate lnTestLength as 0
+			Calculate lnLineWithLastMark as 0     ;; reset
+		Else
+			;  no last mark line     ;; trust the previous to current line - it will be less than pnMaxChars
+			Calculate llText.[llText.$line-1].markBlock as kTrue
+			Calculate lnTestLength as 0
+			;  Calculate lnTestLength as lnTestLength+llText.transLength     ;; +llText.whitespace
+			Calculate lnTestLength as lnTestLength+llText.escapedLength
+		End If
+	End If
+End While
+
+Quit method llText

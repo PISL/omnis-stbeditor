@@ -1,0 +1,3 @@
+;  pass a list and return the binchecksum
+Calculate lbinary as pField
+Quit method binchecksum(lbinary)

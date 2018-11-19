@@ -1,0 +1,43 @@
+;  1. pTo     ;; Field ref - char or list
+;  2. pSubj     ;; char(255)
+;  3. pBody     ;; char(10,000,000)
+;  4. pCC     ;; Field ref - char or list
+;  5. pBCC     ;; Field ref - char or list
+;  6. pEnclosure     ;; Field ref - list, 2 cols: filename , full file path
+;  7. pHTML     ;; char(10,000,000)
+;  8. pSendAsync     ;; boolean, default kFalse
+;  9. pVhostRow     ;; row, optional, used when called from $AsyncEmails and sometimes from $ServerMessage
+
+;  11. pFromAddress     ;; char(255)
+;  12. pFromName     ;; char(255)
+
+If not(isnull(pbFileFromPDFwriter))
+	;  Do oEmail.$attachedFileFromPDFwriter(pbFileFromPDFwriter)
+End If
+Do ioEmail2.$getRowServer() Returns lrServer
+Calculate lrServer.configCode as pcSendFromCode
+
+Do ioEmail2.$getAttachmentsList() Returns llAttachments
+Do llAttachments.$add()     ;; to represent the plain text body part
+
+Do ioEmail2.$getRowMessage() Returns lrMessage
+Calculate lrMessage.text as pBody
+Calculate lrMessage.html as pHTML
+Calculate lrMessage.attachments as llAttachments
+
+Do ioEmail2.$getRowAttributes() Returns lrAttributes
+Calculate lrAttributes.from as
+Calculate lrAttributes.to as pTo
+Calculate lrAttributes.subject as pSubj
+Calculate lrAttributes.cc as pCC
+Calculate lrAttributes.bcc as pBCC
+Calculate lrAttributes.priority as 3     ;; normal
+
+Do ioEmail2.$sendEmail(lrServer,lrAttributes,lrMessage,kFalse) Returns lbOK
+If not(lbOK)
+	Calculate icEmailProtocolStatus as ioEmail2.icErrorMessage     ;; so calling method can pick up error details
+Else
+	Calculate icEmailProtocolStatus as ''     ;; not needed
+End If
+
+Quit method lcStatus

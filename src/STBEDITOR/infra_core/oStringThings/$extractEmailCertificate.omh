@@ -1,0 +1,13 @@
+Do prData.$cols.$findname('verifyCertificate') Returns liColRef
+If liColRef
+	Calculate lcValue as prData.verifyCertificate
+Else
+	Do prData.$cols.$findname('certificate') Returns liColRef
+	If liColRef
+		Calculate lcValue as prData.certificate
+	Else
+		Calculate lcValue as pcDefault
+	End If
+End If
+
+Quit method lcValue

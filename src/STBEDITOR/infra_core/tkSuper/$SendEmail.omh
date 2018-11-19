@@ -1,0 +1,21 @@
+;  1. pTo     ;; Field ref - char or list
+;  2. pSubj     ;; char(255)
+;  3. pBody     ;; char(10,000,000)
+;  4. pCC     ;; Field ref - char or list
+;  5. pBCC     ;; Field ref - char or list
+;  6. pEnclosure     ;; Field ref - list, 2 cols: filename , full file path
+;  7. pHTML     ;; char(10,000,000)
+;  8. plExtraHeaders     ;; list, optional
+;  9. pVhostRow     ;; row, optional, used when called from $ServerMessage
+;  10. pReplyToAddress     ;; char, optional, used for "Reply-To" header and must be a valid email address
+;  11. pReplyToName     ;; char, optional but will be prepended to pReplyToAddress
+;  12. pFromCode     ;; char, optional, defaults to 'DEFAULT', used to lookup inherited EM_SRVR_FROM entry
+;  13. pbFileFromPDFwriter
+
+If not(isnull(pbFileFromPDFwriter))
+	Do oEmailAsync.$attachedFileFromPDFwriter(pbFileFromPDFwriter)
+End If
+;  Do redirect oEmail Returns lcStatus
+Do oEmailAsync.$SendEmail(pTo,pSubj,pBody,pCC,pBCC,pEnclosure,pHTML,plExtraHeaders,pVhostRow,pReplyToAddress,pReplyToName,pcSendFromCode) Returns lcStatus
+
+Quit method lcStatus

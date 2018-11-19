@@ -1,0 +1,28 @@
+{
+	"classtype": "kTable",
+	"internalversion": 3,
+	"superclass": "tMaster",
+	"designtaskname": "Startup_Task",
+	"cvardefs": [
+
+	],
+	"ivardefs": [
+
+	],
+	"properties": {
+		"collectperformancedata": false,
+		"componenticon": 0,
+		"componenttype": "kCompStoreHidden",
+		"createdate": "2017-05-03 12:02:20",
+		"desc": "superclass for SQLite tables",
+		"editor": "",
+		"editordata": "",
+		"external": false,
+		"issupercomponent": false,
+		"moddate": "2017-01-20 11:15:58",
+		"showascheckedout": false,
+		"sqlclassname": "",
+		"userinfo": "",
+		"version": "2"
+	}
+}

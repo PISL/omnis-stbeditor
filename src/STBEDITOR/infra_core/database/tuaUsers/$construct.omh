@@ -1,0 +1,10 @@
+Calculate icPrefix as 'USR_'
+Calculate icPrimarykey as 'USR_SEQ'
+Calculate ibHasSequence as kTrue
+
+Do inherited
+
+Do $cinst.$cols.$findname('PW') Returns lrefCol
+If isclear(lrefCol)
+	Do $cinst.$cols.$add('PW',kCharacter,kSimplechar,15)
+End If

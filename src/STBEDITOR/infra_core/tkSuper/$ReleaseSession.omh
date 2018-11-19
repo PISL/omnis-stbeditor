@@ -1,0 +1,27 @@
+
+
+
+Quit method
+
+;  window is closing and passing a session var that has been logged off
+;  in order to release the session back into the session pool it must be cleared from this task variable
+
+Do $iwindows.$makelist($ref.$name,$ref.$lib().$name) Returns llWindows
+Do llWindows.$redefine(lcInstance,lcLibName)
+Do llWindows.$search($ref.lcLibName=$clib().$name,1,0,1,0)
+Do llWindows.$remove(kListKeepSelected)
+
+;  Breakpoint
+If llWindows.$linecount<=1     ;; llWindows
+	If pSession.$state=kSessionStateLoggedOn
+		;  Do pSession.$logoff     ;; trSequence
+	End If
+	
+	Do pSession.$clear()
+	Calculate pSession as #NULL
+	Calculate pStatement as #NULL
+	
+	Calculate trSequence as ''
+End If
+
+Do $imenus.mMain_MDM.$sessionpoolinuse()

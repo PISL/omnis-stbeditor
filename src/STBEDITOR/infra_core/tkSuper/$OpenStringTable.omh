@@ -1,0 +1,17 @@
+Calculate lcPath as con(pHostDirectory,pcSpecificFile,'.stb')
+
+Do FileOps.$doesfileexist(lcPath) Returns lbFileExists
+If lbFileExists
+	Do StringTable.$unloadstringtable(pcSpecificFile) Returns #F
+	Do StringTable.$loadstringtable(pcSpecificFile,lcPath) Returns #F
+	If flag false
+		Breakpoint
+	End If
+	
+	Do StringTable.$setcolumn(con($clib().$name,'.',tConstants.DefaultLanguageCode)) Returns #F
+	If flag false
+		Breakpoint
+	End If
+End If
+
+Quit method #F

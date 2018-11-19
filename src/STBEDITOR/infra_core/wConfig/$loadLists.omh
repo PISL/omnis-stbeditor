@@ -1,0 +1,18 @@
+Calculate lnOptionLine as ilOptionList.$line
+
+Do ilOptionList.$clear()
+
+Do toConfig.$fetchConfigIni
+Do toConfig.$fetchDBIni
+Do toConfig.$fetchLibIni
+
+Do toConfig.$GetList('ilIniRaw') Returns ilIniData
+Do ilOptionList.$add('LIB_INIT','library init values',nam(ilIniData),$cinst.$returnChecksum(ilIniData))
+
+Do toConfig.$GetList('ilDBList') Returns ilDBData
+Do ilOptionList.$add('DB_CONNECT','database connection info',nam(ilDBData),$cinst.$returnChecksum(ilDBData))
+
+Do toConfig.$GetList('ilConfigList') Returns ilConfigData
+Do ilOptionList.$add('SITE_CONFIG','site config info',nam(ilConfigData),$cinst.$returnChecksum(ilConfigData))
+
+Calculate ilOptionList.$line as lnOptionLine

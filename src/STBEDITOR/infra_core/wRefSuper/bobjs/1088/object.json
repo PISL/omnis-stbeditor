@@ -1,0 +1,27 @@
+{
+	"ident": 1088,
+	"order": 16389,
+	"objtype": "kLabel",
+	"properties": {
+		"align": "kLeftJst",
+		"backcolor": "kColorBackFill",
+		"backpattern": 15,
+		"designactive": true,
+		"edgefloat": "kEFnone",
+		"fieldstyle": "CtrlLabel",
+		"font": 3,
+		"fontsize": 0,
+		"fontstyle": "kPlain",
+		"forecolor": "kColorForeFill",
+		"height": 16,
+		"left": 17,
+		"objlink": 65550,
+		"text": "Select GLOBAL class:",
+		"textcolor": "kColorWindowText",
+		"top": 36,
+		"userinfo": "",
+		"vertcentertext": false,
+		"visible": true,
+		"width": 128
+	}
+}

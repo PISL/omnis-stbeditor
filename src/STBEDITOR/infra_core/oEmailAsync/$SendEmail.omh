@@ -1,0 +1,208 @@
+;  2017-07-17 refactoring from original oEmail.$SendEmail
+;       ;; this will save to sysAsyncEmails only, use the new oEmailWorker to send directly from Omnis
+;  1. pTo     ;; Field ref - char or list
+;  2. pSubj     ;; char(255)
+;  3. pBody     ;; char(10,000,000)
+;  4. pCC     ;; Field ref - char or list
+;  5. pBCC     ;; Field ref - char or list
+;  6. pEnclosure     ;; Field ref - list, 2 cols: filename , full file path
+;  7. pHTML     ;; char(10,000,000)
+;  8. plExtraHeaders     ;; list, optional
+;  9. pVhostRow     ;; row, optional, used when called from $ServerMessage
+;  10. pReplyToAddress     ;; char, optional, used for "Reply-To" header and must be a valid email address
+;  11. pReplyToName     ;; char, optional but will be prepended to pReplyToAddress
+;  12. pFromCode     ;; char, optional, defaults to 'DEFAULT', used to lookup inherited EM_SRVR_FROM entry
+
+Calculate lnPos1 as pos('$DynamicSession',pBody)
+Calculate lnPos2 as pos('fail',pBody)
+If lnPos1>0&lnPos2>0&lnPos1<lnPos2
+	;  failed to connect to database
+	Send to trace log {Save asyncemail failure:  [lcOutSubject]  [lcOutBody]}
+	Open trace log
+	Calculate lbNoConnectionToDb as kTrue
+	
+	;  should probably use oEmailWorker to deliver it.
+	
+	
+	;  Do tConstants.$cols.$findname('WebSiteEmail') Returns liColRef
+	;  If liColRef
+	;  If tConstants.WebSiteEmail<>''
+	;  this method can proceed
+	;  If pSendAsync
+	;  via scheduler email - this will fail     ;; because it relies on sending message to ssysAsyncEmails
+	;  Quit method
+	;  Else
+	;  direct send using SMTPSend should work
+	;  End If
+	;  Else
+	;  Quit method
+	;  End If
+	;  Else
+	Quit method
+	;  End If
+End If
+
+;  Breakpoint
+
+;  Calculate ibVerifyCertificate as kFalse     ;; default
+If pcFromCode=''
+	Calculate pcFromCode as 'DEFAULT'
+End If
+
+;  to avoid notation errors, check that we have a row
+Do pVhostRow.$cols.$findname('PGS_NAME') Returns liColRef
+If liColRef
+	;  led by PageSkins
+Else
+	Calculate pVhostRow as trGroupOrg
+End If
+
+If pcFromCode<>''
+	Do method SetServerFromAttributes (pcFromCode)
+Else If ccOutServer=''
+	Breakpoint
+End If
+
+;  added 23 JUN 17 RSM     ;; these values are default - they may be over written later
+Calculate lcMailFromAddress as ccMailFromAddress
+Calculate lcMailFromName as ccMailFromName
+
+Do llOutToAddressList.$cols.$add('ADDRESS',kCharacter,kSimplechar,255)
+Calculate llOutCCAddressList as llOutToAddressList
+Calculate llOutBCCAddressList as llOutToAddressList
+Do llOutEnclosureList.$cols.$add('Filename',kCharacter,kSimplechar,255)
+Do llOutEnclosureList.$cols.$add('Pathname',kCharacter,kSimplechar,1000)
+
+Do llOutToAddressList.$clear()
+Do llOutCCAddressList.$clear()
+Do llOutBCCAddressList.$clear()
+
+;  email TO addresses
+If pTo.$type=kCharacter&pTo<>''
+	Do method StringAddresses (pTo,llOutToAddressList)
+Else If pTo.1.C1<>''
+	Do llOutToAddressList.$merge(pTo)
+Else
+	Do llOutToAddressList.$merge(clStaticTo)
+End If
+
+;  if we do not have a "To" address, the emailer.py script will fail
+If not(llOutToAddressList.$linecount)
+	Do toStrings.$StringTableEntry('MSG_MISSINGTOADDRESS',lcStatus,'To: address missing')
+	Quit method lcStatus
+End If
+
+;  CC email addresses
+If pCC.$type=kCharacter&pCC<>''
+	Do method StringAddresses (pCC,llOutCCAddressList)
+Else If pCC.1.C1<>''
+	Do llOutCCAddressList.$merge(pCC)
+Else
+	Do llOutCCAddressList.$merge(clStaticCC)
+End If
+
+;  BCC email addresses
+If pBCC.$type=kCharacter&pBCC<>''
+	Do method StringAddresses (pBCC,llOutBCCAddressList)
+Else If pBCC.1.C1<>''
+	Do llOutBCCAddressList.$merge(pBCC)
+Else
+	Do llOutBCCAddressList.$merge(clStaticBCC)
+End If
+
+If pEnclosure.$type=kCharacter
+	If pEnclosure<>''
+		;  this is HTML
+		;  Do iOutEnclosureList.$add(pEnclosure)
+	End If
+Else
+	If pEnclosure.1.C1<>''
+		Do llOutEnclosureList.$merge(pEnclosure)
+	End If
+End If
+
+;  Calculate lcOutStatusCall as
+Calculate lnOutPriority as
+Calculate lcOutSubject as pSubj
+Calculate lcOutBody as pBody
+
+Do llExtraHeaders.$cols.$add('name',kCharacter,kSimplechar,100)
+Do llExtraHeaders.$cols.$add('value',kCharacter,kSimplechar,255)
+If plExtraHeaders.$linecount
+	Do llExtraHeaders.$merge(plExtraHeaders,kFalse)
+End If
+;  If pReplyToAddress<>''
+;  Do llExtraHeaders.$add('Reply-To',con(pReplyToName,' <',pReplyToAddress,'>'))
+;  End If
+
+;  to avoid notation errors, check that we have a row
+Do pVhostRow.$cols.$findname('PGS_NAME') Returns liColRef
+If liColRef
+	;  led by PageSkins
+	If pVhostRow.PGS_NAME<>''
+		;  called from $AsyncEmails
+		If pos('DEV',upp(tConstants.WebSiteName))
+			Calculate lcMailFromName as con(low(pVhostRow.PGS_NAME),' DEV ',)
+		Else
+			If pos('CONSOLE',upp(pVhostRow.PGS_NAME))>0
+				Calculate lcMailFromName as con(low(pVhostRow.PGS_NAME))
+			Else
+				Calculate lcMailFromName as con(low(pVhostRow.PGS_NAME),' CONSOLE ',)
+			End If
+		End If
+		If pVhostRow.PGS_EMAIL2<>''     ;; this is the webmaster email  (pVhostRow.PGS_EMAIL1 is the owner of the website)
+			Calculate lcMailFromAddress as pVhostRow.PGS_EMAIL2
+		Else
+			;  otherwise leave empty for tConstants.WebSiteEmail to carry as default
+		End If
+		
+	Else If pos('DEV',upp(tConstants.WebSiteName))     ;; tConstants.WebSiteEmail
+		Calculate lcMailFromName as con(low(tConstants.WebSiteName),' CONSOLE ',)
+		Calculate lcMailFromAddress as      ;; leave empty for tConstants.WebSiteEmail to carry as default
+	Else
+		Calculate lcMailFromName as con(low(tConstants.WebSiteName),' CONSOLE ',)
+		Calculate lcMailFromAddress as      ;; leave empty for tConstants.WebSiteEmail to carry as default
+	End If
+Else
+	;  pVhostRow was set to trGroupOrg above
+End If
+
+Do lrAsyncMessage.$definefromsqlclass('tsysAsyncEmails')     ;; this line defers the error until the $insert, when tMaster throws the notation error on "$ctask.$DynamicSession"
+
+If llOutToAddressList.$linecount=0
+	Do toValues.$initInherited('EMAIL','_TO') Returns lrReference
+	If lrReference.RFO_SEQ>0
+		Do llOutToAddressList.$add(lrReference.RFO_CHAR)
+	End If
+End If
+Do OJSON.$listorrowtojson(llOutToAddressList,kUniTypeCharacter,lcErrorText) Returns lrAsyncMessage.AE_TO
+Calculate lrAsyncMessage.AE_SUBJECT as con(lcOutSubject,' @ ',dat(#D,'D/M/Y'),' ',tim(#T,'H:N:S'))
+Calculate lrAsyncMessage.AE_MESSAGE as lcOutBody
+Do OJSON.$listorrowtojson(llOutCCAddressList,kUniTypeCharacter,lcErrorText) Returns lrAsyncMessage.AE_CC
+Do OJSON.$listorrowtojson(llOutBCCAddressList,kUniTypeCharacter,lcErrorText) Returns lrAsyncMessage.AE_BCC
+Calculate lrAsyncMessage.AE_PRIORITY as lnOutPriority
+Do OJSON.$listorrowtojson(llOutEnclosureList,kUniTypeCharacter,lcErrorText) Returns lrAsyncMessage.AE_ENCL
+Calculate lrAsyncMessage.AE_HTML as pHTML
+Calculate lrAsyncMessage.AE_GO_REF as pVhostRow.GO_SEQ     ;; 2015-05-01 virtual host now also includes the corresponding GO record
+If pReplyToAddress<>''     ;; save the from address
+	;  2017-07-11 GRS do NOT change the next three lines, asyncemails.py relies on this value
+	Do lrFrom.$cols.$add('replyAddress',kCharacter,kSimplechar,255)
+	Calculate lrFrom.replyAddress as con(pReplyToName,' <',pReplyToAddress,'>')
+	Do OJSON.$listorrowtojson(lrFrom,kUniTypeCharacter,lcErrorText) Returns lrAsyncMessage.AE_FROM
+End If
+Calculate lrAsyncMessage.AE_SENDERCODE as pcFromCode
+
+Do lrAsyncMessage.$insert() Returns lbOK
+
+
+If lcStatus<0
+	If lrAsyncMessage.icValidationMessage<>''
+		Calculate lcStatus as lrAsyncMessage.icValidationMessage
+	Else
+		Calculate lcStatus as lrAsyncMessage.irErrorSql.NativeErrorMessage
+	End If
+	Do $LogError('ASYNCEMAIL_FAIL',upp($cmethod().$name),lcStatus)
+	
+End If
+
+Quit method lcStatus

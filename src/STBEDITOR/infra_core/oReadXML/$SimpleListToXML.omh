@@ -1,0 +1,21 @@
+Begin text block
+Text: {<xml>} (Carriage return)
+
+Calculate pList.$line as 0
+While $Loop(pList)
+	Text: {<[pRowDesignator]>}
+	
+	For lnColNo from 1 to pList.$colcount step 1
+		Calculate lcColName as pList.$cols.[lnColNo].$name
+		Calculate lcValue as pList.[pList.$line].C[lnColNo]
+		Text: {<[lcColName]>[lcValue]</[lcColName]>}
+	End For
+	
+	Text: {</[pRowDesignator]>} (Carriage return)
+End While
+
+Text: {</xml>} (Carriage return)
+End text block
+Get text block lcResult
+
+Quit method lcResult

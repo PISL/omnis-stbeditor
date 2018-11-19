@@ -1,0 +1,4 @@
+Set reference irefVisualLayer to prefVisual
+;  Calculate credVisualLayer as prefVisual
+Set reference credVisualLayer to prefVisual
+Calculate ibVisualLayerSet as kTrue

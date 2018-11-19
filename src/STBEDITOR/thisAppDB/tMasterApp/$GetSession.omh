@@ -1,0 +1,2 @@
+Calculate pSession as $cinst().$sessionobject
+Calculate pStatement as $cinst.$statementobject

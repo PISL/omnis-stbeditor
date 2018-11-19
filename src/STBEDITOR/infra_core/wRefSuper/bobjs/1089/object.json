@@ -1,0 +1,27 @@
+{
+	"ident": 1089,
+	"order": 16390,
+	"objtype": "kLabel",
+	"properties": {
+		"align": "kLeftJst",
+		"backcolor": "kColorBackFill",
+		"backpattern": 15,
+		"designactive": true,
+		"edgefloat": "kEFnone",
+		"fieldstyle": "",
+		"font": 1,
+		"fontsize": 12,
+		"fontstyle": "kPlain",
+		"forecolor": "kColorForeFill",
+		"height": 16,
+		"left": 321,
+		"objlink": 65550,
+		"text": "LOCAL entries exist",
+		"textcolor": "kBlue",
+		"top": 31,
+		"userinfo": "",
+		"vertcentertext": false,
+		"visible": false,
+		"width": 130
+	}
+}

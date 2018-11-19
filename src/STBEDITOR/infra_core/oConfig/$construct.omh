@@ -1,0 +1,2 @@
+Calculate icConfigFile as sys(10)
+Calculate icConfigFile as con(mid(icConfigFile,1,rpos(sys(9),icConfigFile)),$clib().$name,'_config.xml')

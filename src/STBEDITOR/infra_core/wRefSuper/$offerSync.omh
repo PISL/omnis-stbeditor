@@ -1,0 +1,2 @@
+Do method otherWindows Returns llWindows
+Calculate $cinst.$objs.ibStickyUpdates.$visible as llWindows.$linecount>0

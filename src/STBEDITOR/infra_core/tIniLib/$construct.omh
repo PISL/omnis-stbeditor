@@ -1,0 +1,4 @@
+Calculate icPrefix as 'LIB_'
+Calculate icPrimarykey as 'LIB_SEQ'
+Calculate ibHasSequence as kTrue
+Do inherited

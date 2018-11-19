@@ -1,0 +1,74 @@
+If upp(pcType)='SECURE'
+	Do iSecureConnectionList.$define(iSecureConnectionName,iSecureConnectionValue)
+	Do iSecureConnectionList.$add("kOWEBsmtpSecureNotSecure",kOWEBsmtpSecureNotSecure)
+	Do iSecureConnectionList.$add("kOWEBsmtpSecureSSL",kOWEBsmtpSecureSSL)
+	Do iSecureConnectionList.$add("kOWEBsmtpSecureSTARTTLS",kOWEBsmtpSecureSTARTTLS)
+	Calculate iSecureConnectionList.$line as 3     ;; for practical use, TL put 2 here
+	Quit method iSecureConnectionList
+	
+Else If upp(pcType)='AUTHENTICATION'
+	Do iAuthTypeList.$define(iAuthTypeName,iAuthTypeValue)
+	Do iAuthTypeList.$add("kOWEBsmtpAuthTypeCRAMMD5",kOWEBsmtpAuthTypeCRAMMD5)
+	Do iAuthTypeList.$add("kOWEBsmtpAuthTypeDIGESTMD5",kOWEBsmtpAuthTypeDIGESTMD5)
+	Do iAuthTypeList.$add("kOWEBsmtpAuthTypeLOGIN",kOWEBsmtpAuthTypeLOGIN)
+	Do iAuthTypeList.$add("kOWEBsmtpAuthTypeNTLM",kOWEBsmtpAuthTypeNTLM)
+	Do iAuthTypeList.$add("kOWEBsmtpAuthTypeOAUTH2",kOWEBsmtpAuthTypeOAUTH2)
+	Do iAuthTypeList.$add("kOWEBsmtpAuthTypePLAIN",kOWEBsmtpAuthTypePLAIN)
+	Do iAuthTypeList.$add("kOWEBsmtpAuthTypeNone",kOWEBsmtpAuthTypeNone)
+	Do iAuthTypeList.3.$selected.$assign(kTrue)
+	Quit method iAuthTypeList
+	
+Else If upp(pcType)='PROPERTIES'
+	Do iPropsList.$define(iPropName,iPropValue)
+	Quit method iPropsList
+	
+Else If upp(pcType)='PRIORITIES'
+	Do iPriorityList.$define(iPriorityName,iPriorityValue)
+	Do iPriorityList.$add("kOWEBmsgPriorityLowest",kOWEBmsgPriorityLowest)
+	Do iPriorityList.$add("kOWEBmsgPriorityLow",kOWEBmsgPriorityLow)
+	Do iPriorityList.$add("kOWEBmsgPriorityNormal",kOWEBmsgPriorityNormal)
+	Do iPriorityList.$add("kOWEBmsgPriorityHigh",kOWEBmsgPriorityHigh)
+	Do iPriorityList.$add("kOWEBmsgPriorityHighest",kOWEBmsgPriorityHighest)
+	Calculate iPriorityList.$line as 3
+	Quit method iPriorityList
+	
+Else If upp(pcType)='HEADERS'
+	Do iExtraHeaderList.$define(iExtraHeaderName,iExtraHeaderValue)
+	Quit method iExtraHeaderList
+	
+Else If upp(pcType)='ATTACHMENTS'
+	Do ilAttachments.$define(inBodyPartId,filepath,filename,attachAs,mimetype,charset,encoding,disposition)
+	Quit method ilAttachments
+	
+Else If upp(pcType)='CREDENTIALS'
+	Do irCredentials.$cols.$add('configCode',kCharacter,kSimplechar,15)
+	Do irCredentials.$cols.$add('server',kCharacter,kSimplechar,100)
+	Do irCredentials.$cols.$add('account',kCharacter,kSimplechar,100)
+	Do irCredentials.$cols.$add('pw',kCharacter,kSimplechar,100)
+	Do irCredentials.$cols.$add('secure',kInteger,kShortint)     ;; kCharacter,kSimplechar,100
+	Do irCredentials.$cols.$add('authenticationTypes',kInteger,k32bitint)
+	Do irCredentials.$cols.$add('OAUTH2',kCharacter,kSimplechar,1000000)
+	Do irCredentials.$cols.$add('domain',kCharacter,kSimplechar,100000)
+	Do irCredentials.$cols.$add('realm',kCharacter,kSimplechar,100000)
+	Do irCredentials.$cols.$add('debugLog',kBoolean)
+	Do irCredentials.$cols.$add('timeout',kInteger,k32bitint)
+	Do irCredentials.$cols.$add('verifyCertificate',kBoolean)
+	Quit method irCredentials
+	
+Else If upp(pcType)='ATTRIBUTES'
+	Do irMessageAttributes.$cols.$add('from',kCharacter,kSimplechar,100)
+	Do irMessageAttributes.$cols.$add('subject',kCharacter,kSimplechar,255)
+	Do irMessageAttributes.$cols.$add('to',kCharacter,kSimplechar,1000)
+	Do irMessageAttributes.$cols.$add('cc',kCharacter,kSimplechar,1000)
+	Do irMessageAttributes.$cols.$add('bcc',kCharacter,kSimplechar,1000)
+	Do irMessageAttributes.$cols.$add('priority',kInteger,kShortint)     ;; 1-5
+	Quit method irMessageAttributes
+	
+Else If upp(pcType)='MESSAGE'
+	Do irMessageBody.$cols.$add('text',kCharacter,kSimplechar,100000)
+	Do irMessageBody.$cols.$add('html',kCharacter,kSimplechar,100000)
+	Do irMessageBody.$cols.$add('attachments',kList)
+	Calculate irMessageBody.attachments as ilAttachments
+	Quit method irMessageBody
+	
+End If

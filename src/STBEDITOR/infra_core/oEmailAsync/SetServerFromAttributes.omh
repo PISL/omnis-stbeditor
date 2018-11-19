@@ -1,0 +1,48 @@
+If pcFromCode=''
+	Calculate pcFromCode as 'DEFAULT'
+End If
+
+Do clFromCache.$search($ref.code=pcFromCode&$ref.GO_SEQ=trGroupOrg.GO_SEQ,1,0,0,0) Returns lbFoundInCache
+If lbFoundInCache
+	Calculate lrEmailFrom as clFromCache.attributes
+Else
+	Do toValues.$initInherited('EM_SRVR_FROM',pcFromCode) Returns lrReference     ;; relies on trGroupOrg
+	If lrReference.RFO_SEQ>0
+		Do OJSON.$jsontolistorrow(lrReference.RFO_JSON) Returns lrEmailFrom     ;; lrEmailFrom.address lrEmailFrom.name
+	Else
+		Quit method kFalse
+	End If
+End If
+
+If lrEmailFrom.$colcount>0     ;; lrEmailFrom.address lrEmailFrom.name
+	If not(lbFoundInCache)
+		;  valid JSON that was fetched from DB - put in cache
+		Do clFromCache.$add(pcFromCode,lrEmailFrom)
+	End If
+	Calculate ccOutServer as toStrings.$extractEmailServer(lrEmailFrom,ccOutServer)
+	
+	Calculate ccMailFromAddress as toStrings.$extractEmailFromAddress(lrEmailFrom,ccOutFrom)
+	
+	Calculate ccMailFromName as toStrings.$extractEmailFromName(lrEmailFrom,ccOutFromName)
+	
+	Calculate ccSMTP_AuthenticationMethod as toStrings.$extractEmailAuthentication(lrEmailFrom)
+	
+	Calculate ccSMTP_ID as toStrings.$extractEmailLogin(lrEmailFrom,ccOutFrom)
+	
+	Calculate ccSMTP_PASSWORD as toStrings.$extractEmailPassword(lrEmailFrom)
+	
+	Calculate cnSecure as toStrings.$extractEmailSecurity(lrEmailFrom)
+	
+	Calculate ibVerifyCertificate as toStrings.$extractEmailCertificate(lrEmailFrom)
+	
+	;  static email to addresses for automated workflow messages
+	Calculate clStaticTo as toStrings.$extractEmailTo(lrEmailFrom,,kTrue)
+	
+	Calculate clStaticCC as toStrings.$extractEmailCC(lrEmailFrom,,kTrue)
+	
+	Calculate clStaticBCC as toStrings.$extractEmailBCC(lrEmailFrom,,kTrue)
+	
+	Quit method kTrue
+End If
+
+Quit method kFalse

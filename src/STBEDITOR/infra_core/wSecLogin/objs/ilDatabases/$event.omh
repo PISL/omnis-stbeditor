@@ -1,0 +1,36 @@
+On evClick     ;; Event Parameters - pRow ( Itemreference )
+	Do $SetSelectedDB(ilDatabases)
+	If ilDatabases.DAM='WebService'
+		Do tConstants.$cols.$findname('REST_URI') Returns liColRef
+		If liColRef
+			;  column already exists
+		Else
+			;  add REST URI for the Web Server
+			Do tConstants.$cols.$add('REST_URI',kCharacter,kSimplechar,255)
+			Do tConstants.$cols.$add('ExternalIP',kCharacter,kSimplechar,45)     ;; allow for IPv6
+			Do tConstants.$cols.$add('RESTsessionID',kCharacter,kSimplechar,100)
+		End If
+		;  Calculate tConstants.REST_URI as con('http://',ilDatabases.Host,':',ilDatabases.port,'/api/tracker/data/')     ;; https:// does not work yet
+		
+		If left(ilDatabases.Host,4)='http'     ;; added this check to allow for local testing which probably will not be using SSL
+			Calculate tConstants.REST_URI as con(ilDatabases.Host,'/api/tracker/data/')
+		Else
+			Calculate tConstants.REST_URI as con('https://',ilDatabases.Host,ilDatabases.port,'/api/tracker/data/')
+		End If
+		
+		Do ioWeb.$ping(lcErrorText) Returns lrResult
+		If lrResult.$colcount>0
+			If lrResult.ip<>''
+				Calculate tConstants.ExternalIP as lrResult.ip
+			Else
+				OK message Erroneous response {The server did not return an acceptable value.  You cannot use this at the moment.}
+				Calculate ilDatabases.$line as 1
+				Do $SetSelectedDB(ilDatabases)
+			End If
+		Else
+			;  no content in lrResult     ;; server is probably not running
+			OK message Problem with remote server {The server did not acknowledge its presence.  It is probably not running.}
+			Calculate ilDatabases.$line as 1
+			Do $SetSelectedDB(ilDatabases)
+		End If
+	End If

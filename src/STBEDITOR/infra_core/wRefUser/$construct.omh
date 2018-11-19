@@ -1,0 +1,23 @@
+Do toValues.$initInherited('REF_USER') Returns ilPreferences
+;  Do $DefineList(ilPreferences,'tREFERENCE')
+;  Calculate ilREFERENCE as ilPreferences
+;  Do ilPreferences.$FetchClass('REF_USER')
+;  Do ilPreferences.$sort($ref.RFU_ORDER,0,$ref.RFU_VALUE,0)
+Calculate ilPreferences.$line as 0
+
+Do toValues.$initUser() Returns ilData
+;  Do $DefineList(ilData,'tsysReferenceUser')
+Calculate $cinst.$enterable as kTrue
+
+Do ilData.$WhichDatabase() Returns lcDatabase
+Calculate $cinst.$title as con('connected to ',lcDatabase)
+Calculate icPathForSoundFiles as con(sys(215),'SOUNDS')
+
+Do ilDisplay.$cols.$add('desc',kCharacter,kSimplechar,255)
+Do ilDisplay.$cols.$add('code',kCharacter,kSimplechar,100)
+Do method $WindowClasses
+
+If pOpenWithThisClass<>''
+	Do ilPreferences.$search($ref.RFU_CLASS=pOpenWithThisClass,1,0,0,0)
+	Do $cinst.$refresh()
+End If

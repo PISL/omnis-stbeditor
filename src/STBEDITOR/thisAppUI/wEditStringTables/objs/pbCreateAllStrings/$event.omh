@@ -1,0 +1,32 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	Calculate $clib.$ignoreexternal as kTrue
+	Prompt for input Enter library name: Returns lcLibrary (Cancel button)
+	If flag false
+		Quit method kFalse
+	End If
+	
+	Do $itasks.$findname(lcLibrary) Returns lrefTask
+	If lrefTask
+		Do lrefTask.$buildStringTable()
+	Else
+		Do $DefineList(llStrings,'tomStrings')
+		Do llStrings.$fetchForLibrary(lcLibrary)
+		For lnCount from 9 to llStrings.$colcount step 1
+			Do llData.$cols.$add(llStrings.$cols.[lnCount].$name,kCharacter,kSimplechar)
+		End For
+		
+		Do llData.$merge(llStrings,kTrue,kFalse,kTrue)
+		
+		
+		Do llTables.$cols.$add('name',kCharacter,kSimplechar)
+		Do llTables.$cols.$add('path',kCharacter,kSimplechar)
+		Do StringTable.$gettablelist(llTables)
+		Do llTables.$search($ref.name='allstrings',1,0,0,0) Returns lnLine
+		If lnLine
+			Do StringTable.$loadlistfromtable('allstrings') Returns llAllStrings
+			Do StringTable.$unloadstringtable('allstrings')
+			Do llData.$merge(llAllStrings,kTrue,kFalse,kFalse)
+		End If
+		
+		Do StringTable.$loadtablefromlist('allstrings',,llData) Returns lnStringTableResult     ;; this will automatically remove all duplicates based on STRINGID
+	End If

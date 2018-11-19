@@ -1,0 +1,177 @@
+{
+	"classtype": "kSystemtable",
+	"internalversion": 4,
+	"iconversion": 10,
+	"nextident": 3,
+	"properties": {
+		"componenttype": "kCompStoreHidden",
+		"createdate": "2017-05-03 12:02:17",
+		"desc": "",
+		"external": false,
+		"moddate": "2015-07-02 15:11:02",
+		"showascheckedout": false,
+		"userinfo": "",
+		"version": "1.01"
+	},
+	"iconids": [
+		{
+			"iconid": 5000,
+			"pageid": 1,
+			"iconpos": 1,
+			"defaultsize": 1,
+			"flags": 0
+		},
+		{
+			"iconid": 5001,
+			"pageid": 1,
+			"iconpos": 2,
+			"defaultsize": 1,
+			"flags": 0
+		},
+		{
+			"iconid": 5002,
+			"pageid": 1,
+			"iconpos": 3,
+			"defaultsize": 1,
+			"flags": 0
+		},
+		{
+			"iconid": 5003,
+			"pageid": 1,
+			"iconpos": 4,
+			"defaultsize": 1,
+			"flags": 0
+		},
+		{
+			"iconid": 1000,
+			"pageid": 3,
+			"iconpos": 1,
+			"defaultsize": 1,
+			"flags": 0,
+			"hotspots": [
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				}
+			]
+		},
+		{
+			"iconid": 1001,
+			"pageid": 3,
+			"iconpos": 2,
+			"defaultsize": 1,
+			"flags": 0,
+			"hotspots": [
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				}
+			]
+		},
+		{
+			"iconid": 1002,
+			"pageid": 3,
+			"iconpos": 3,
+			"defaultsize": 1,
+			"flags": 0,
+			"hotspots": [
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				}
+			]
+		},
+		{
+			"iconid": 1003,
+			"pageid": 3,
+			"iconpos": 4,
+			"defaultsize": 1,
+			"flags": 0,
+			"hotspots": [
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				},
+				{
+					"x": 0,
+					"y": 0
+				}
+			]
+		}
+	],
+	"pages": [
+		{
+			"pageid": 1,
+			"name": "myEcoCost",
+			"bitmapid": 1,
+			"flags": 1806
+		},
+		{
+			"pageid": 3,
+			"name": "ZipIcons",
+			"bitmapid": 2,
+			"flags": 260
+		}
+	],
+	"bitmaps": [
+		{
+			"bitmapid": 1,
+			"solid": {
+				"$png": "solid1.png"
+			},
+			"alpha": {
+				"$png": "alpha1.png"
+			}
+		},
+		{
+			"bitmapid": 2,
+			"solid": {
+				"$png": "solid2.png"
+			}
+		}
+	]
+}

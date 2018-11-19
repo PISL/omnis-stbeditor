@@ -1,0 +1,23 @@
+If $cinst.[icPrefix]DATE>=idTestDate
+	;  leave as is
+Else
+	Calculate $cinst.[icPrefix]DATE as #NULL
+End If
+
+If $cinst.[icPrefix]EFFECTIVE>=idTestDate
+	;  leave as is
+Else
+	Calculate $cinst.[icPrefix]EFFECTIVE as #NULL
+End If
+
+If $cinst.[icPrefix]EXPIRES>=idTestDate
+	;  leave as is
+Else
+	Calculate $cinst.[icPrefix]EXPIRES as #NULL
+End If
+
+If len($cinst.[icPrefix]JSON)=0
+	Calculate $cinst.[icPrefix]JSON as #NULL     ;; Postgres does not allow empty in a JSONB column
+End If
+
+Do inherited

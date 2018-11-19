@@ -1,0 +1,47 @@
+Calculate llTemp as toValues.$emailOptions('AUTHENTICATION')
+Do llTemp.$search(0)
+
+Do prData.$cols.$findname('authentication') Returns liColRef
+If liColRef
+	Calculate lcValue as prData.authentication
+Else
+	Do prData.$cols.$findname('authType') Returns liColRef
+	If liColRef
+		Calculate lcValue as prData.authType
+	Else
+		If pcDefault<>''
+			Calculate lcValue as pcDefault
+		Else
+			Calculate lcValue as kOWEBsmtpAuthTypeNone
+		End If
+	End If
+End If
+
+If lcValue<>''
+	;  convert the authentication type to all possible values
+	If pos(kSp,lcValue)
+		Calculate lcDelimiter as kSp
+	Else If pos(',',lcValue)
+		Calculate lcDelimiter as ','
+	Else If pos(';',lcValue)
+		Calculate lcDelimiter as ';'
+	Else
+		Calculate lcDelimiter as kSp
+	End If
+	While lcValue<>''
+		Calculate lcToken as strtok(nam(lcValue),lcDelimiter)
+		Calculate lcToken as trim(lcToken)
+		If lcToken<>''
+			Calculate lcVarName as con('kOWEBsmtpAuthType',lcToken)     ;; e.g. kOWEBsmtpAuthTypeCRAMMD5
+			Do llTemp.$search($ref.iAuthTypeName=lcVarName,1,0,1,0) Returns lbFound
+			If not(lbFound)
+				Breakpoint
+				;  Calculate icErrorMessage as con('Error invalid authType ',lrAttributes.authType,': ',kDq,lcVarName,kDq)
+				Quit method kFalse
+			End If
+		End If
+	End While
+	Do method calcauthtype (llTemp) Returns lnValue
+End If
+
+Quit method lnValue

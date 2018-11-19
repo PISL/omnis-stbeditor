@@ -1,0 +1,96 @@
+;  we don't know what we are parsing except it is an xml like structure
+;  the assumed pattern is <row tag><tag1>value</tag1><tag2>value</tag2></row tag>
+;  with any number of row tags     ;; and any number of value tags within the row
+;  limit on single string value is 2000 chars
+Do llCompleteStructure.$cols.$add('tag',kCharacter,kSimplechar,40)
+Do llCompleteStructure.$cols.$add('row',kRow)
+Do llCompleteStructure.$cols.$add('value',kCharacter,kSimplechar,255)
+
+While pStringIn<>''
+	;  what is the first tag?
+	Calculate lcRowTag as con(mid(pStringIn,2,pos('>',pStringIn)-2))
+	;  extract "row"
+	Do method $TagContent (pStringIn,lcRowTag) Returns lcRow
+	;  truncate pStringin     ;; much like the strtok() function does
+	Calculate pStringIn as mid(pStringIn,((len(lcRowTag)+2)*2)+1+len(lcRow)+1,kFetchAll)
+	;  fresh structure for each row
+	Calculate lrStructure as ''
+	
+	;  now parse the row
+	While lcRow<>''
+		Calculate lcStartTag as con(mid(lcRow,2,pos('>',lcRow)-2))     ;; determine tag
+		If lcStartTag<>''     ;; there is structure within the row
+			Do method $TagContent (lcRow,lcStartTag) Returns lcValue     ;; extract value
+			Calculate lcRow as mid(lcRow,((len(lcStartTag)+2)*2)+1+len(lcValue)+1,kFetchAll)     ;; truncate source string
+		Else
+			;  the row is the remaining value
+			Calculate lcValue as lcRow
+			Calculate lcRow as ''
+		End If
+		
+		If isnumber(lcValue)
+			If pos('.',lcValue)
+				Do lrStructure.$cols.$add(lcStartTag,kNumber,kFloatdp)
+			Else
+				Do lrStructure.$cols.$add(lcStartTag,kInteger,k32bitint)
+			End If
+			Calculate lrStructure.[lcStartTag] as lcValue
+		Else
+			;  checking for date is flawed     ;; calculate ldDate as 12 Lombard St results in 12 APR 2012 (when current date is 25 APR 2012)
+			Calculate lbLooksLikeAdate as kFalse
+			Calculate lcSubValue as ''
+			;  does string begin with a number?
+			If isnumber(mid(lcValue,1,pos(' ',lcValue)-1))     ;; 12 3 49
+				Calculate lbLooksLikeAdate as kTrue
+				Calculate lcSeparator as ' '
+				Calculate lcSubValue as mid(lcValue,pos(lcSeparator,lcValue)+1,9999)
+			Else If isnumber(mid(lcValue,1,pos('/',lcValue)-1))     ;; 12/3/49
+				Calculate lbLooksLikeAdate as kTrue
+				Calculate lcSeparator as '/'
+				Calculate lcSubValue as mid(lcValue,pos(lcSeparator,lcValue)+1,9999)
+			Else If isnumber(mid(lcValue,1,pos('.',lcValue)-1))     ;; 12.3.49
+				Calculate lbLooksLikeAdate as kTrue
+				Calculate lcSeparator as '.'
+				Calculate lcSubValue as mid(lcValue,pos(lcSeparator,lcValue)+1,9999)
+			End If
+			If lbLooksLikeAdate
+				If pos(con(lcSeparator,'JAN'),upp(lcSubValue))|pos(con(lcSeparator,'FEB'),upp(lcSubValue))|pos(con(lcSeparator,'MAR'),upp(lcSubValue))|pos(con(lcSeparator,'APR'),upp(lcSubValue))|pos(con(lcSeparator,'MAY'),upp(lcSubValue))|pos(con(lcSeparator,'JUN'),upp(lcSubValue))|pos(con(lcSeparator,'JUL'),upp(lcSubValue))|pos(con(lcSeparator,'AUG'),upp(lcSubValue))|pos(con(lcSeparator,'SEP'),upp(lcSubValue))|pos(con(lcSeparator,'OCT'),upp(lcSubValue))|pos(con(lcSeparator,'NOV'),upp(lcSubValue))|pos(con(lcSeparator,'DEC'),upp(lcSubValue))
+					;  it still looks like a date
+				Else If pos(con(1,lcSeparator),lcSubValue)|pos(con(2,lcSeparator),lcSubValue)|pos(con(3,lcSeparator),lcSubValue)|pos(con(4,lcSeparator),lcSubValue)|pos(con(5,lcSeparator),lcSubValue)|pos(con(6,lcSeparator),lcSubValue)|pos(con(7,lcSeparator),lcSubValue)|pos(con(8,lcSeparator),lcSubValue)|pos(con(9,lcSeparator),lcSubValue)|pos(con(10,lcSeparator),lcSubValue)|pos(con(11,lcSeparator),lcSubValue)|pos(con(12,lcSeparator),lcSubValue)
+					;  it still looks like a date
+				Else
+					Calculate lbLooksLikeAdate as kFalse
+				End If
+			End If
+			
+			If lcStartTag<>''
+				Calculate lcColName as lcStartTag
+			Else
+				Calculate lcColName as lcRowTag
+			End If
+			
+			If lbLooksLikeAdate&dat(lcValue)>=dat('1 JAN 2000')&dat(lcValue)<=dat('31 DEC 2099')
+				Do lrStructure.$cols.$add(lcColName,kDate,kDate2000)
+				Calculate lrStructure.[lcColName] as lcValue
+				
+			Else If lbLooksLikeAdate&dat(lcValue)>=dat('1 JAN 1980')&dat(lcValue)<=dat('31 DEC 2079')
+				Do lrStructure.$cols.$add(lcColName,kDate,kDate1980)
+				Calculate lrStructure.[lcColName] as lcValue
+				
+			Else If lbLooksLikeAdate&dat(lcValue)>=dat('1 JAN 1900')&dat(lcValue)<=dat('31 DEC 1999')
+				Do lrStructure.$cols.$add(lcColName,kDate,kDate1900)
+				Calculate lrStructure.[lcColName] as lcValue
+			Else
+				Do lrStructure.$cols.$add(lcColName,kCharacter,kSimplechar,2000)
+				Calculate lrStructure.[lcColName] as lcValue
+			End If
+		End If
+	End While
+	If lcStartTag<>''     ;; structure within the row
+		Do llCompleteStructure.$add(lcRowTag,lrStructure)
+	Else     ;; straight value within the row
+		Do llCompleteStructure.$add(lcRowTag,#NULL,lcValue)
+	End If
+End While
+
+Quit method llCompleteStructure

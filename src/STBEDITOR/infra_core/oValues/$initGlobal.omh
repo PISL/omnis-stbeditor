@@ -1,0 +1,90 @@
+Do irErrorSQL.$clear()
+Calculate lList as ilBaseGlobal
+Calculate llFixed as ilBaseGlobal
+If not(pbExcludeFixed)
+	Do method FixedValues (pcREF_CLASS,llFixed)
+End If
+
+If $ctask.tlDatabases.DAM='WebService'
+	;  utilise a cache of reference values
+	
+	;  Have we searched on this class already?
+	;  Because of $initInherited method there will many instances of records being fetched from Org, Local and Global
+	;  and there being records only in one of those tables.  This check prevents repeated fetched for nothing.
+	If pcREF_VALUE<>''
+		If pos(con(',',pcREF_CLASS,'/',pcREF_VALUE,','),ccClassesG)
+			Calculate lbAlreadyFetched as kTrue
+		End If
+	Else If pos(con(',',pcREF_CLASS,','),ccClassesG)
+		Calculate lbAlreadyFetched as kTrue
+	End If
+	
+	If lbAlreadyFetched
+		If pcREF_VALUE<>''
+			Do clGlobal.$search($ref.RFG_CLASS=pcREF_CLASS&$ref.RFG_VALUE=pcREF_VALUE,1,0,1,0) Returns lnFirstSelectedLine
+		Else
+			Do clGlobal.$search($ref.RFG_CLASS=pcREF_CLASS,1,0,1,0) Returns lnFirstSelectedLine
+		End If
+		If lnFirstSelectedLine     ;; totc(clGlobal,#LSEL)>0
+			Do lList.$merge(clGlobal,kFalse,kTrue)
+			Do clGlobal.$search(0) Returns lbFound     ;; clear any selected lines
+			Calculate lbFoundInCache as kTrue
+		End If
+	End If
+End If
+
+If lList.$linecount=0&not(lbAlreadyFetched)
+	;  only fetch from db if there is nothing in local list
+	If llFixed.$linecount>0
+		Do lList.$FetchClass(pcREF_CLASS,pcREF_VALUE,kTrue,kTrue)     ;; include non active which will be processed bvelow
+	Else
+		Do lList.$FetchClass(pcREF_CLASS,pcREF_VALUE,pbIncludeNonActive,kTrue)     ;; class, value, incl.non.active, append, go_seq
+	End If
+	If lList.irErrorSQL.NativeErrorText<>''
+		Calculate irErrorSQL as lList.irErrorSQL
+		Quit method
+	End If
+End If
+
+If $ctask.tlDatabases.DAM='WebService'
+	If not(lbFoundInCache)
+		;  build up a cache of reference values
+		Do clGlobal.$merge(lList)
+		
+		If not(lbAlreadyFetched)
+			;  Build up a cache of requested CLASSES so repeated calls to a class that fetches nothing is not repeated.
+			If pcREF_VALUE<>''
+				Calculate ccClassesG as con(ccClassesG,pcREF_CLASS,'/',pcREF_VALUE,',')
+			Else
+				Calculate ccClassesG as con(ccClassesG,pcREF_CLASS,',')
+			End If
+		End If
+	End If
+End If
+
+If llFixed.$linecount>0
+	Calculate llFixed.$line as 0
+	;  While $Loop(llFixed)     ;; Studio 8.0.1 bug - losing scope with task
+	For llFixed.$line from 1 to llFixed.$linecount step 1
+		Do lList.$search($ref.RFG_VALUE=llFixed.RFG_VALUE,1,0,0,0) Returns lbFound
+		If lbFound
+			If not(lList.RFG_ACTIVE)
+				;  then user has disabled this entry
+				Calculate lList.[lList.$line].$selected as kTrue
+				Calculate llFixed.[llFixed.$line].$selected as kTrue
+			Else
+				;  don't duplicate rows
+				Calculate lList.[lList.$line].$selected as kTrue     ;; fixed entry takes precedence
+			End If
+		End If
+		;  End While
+	End For
+	
+	Do llFixed.$remove(kListDeleteSelected)
+	Do lList.$remove(kListDeleteSelected)
+	
+	Do lList.$merge(llFixed)
+	Do lList.$sort($ref.RFG_ORDER,0,$ref.RFG_VALUE,0)
+End If
+
+Quit method lList

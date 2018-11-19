@@ -1,0 +1,43 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Calculate ldtStart as #D
+	Do ioWeb.$callFetch(ldtServerTime,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,#NULL,ldtServerTime.$type,0,ilRESTextensions))
+	Calculate inServiceMS as ddiff(kCentiSecond,ldtStart,#D)*10
+	Calculate inRESTserverMS as ioWeb.inServerTime
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method ldtServerTime
+	Else
+		Quit method kFalse
+	End If
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Calculate icStatementType as 'SELECT'
+
+If $cinst.$sessionobject.$damname='PGSQLDAM'
+	Begin statement
+	Sta: {select localtimestamp(0)}     ;; current database date/time to the nearest second GRS 2014-02-17 changed from localtime which Returnｓ time of day only
+	End statement
+	Do $cinst.$executesqlandfetchinto(ldtServerTime) Returns lbOK
+Else If $cinst.$sessionobject.$damname='OMSQLDAM'
+	Calculate ldtServerTime as #D
+Else
+	Breakpoint
+End If
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method ldtServerTime

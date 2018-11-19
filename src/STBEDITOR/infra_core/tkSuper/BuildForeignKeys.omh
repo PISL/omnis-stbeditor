@@ -1,0 +1,21 @@
+
+;  Defines a row from each table object and executes $ForeignKeys to get the foreign keys
+If ilTables.$linecount=0
+	Do method BuildTables
+End If
+
+Calculate ilForeignKeys as #NULL
+Do ilForeignKeys.$cols.$add('TABLE',kCharacter,kSimplechar,100)
+Do ilForeignKeys.$cols.$add('COLUMN',kCharacter,kSimplechar,100)
+Do ilForeignKeys.$cols.$add('FTABLE',kCharacter,kSimplechar,100)
+Do ilForeignKeys.$cols.$add('FCOLUMN',kCharacter,kSimplechar,100)
+
+Calculate ilTables.$line as 0
+While $Loop(ilTables)
+	If isnull($clib.$tables.t[ilTables.TABLE].$methods.//$ForeignKeys//)=0
+		Do $DefineList(lrTable,con('t',ilTables.TABLE))
+		Do ilForeignKeys.$merge(lrTable.$ForeignKeys)
+	End If
+End While
+
+Quit method ilForeignKeys

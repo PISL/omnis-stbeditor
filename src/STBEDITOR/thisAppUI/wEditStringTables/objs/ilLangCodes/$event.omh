@@ -1,0 +1,53 @@
+On evKey
+	;  Breakpoint
+	If #COMMAND&pKey='a'
+		Quit event handler (Discard event)
+	End If
+	
+On evClick     ;; Event Parameters - pRow ( Itemreference )    pLineNumber
+	Calculate lcColName as ilLangCodes.[pLineNumber].lang
+	
+	;  Breakpoint
+	
+	If ilLangCodes.[pLineNumber].$selected
+		;  is the column already defined (user clicked on line but didn't change $selected)
+		Calculate lcAllCols as irefStringsGrid.$columnnames
+		If pos(con(',',lcColName),lcAllCols)
+			Quit method
+		Else
+			;  add column to the grid
+			Do irefStringsGrid.$designcols.$assign(irefStringsGrid.$designcols+1)
+			Calculate lnColCount as irefStringsGrid.$designcols
+			Do irefStringsGrid.$columnnames.$assign(con(irefStringsGrid.$columnnames,',',lcColName))
+			Calculate irefStringsGrid.$currentcolumn as lnColCount
+			Do ilStrings.$cols.$findname(lcColName) Returns lrefCol
+			Calculate irefStringsGrid.$columndatacol as lrefCol.$ident
+		End If
+		
+	Else
+		;  remove column from grid
+		;  is the column already defined (user clicked on line but didn't change $selected)
+		Calculate lcAllCols as irefStringsGrid.$columnnames
+		If pos(con(',',lcColName),lcAllCols)
+			;  remove the column
+			Calculate lnColCount as irefStringsGrid.$designcols
+			Calculate lnColNo as 0
+			Calculate lcFound as ''
+			While lcFound<>lcColName
+				Calculate lnColNo as lnColNo+1
+				Calculate lcFound as strtok('lcAllCols',',')
+			End While
+			Calculate irefStringsGrid.$currentcolumn as lnColNo
+			Calculate irefStringsGrid.$movecolumn as lnColCount
+			Calculate irefStringsGrid.$designcols as lnColCount-1
+			Calculate irefStringsGrid.$columnnames as replaceall(irefStringsGrid.$columnnames,con(',',lcColName),'')
+			Calculate lcAllCols as irefStringsGrid.$columnnames
+			
+		Else
+			Quit method
+		End If
+		
+	End If
+	Do $cobj.$redraw()
+	
+On evDoubleClick     ;; Event Parameters - pRow ( Itemreference )

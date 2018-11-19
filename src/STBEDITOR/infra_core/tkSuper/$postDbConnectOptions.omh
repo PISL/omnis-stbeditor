@@ -1,0 +1,7 @@
+Do toValues.$initInherited('DB_OPTIONS','ENCRYPT') Returns lrReference
+Do tConstants.$cols.$add('encryptionMethod',kInteger,kShortint)
+If isnull(lrReference.RFO_INT)
+	Calculate tConstants.encryptionMethod as 0
+Else
+	Calculate tConstants.encryptionMethod as lrReference.RFO_INT
+End If

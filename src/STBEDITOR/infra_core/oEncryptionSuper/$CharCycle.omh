@@ -1,0 +1,40 @@
+Calculate lcNewString as ''
+For lnPos from 1 to len(pStringIn) step 1
+	Calculate lnThisChar as asc(pStringIn,lnPos)
+	Calculate lnNextChar as asc(pStringIn,lnPos)+pShift
+	
+	If pAlphaNumCycle
+		;  0 = 48, 9 = 57, A = 65,  Z = 90, a = 97, z = 122
+		If lnThisChar>=48&lnThisChar<=57     ;; 0 to 9
+			If lnNextChar>57
+				Calculate lnNextChar as 48+(lnNextChar-57)-1
+			Else If lnNextChar<48
+				Calculate lnNextChar as 57-(48-lnNextChar)+1
+			End If
+			
+		Else If lnThisChar>=65&lnThisChar<=90
+			If lnNextChar>90
+				Calculate lnNextChar as 65+(lnNextChar-90)-1
+			Else If lnNextChar<65
+				Calculate lnNextChar as 90-(65-lnNextChar)+1
+			End If
+			
+		Else If lnThisChar>=97&lnThisChar<=122
+			If lnNextChar>122
+				Calculate lnNextChar as 97+(lnNextChar-122)-1
+			Else If lnNextChar<97
+				Calculate lnNextChar as 122-(97-lnNextChar)+1
+			End If
+			
+		End If
+	Else
+		If lnNextChar>255
+			Calculate lnNextChar as 0+(lnNextChar-255)-1
+		Else If lnNextChar<0
+			Calculate lnNextChar as 255-(0-lnNextChar)+1
+		End If
+	End If
+	
+	Calculate lcNewString as con(lcNewString,chr(lnNextChar))
+End For
+Quit method lcNewString

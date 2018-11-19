@@ -1,0 +1,21 @@
+If len(pClass)
+	Calculate $cinst.DD_CLASS as pClass
+End If
+If len(pMethod)
+	Calculate $cinst.DD_METHOD as pMethod
+End If
+
+Do $cinst.$fetch_(con('DD_CLASS = @[$cinst.DD_CLASS] and DD_METHOD = @[$cinst.DD_METHOD]'))
+
+If isclear(pDirectoryPath)
+	;  nothing to do
+Else
+	Calculate $cinst.DD_PATH as pDirectoryPath
+	If len($cinst.DD_CLASS)
+		Do $cinst.$update()
+	Else
+		Do $cinst.$insert()
+	End If
+End If
+
+Quit method $cinst.DD_PATH

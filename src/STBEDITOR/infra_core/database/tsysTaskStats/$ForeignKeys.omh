@@ -1,0 +1,10 @@
+;  Builds a list of foreign keys for the table
+Calculate llForeignKeyList as
+Do llForeignKeyList.$cols.$add('TABLE',kCharacter,kSimplechar,100)
+Do llForeignKeyList.$cols.$add('COLUMN',kCharacter,kSimplechar,100)
+Do llForeignKeyList.$cols.$add('FTABLE',kCharacter,kSimplechar,100)
+Do llForeignKeyList.$cols.$add('FCOLUMN',kCharacter,kSimplechar,100)
+
+;  Do llForeignKeyList.$add($cinst.$servertablenames(),'ula_usr_ref',lrUsers.$servertablenames(),'usr_seq')
+
+Quit method llForeignKeyList

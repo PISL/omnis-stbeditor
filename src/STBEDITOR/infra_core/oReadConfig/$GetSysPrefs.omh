@@ -1,0 +1,9 @@
+;
+If isclear(pcLib)
+	;  no library name - load all preferences
+	Quit method ilIniList
+Else
+	;  gets variables for a INI section that is named after a library/module e.g. [DEMO]
+	Do method $GetSectionVarsList (pcLib) Returns llVarsList
+	Quit method llVarsList
+End If

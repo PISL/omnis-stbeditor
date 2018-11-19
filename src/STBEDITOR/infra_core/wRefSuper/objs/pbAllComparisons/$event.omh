@@ -1,0 +1,3 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	Do ilComparisonCols.$search(1)
+	Do $cinst.$behaviour()

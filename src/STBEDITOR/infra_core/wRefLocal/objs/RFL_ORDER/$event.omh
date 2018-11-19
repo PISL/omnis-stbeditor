@@ -1,0 +1,2 @@
+On evBefore
+	Do $cinst.$behaviour()

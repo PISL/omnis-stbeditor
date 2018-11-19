@@ -1,0 +1,10 @@
+Do $windows.$makelist($ref.$name,$ref.$desc) Returns llWindows
+Do llWindows.$search(pos('<startwin>',llWindows.C2)>0,1,0,1,0)     ;; <name>3rd party contats</name><startwin>yes</startwin>
+Do llWindows.$remove(kListKeepSelected)
+
+Do ilDisplay.$clear()
+
+Calculate llWindows.$line as 0
+While $Loop(llWindows)
+	Do ilDisplay.$add(toStrings.$TagContent(llWindows.C2,'name'),llWindows.C1)     ;; display name to user , class name
+End While

@@ -1,0 +1,5 @@
+;
+Do llSectionList.$define(KEY,VALUE)
+Do ilIniList.$search(ilIniList.SectionName=pcSection,1,0,1,1)
+Do llSectionList.$merge(ilIniList,1,1)
+Quit method llSectionList

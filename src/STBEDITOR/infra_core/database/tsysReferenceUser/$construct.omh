@@ -1,0 +1,3 @@
+Calculate icPrefix as 'RFU_'
+Calculate icPrimarykey as 'RFU_SEQ'
+Do inherited

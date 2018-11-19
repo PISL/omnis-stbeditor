@@ -1,0 +1,33 @@
+;  call oRest.$ping_put
+;  Breakpoint {pParams}
+;  do stuff here
+Do pParamsRow.$cols.$add('sid',kCharacter,kSimplechar,100)
+Calculate pParamsRow.sid as tConstants.RESTsessionID
+
+Do method $prepareToSend (pParamsRow) Returns lrParams
+
+Calculate lcURI as con(tConstants.REST_URI,'ping')
+
+Do ioRest.$init(lcURI,kOWEBhttpMethodPut,ilHeaders,OJSON.$listorrowtojson(lrParams,kUniTypeCharacter,lcErrorText))
+
+Calculate ldStartTime as #D
+Do ioRest.$run() Returns lbStatus
+Calculate inServiceCallTime as ddiff(kCentiSecond,ldStartTime,#D)*10     ;; milliseconds
+
+If lbStatus
+	Do ioRest.$returnVal(irResponseHeaders,irResponse,irJSON) Returns icJSON
+	
+	If irResponse.httpStatusCode<>200
+		;  do some error reporting here
+		Calculate pErrorField.ErrorCode as irResponse.httpStatusCode
+		Calculate pErrorField.NativeErrorCode as irResponse.httpStatusCode
+		Calculate pErrorField.NativeErrorText as irResponseHeaders.omniserror
+		
+	Else
+		Calculate lbinResponse as binfromhex(irJSON.data)     ;; convert the return to binary and put it into a row variable
+		Do $cinst.$extractData(lbinResponse) Returns lrResult     ;; decrypt and return the original server data row
+		Calculate inServerTime as lrResult.elapsed
+	End If
+End If
+
+Quit method lrResult.ok

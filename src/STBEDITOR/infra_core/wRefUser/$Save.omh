@@ -1,0 +1,27 @@
+If irCurrentOption.RFU_CLASS<>''
+	Calculate ilData.$line as 0
+	Do ilData.$search(0)
+	Do ilData.$search(len($ref.RFU_CLASS)=0|len($ref.RFU_VALUE)=0,1,0,1,0)
+	While $Loop(ilData,kTrue)
+		Calculate lRow as ilData
+		If lRow.RFU_SEQ>0
+			Do lRow.$delete() Returns lbOK
+		Else
+			Calculate ilData.[ilData.$line].$selected as kFalse     ;; this row is not being deleted
+		End If
+	End While
+	Do ilData.$remove(kListDeleteSelected)
+	
+	While $Loop(ilData)
+		Calculate lRow as ilData
+		If lRow.RFU_SEQ>0
+			Do lRow.$update() Returns lbOK
+		Else
+			;  Breakpoint {why are getting lots of new sequence errors?}
+			Do lRow.$insert_pk() Returns lbOK
+		End If
+		If lbOK
+			Calculate ilData.[ilData.$line] as lRow
+		End If
+	End While
+End If

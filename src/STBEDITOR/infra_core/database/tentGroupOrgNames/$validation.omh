@@ -1,0 +1,24 @@
+Calculate icValidationMessage as ''
+Do ilValidation.$clear()
+
+
+If $cinst.GON_GO_REF>0
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'Organisation reference missing')
+	Do ilValidation.$add('GO_GO_REF','VAL_MISSING','Organisation reference missing',0)
+End If
+
+If $cinst.GON_NAME_FULL<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'full name missing')
+	Do ilValidation.$add('GON_NAME_FULL_LBL','VAL_MISSING','full name missing',0)
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

@@ -1,0 +1,23 @@
+Do pTreeList.$search($ref.path=pcIdentifier,1,0,0,0) Returns lnLine
+If not(lnLine)
+	Quit method
+End If
+
+Do llData.$add()
+Calculate llData.$line as llData.$linecount
+Calculate lbFirstPass as kTrue
+For pTreeList.$line from lnLine+1 to pTreeList.$linecount step 1
+	If pTreeList.path=pcIdentifier
+		Calculate lbFirstPass as kFalse
+		Do llData.$add()
+		Calculate llData.$line as llData.$linecount
+		Jump to start of loop
+	End If
+	Calculate lcColName as mid(pTreeList.path,len(pcIdentifier)+2)
+	If lbFirstPass
+		Do llData.$cols.$add(lcColName,kCharacter,kSimplechar,2000)
+	End If
+	Calculate llData.[lcColName] as pTreeList.value
+End For
+
+Quit method llData

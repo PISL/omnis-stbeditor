@@ -1,0 +1,18 @@
+
+;  Builds a list of first-level relational links for pTable
+If ilForeignKeys.$linecount=0
+	Do method BuildForeignKeys
+End If
+
+Do llChains.$cols.$add('TABLE',kCharacter,kSimplechar,100)
+Do llChains.$cols.$add('FTABLE',kCharacter,kSimplechar,100)
+Do llChains.$cols.$add('CHAIN',kCharacter,kSimplechar,1000)
+Do llChains.$cols.$add('LINKS',kInteger,kShortint)
+Do llChains.$cols.$add('DEFAULT',kInteger,kShortint)
+
+Do ilForeignKeys.$search($ref.TABLE=pcTable)
+While $Loop(ilForeignKeys,1)
+	Do llChains.$add(pcTable,ilForeignKeys.FTABLE,con(ilForeignKeys.COLUMN,'=',ilForeignKeys.FCOLUMN),1)
+End While
+
+Quit method llChains

@@ -1,0 +1,65 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Calculate ldtStart as #D
+	Do ioWeb.$callFetch(lnCount,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pcCheckCol,pbUpperCase,pcAdditionalCriteria),lnCount.$type,0,ilRESTextensions))
+	Calculate inServiceMS as ddiff(kCentiSecond,ldtStart,#D)*10
+	Calculate inRESTserverMS as ioWeb.inServerTime
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method 99
+		End If
+		Quit method lnCount
+	Else
+		Quit method 99
+	End If
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Calculate lnDataType as $cinst.$cols.[pcCheckCol].$coltype
+Calculate lnPrimaryKey as $cinst.[icPrimarykey]
+
+Calculate icStatementType as 'SELECT'
+
+Begin statement
+Sta: {select count(*)}
+Sta: {from [$cinst.$servertablenames]}
+If lnDataType=kInteger
+	Calculate lnInteger as $cinst.[pcCheckCol]
+	Sta: {where [pcCheckCol] = @[lnInteger]}
+Else If lnDataType=kNumber
+	Calculate lnReal as $cinst.[pcCheckCol]
+	Sta: {where [pcCheckCol] = @[lnReal]}
+Else If lnDataType=kDate
+	Calculate ldDate as $cinst.[pcCheckCol]
+	Sta: {where [pcCheckCol] = @[ldDate]}
+Else     ;; lnDataType=kCharacter
+	If pbUpperCase
+		Calculate lcChar as upp($cinst.[pcCheckCol])
+		Sta: {where upper([pcCheckCol]) = @[lcChar]}
+	Else
+		Calculate lcChar as $cinst.[pcCheckCol]
+		Sta: {where [pcCheckCol] = @[lcChar]}
+	End If
+End If
+If lnPrimaryKey<>0
+	Sta: {and     [icPrimarykey] <> @[lnPrimaryKey]}
+End If
+If pcAdditionalCriteria<>''
+	Sta: {and   [pcAdditionalCriteria]}
+End If
+End statement
+
+Do $cinst.$executesqlandfetchinto(lnCount) Returns lbOK
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lnCount

@@ -1,0 +1,48 @@
+Calculate lnGO_REF as $ctask.trGroupOrg.GO_SEQ
+Calculate lnUSR_REF as $ctask.trCurrUser.USR_SEQ
+If lnGO_REF>0&lnUSR_REF>0
+	If tlDatabases.DAM='WebService'
+		;  pass parameters to web service
+		;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+		Do ioWeb.$callFetch($cinst,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pClass,pValue,pIncludeNonActive,pAppend),$cinst.$type,0,ilRESTextensions))
+		If ioWeb.irResponse.httpStatusCode=200
+			;  the result should be in this object     ;; however there may be a SQL error
+			If irErrorSQL.NativeErrorText<>''
+				Quit method kFalse
+			End If
+			Quit method kTrue
+		Else
+			Quit method kFalse
+		End If
+	End If
+	
+	Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+	If lbImmediateSession
+		Do $cinst.$SetSession(loSession,loStatement)
+	Else If not(ibGoodConnectionToDb)
+		Quit method kFalse
+	End If
+	
+	Begin statement
+	Sta: {select [$cinst.$selectnames()]}
+	Sta: {from  [$cinst.$servertablenames()]}
+	Sta: {where [icPrefix]CLASS = @[pClass]}
+	If pValue<>''
+		Sta: {and [icPrefix]VALUE = @[pValue]}
+	End If
+	If pIncludeNonActive
+		;  exclude the active items clause
+	Else
+		Sta: {and [icPrefix]ACTIVE = 1}
+	End If
+	Sta: {and RFU_GO_REF = @[lnGO_REF]}
+	Sta: {and RFU_USR_REF = @[lnUSR_REF]}
+	End statement
+	Do $cinst.$executesqlandfetch($cinst,pAppend)
+	
+	If lbImmediateSession
+		Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+	End If
+	
+	Do $cinst.$sort($ref.[icPrefix]ORDER,0,$ref.[icPrefix]VALUE,0)
+End If

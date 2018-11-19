@@ -1,0 +1,42 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Do ioWeb.$callFetch(lList,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pnGO_SEQ),lList.$type,1,ilRESTextensions))
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method lList
+	Else
+		Quit method kFalse
+	End If
+End If
+
+If pnGO_SEQ>0
+	Calculate lnGO_REF as pnGO_SEQ
+Else
+	Calculate lnGO_REF as $ctask.trGroupOrg.GO_SEQ
+End If
+If lnGO_REF>0
+	Do lList.$cols.$add(con(icPrefix,'CLASS'),kCharacter,kSimplechar,15)
+	
+	Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+	If lbImmediateSession
+		Do $cinst.$SetSession(loSession,loStatement)
+	Else If not(ibGoodConnectionToDb)
+		Quit method kFalse
+	End If
+	
+	Begin statement
+	Sta: {select distinct [icPrefix]CLASS from  [$cinst.$servertablenames]}
+	Sta: {where RFO_GO_REF = @[lnGO_REF]}
+	End statement
+	Do $cinst.$executesqlandfetch(lList)
+	
+	If lbImmediateSession
+		Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+	End If
+	
+	Quit method lList
+End If

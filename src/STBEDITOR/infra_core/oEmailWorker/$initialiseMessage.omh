@@ -1,0 +1,7 @@
+Do ilAttachments.$clear()
+Do $cinst.$newMessage()
+If iSmtp.$state=kWorkerStateClear
+	;  this is what we expect
+Else If iSmtp.$state=kWorkerStateInit
+	Breakpoint
+End If

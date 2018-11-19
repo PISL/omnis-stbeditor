@@ -1,0 +1,44 @@
+Do irLicensor.$cols.$add('name',kCharacter,kSimplechar,255)
+Do irLicensor.$cols.$add('address',kCharacter,kSimplechar,255)
+Do irLicensor.$cols.$add('registered_office',kCharacter,kSimplechar,255)
+Do irLicensor.$cols.$add('country_code',kCharacter,kSimplechar,25)
+Do irLicensor.$cols.$add('company_no',kCharacter,kSimplechar,25)
+Do irLicensor.$cols.$add('VAT_no',kCharacter,kSimplechar,25)
+Do irLicensor.$cols.$add('phone_sales',kCharacter,kSimplechar,25)
+Do irLicensor.$cols.$add('phone_support',kCharacter,kSimplechar,25)
+Do irLicensor.$cols.$add('email_sales',kCharacter,kSimplechar,255)
+Do irLicensor.$cols.$add('email_support',kCharacter,kSimplechar,255)
+
+Do FileOps.$doesfileexist(icPathLicensor) Returns lbFound
+If lbFound
+	Do loFileOps.$openfile(icPathLicensor) Returns lbFileIsOpen
+	If lbFileIsOpen
+		Do loFileOps.$readcharacter(kUniTypeUTF8,lcContents) Returns lbReadOK
+		Do loFileOps.$closefile() Returns loFileOps.$closefile()     ;; Returnｓ nothing
+	Else
+		Do $cinst.$Progress(con('Could not open licensor file'))
+	End If
+Else
+	;  Do $cinst.$Progress(con('Could not find licensor file "',icPathLicensor,'" '))
+	Begin text block
+	Text: {<xml><licensor>}
+	Text: {<name>Platform Independent Systems Limited</name>}
+	Text: {<address>2 Kennel Cottages, Shendish, Henel Hemnpstead  HP3 0AB, United Kingdom</address>}
+	Text: {<registered_office>112 Morden Road, Wimbledon, SW19 3BP   United Kingdom</registered_office>}
+	Text: {<country_code>GBR</country_code>}
+	Text: {<company_no>3155091</company_no>}
+	Text: {<VAT_no>150 5282 35</VAT_no>}
+	Text: {<phone_sales>+44 1442 41 2232</phone_sales>}
+	Text: {<phone_support>+44 1442 41 2232</phone_support>}
+	Text: {<email_sales>rmostyn@multidimensionalmoney.net</email_sales>}
+	Text: {<email_support>technical_support@multidimensionalmoney.net</email_support>}
+	Text: {</licensor></xml>}
+	End text block
+	Get text block lcContents
+End If
+
+If lcContents<>''
+	Do method ParseLicensorFile (lcContents,irLicensor)
+End If
+
+Quit method irLicensor

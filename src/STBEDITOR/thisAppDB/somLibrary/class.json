@@ -1,0 +1,20 @@
+{
+	"classtype": "kSchema",
+	"internalversion": 3,
+	"nextident": 32005,
+	"properties": {
+		"componenticon": 0,
+		"componenttype": "kCompStoreHidden",
+		"createdate": "2017-05-03 12:02:18",
+		"createinstancewhensubtype": true,
+		"desc": "",
+		"editor": "",
+		"editordata": "",
+		"external": false,
+		"moddate": "2017-04-26 14:04:23",
+		"servertablename": "translate.omlibrary",
+		"showascheckedout": false,
+		"userinfo": "",
+		"version": "2"
+	}
+}

@@ -1,0 +1,9 @@
+Do FileOps.$splitpathname(pcPath,lcDrive,lcDirectory,lcFile,lcExtn)
+Do ioAttachments.$determineMimeType(lcExtn) Returns lcMimeType
+Do ioAttachments.$determineCharSet(lcExtn) Returns lcCharSet
+Do ioAttachments.$determineEncoding(lcExtn) Returns lcEncoding
+Do ioAttachments.$determineDisposition(lcExtn) Returns lcDisposition
+
+Do ilAttachments.$add(,pcPath,con(lcFile,lcExtn),cAttachAsFile,lcMimeType,lcCharSet,lcEncoding,lcDisposition)
+
+Quit method ilAttachments

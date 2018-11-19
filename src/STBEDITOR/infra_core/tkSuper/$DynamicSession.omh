@@ -1,0 +1,53 @@
+If pSessObj.$state=kSessionStateLoggedOn&pStateObj.$state=kSessionStateLoggedOn
+	Quit method kTrue
+Else If pSessObj.$state=kSessionStateLoggedOn
+	Do pSessObj.$newstatement('STMT') Returns pStateObj
+	Quit method kTrue
+End If
+
+Do $sessionpools.$findname(pSource) Returns lrefSessionPool
+If lrefSessionPool
+	;  Set reference lrefSessionPool to $sessionpools.[pSource].$ref
+	Do lrefSessionPool.$new(2) Returns pSessObj
+	If pSessObj.$state=kSessionStateLoggedOn
+		Do pSessObj.$newstatement('STMT') Returns pStateObj
+		Quit method kTrue
+	Else
+		;  Do $AppError(con('$DynamicSession ',pSource,' failed - no sessions available'))
+		If irefMessageWinExists
+			Open window instance wMessage_e/* (con($clib().$name,' ',sys(85),' ',pSource,' failed - no sessions available'))
+		End If
+		Do method $ProcedureStack Returns lcDiagnosticInfo
+		Do $SendEmailBackground(tConstants.EmailAddressWebmaster,con($clib().$name,' ',sys(85),' Web App Error - no sessions available'),con('$DynamicSession ',pSource,' failed - it did not exist',kCr,kCr,lcDiagnosticInfo),#NULL,#NULL,#NULL,#NULL,kFalse)
+	End If
+	
+Else
+	;  the problem here is that $AppError will attempt to Log this error, which it can't do because we have already failed to a session !
+	;  mind you, we could pass a param to NOT log the error, but sending emails is now asyncronously, going to file to be sent later!
+	;  Do $AppError(con('$DynamicSession ',pSource,' failed - it did not exist'))
+	If irefMessageWinExists
+		Open window instance wMessage_e/* (con($clib().$name,' ',sys(85),' ',pSource,' failed - it did not exist'))
+	End If
+	;  send an email message?     ;; yes
+	Do method $ProcedureStack Returns lcDiagnosticInfo
+	Do $SendEmailBackground(tConstants.EmailAddressWebmaster,con($clib().$name,' ',sys(85),' Web App Error - dynamic session failure'),con('$DynamicSession ',pSource,' failed - it did not exist',kCr,kCr,lcDiagnosticInfo),#NULL,#NULL,#NULL,#NULL,kFalse)
+End If
+
+;  if we are here then something has gone wrong above.
+;  Appropriate messages have been sent but its now time to resurrect our db connection.
+Do method $ResurrectSessionPool (pSource,$ctask.tlDatabases.Host) Returns lbOK
+If lbOK
+	;  2nd attempt for session
+	Set reference lrefSessionPool to $sessionpools.[pSource].$ref
+	Do lrefSessionPool.$new(2) Returns pSessObj
+	If pSessObj.$state=kSessionStateLoggedOn
+		Do pSessObj.$newstatement('STMT') Returns pStateObj
+		Quit method kTrue
+	Else
+		If irefMessageWinExists
+			Open window instance wMessage_e/* (con($clib().$name,' ',sys(85),' ',pSource," failed 2nd time - we're fucked!"))
+		End If
+		Do $SendEmailBackground(tConstants.EmailAddressWebmaster,con($clib().$name,' ',sys(85),' Web App Error - no sessions available'),con('$DynamicSession ',pSource," failed 2nd time - we're fucked!"),#NULL,#NULL,#NULL,#NULL,kFalse)
+	End If
+End If
+Quit method kFalse

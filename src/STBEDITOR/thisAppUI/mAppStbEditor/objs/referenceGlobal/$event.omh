@@ -1,0 +1,10 @@
+If #SHIFT
+	Open window instance wRefGlobal/*/CEN
+Else
+	Test for window open {wRefGlobal}
+	If flag true
+		Bring window instance to front wRefGlobal
+	Else
+		Open window instance wRefGlobal/CEN
+	End If
+End If

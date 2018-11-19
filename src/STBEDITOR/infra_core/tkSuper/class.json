@@ -1,0 +1,464 @@
+{
+	"classtype": "kTask",
+	"internalversion": 25,
+	"tvardefs": [
+		{
+			"name": "tbDbConnectionOK",
+			"order": 19,
+			"type": "kBoolean",
+			"subtype": 0,
+			"sublen": 0,
+			"initval": "kFalse",
+			"desc": "set by $ConnectToDb/$OpenSessionPool/tMaster.checkConnectionState"
+		},
+		{
+			"name": "tCodeTables",
+			"order": 17,
+			"type": "kObject",
+			"subtype": "oCodeTables",
+			"sublen": 0,
+			"desc": "repository for code tables and lookups used in windows"
+		},
+		{
+			"name": "tConstants",
+			"order": 1,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "tDatabase",
+			"order": 13,
+			"type": "kObjectref",
+			"subtype": "oDUMMYDAM",
+			"sublen": 0,
+			"desc": "Session for the postgres datafile"
+		},
+		{
+			"name": "tDefaultData",
+			"order": 20,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0,
+			"desc": "This is the current default data(Department) record"
+		},
+		{
+			"name": "tFormSession",
+			"order": 7,
+			"type": "kObject",
+			"subtype": ".PGSQLDAM.PGSQLSESS",
+			"sublen": 0
+		},
+		{
+			"name": "tFormStatement",
+			"order": 10,
+			"type": "kObject",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "tlDatabases",
+			"order": 15,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "tlLinks",
+			"order": 12,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "toConfig",
+			"order": 18,
+			"type": "kObject",
+			"subtype": "oReadConfig",
+			"sublen": 0
+		},
+		{
+			"name": "toStrings",
+			"order": 11,
+			"type": "kObject",
+			"subtype": "oStringThings",
+			"sublen": 0
+		},
+		{
+			"name": "toValues",
+			"order": 23,
+			"type": "kObject",
+			"subtype": "oValues",
+			"sublen": 0
+		},
+		{
+			"name": "trCurrUser",
+			"order": 2,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "trErrCodes",
+			"order": 3,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "trFormColours",
+			"order": 22,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "trGroupOrg",
+			"order": 14,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "trLogAccess",
+			"order": 21,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0,
+			"desc": "will be populated from uaLogAccess in Startup_Task in libraries that require it"
+		},
+		{
+			"name": "trReference",
+			"order": 4,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "trSequence",
+			"order": 5,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "trTaskStats",
+			"order": 6,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "tSessionPollPCODES",
+			"order": 9,
+			"type": "kItemref",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "tSessionPool",
+			"order": 8,
+			"type": "kItemref",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "tStringFields",
+			"order": 16,
+			"type": "kObject",
+			"subtype": "oStringFields",
+			"sublen": 0,
+			"desc": "helper class for string manipulation"
+		}
+	],
+	"cvardefs": [
+		{
+			"name": "cIconError",
+			"order": 4,
+			"type": "kInteger",
+			"subtype": "k32bitint",
+			"sublen": 0,
+			"initval": "10631"
+		},
+		{
+			"name": "cIconSending",
+			"order": 2,
+			"type": "kInteger",
+			"subtype": "k32bitint",
+			"sublen": 0,
+			"initval": "10520"
+		},
+		{
+			"name": "cIconSent",
+			"order": 3,
+			"type": "kInteger",
+			"subtype": "k32bitint",
+			"sublen": 0,
+			"initval": "10536"
+		},
+		{
+			"name": "clRegularReportingOptions",
+			"order": 1,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "cWebSalesWRef",
+			"order": 5,
+			"type": "kItemref",
+			"subtype": "",
+			"sublen": 0
+		}
+	],
+	"ivardefs": [
+		{
+			"name": "ibStartingUp",
+			"order": 22,
+			"type": "kBoolean",
+			"subtype": 0,
+			"sublen": 0,
+			"initval": "kFalse"
+		},
+		{
+			"name": "icAdminFunctionTrace",
+			"order": 20,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 1000
+		},
+		{
+			"name": "icConnectDAM",
+			"order": 26,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 30
+		},
+		{
+			"name": "icConnectHost",
+			"order": 27,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 30
+		},
+		{
+			"name": "icConnectID",
+			"order": 24,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 30
+		},
+		{
+			"name": "icConnectPW",
+			"order": 25,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 30
+		},
+		{
+			"name": "icEmailProtocolStatus",
+			"order": 2,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "idtLastAboutNow",
+			"order": 19,
+			"type": "kDate",
+			"subtype": "kDatetime",
+			"sublen": 8
+		},
+		{
+			"name": "idtLastFetch",
+			"order": 14,
+			"type": "kDate",
+			"subtype": "kDatetime",
+			"sublen": 8
+		},
+		{
+			"name": "ilColumns",
+			"order": 18,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ilConnectionAttempts",
+			"order": 35,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ilForeignKeys",
+			"order": 31,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ilLinks",
+			"order": 32,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ilSysPrefs",
+			"order": 37,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ilTables",
+			"order": 33,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ilWebErrorLog",
+			"order": 17,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "inMaxConnections",
+			"order": 1,
+			"type": "kInteger",
+			"subtype": "kShortint",
+			"sublen": 0
+		},
+		{
+			"name": "ioEmail2",
+			"order": 13,
+			"type": "kObject",
+			"subtype": "oEmailWorker",
+			"sublen": 0
+		},
+		{
+			"name": "iOutBCCAddressList",
+			"order": 9,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "iOutBody",
+			"order": 7,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "iOutCCAddressList",
+			"order": 8,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "iOutEnclosureList",
+			"order": 12,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "iOutPriority",
+			"order": 10,
+			"type": "kInteger",
+			"subtype": "kShortint",
+			"sublen": 0
+		},
+		{
+			"name": "iOutStatusCall",
+			"order": 11,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "iOutSubject",
+			"order": 6,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "iOutToAddressList",
+			"order": 5,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ioWeb",
+			"order": 36,
+			"type": "kObject",
+			"subtype": "oWebClient",
+			"sublen": 0
+		},
+		{
+			"name": "irConfigFile",
+			"order": 29,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "irefMessageWinExists",
+			"order": 34,
+			"type": "kItemref",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "irefProgressLog",
+			"order": 21,
+			"type": "kItemref",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "iServerTimeOffset",
+			"order": 3,
+			"type": "kInteger",
+			"subtype": "k32bitint",
+			"sublen": 0,
+			"desc": "Seconds this machine is off the server"
+		},
+		{
+			"name": "oConfig",
+			"order": 28,
+			"type": "kObject",
+			"subtype": "oConfig",
+			"sublen": 0
+		},
+		{
+			"name": "oEmailAsync",
+			"order": 4,
+			"type": "kObject",
+			"subtype": "oEmailAsync",
+			"sublen": 0
+		}
+	],
+	"properties": {
+		"collectperformancedata": false,
+		"componenticon": 0,
+		"componenttype": "kCompStoreHidden",
+		"createdate": "2017-05-03 12:02:18",
+		"desc": "super class for common Startup_Task methods",
+		"editor": "",
+		"editordata": "",
+		"external": false,
+		"issupercomponent": true,
+		"moddate": "2018-11-19 15:48:34",
+		"showascheckedout": false,
+		"userinfo": "",
+		"version": "2"
+	}
+}

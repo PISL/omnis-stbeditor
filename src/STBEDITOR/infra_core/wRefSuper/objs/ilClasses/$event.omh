@@ -1,0 +1,17 @@
+On evClick     ;; Event Parameters - pRow ( Itemreference )
+	Do $cinst.$Refresh()
+	
+	Do method otherWindows Returns llWindows
+	Calculate $cinst.$objs.ibStickyUpdates.$visible as llWindows.$linecount>0
+	
+	If ibStickyUpdates
+		Calculate llWindows.$line as 0
+		While $Loop(llWindows)
+			;  Do llWindows.ref.$SyncRefresh(ilClasses.RFG_CLASS)
+		End While
+	End If
+	
+	Do method sendMessage (llWindows,'$SyncRefresh')
+	
+	;  Do $cinst.$behaviour()
+	Do $cinst.$redraw()

@@ -1,0 +1,5 @@
+If mid(pVarName,1,4)='iref'
+	Set reference [pVarName] to pVarValue
+Else
+	Calculate [pVarName] as pVarValue
+End If

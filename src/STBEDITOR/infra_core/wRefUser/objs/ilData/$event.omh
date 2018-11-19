@@ -1,0 +1,25 @@
+On evDrop
+	Calculate lcNotationString as pDragField.$fullname()
+	Calculate lcNotationString as mid(lcNotationString,1,pos('$objs',lcNotationString)-2)     ;; determine window instance reference
+	Set reference irOtherWin to [lcNotationString]
+	
+	If pos($cclass().$name,lcNotationString)
+		;  good - it has come from an instance of this window class
+		If irOtherWin<>$cinst.$ref     ;; itmust come from different window
+			;  and it must be a DIFFERENT instance to this one
+			Calculate inDeletes as 0
+			Calculate inInserts as 0
+			Calculate inNoChanges as 0
+			Calculate inUpdates as 0
+			
+			Do irOtherWin.$GetData() Returns llDataOtherDB
+			;  possible results:  pbYes, pbCancel, pbAllAutomatic, pbAllWithPrompt
+			Open window instance wTransferBatchInstructions_e/CEN (con('Copy only ',llDataOtherDB.1.RFU_CLASS,' ?'),lcPromptResult,'YES',$cinst)
+			;  calls back to $TransferInstructions
+		End If
+	End If
+	
+On evClick
+	If ilData.RFU__VALUE='POPUP_SOUND'
+		Do method $SoundSelected
+	End If

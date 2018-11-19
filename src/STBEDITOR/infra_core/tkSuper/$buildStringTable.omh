@@ -1,0 +1,47 @@
+;  this method builds the "allstrings: string table from the database specified in the .libini
+;  if there is no DB connection to stb in the .libini, nothing will happen
+;  the connection to the stb DB is done with a local variable which automatically disconnects on destruct
+
+Do toConfig.$GetDatabases() Returns llDBList
+Do llDBList.$search($ref.Name='StringTable',1,0,0,0) Returns lnLine
+If lnLine
+	Do method $ConnectToDb (llDBList.Host,'stringsonly','61veM3theT@ble5',,llDBList.DAM,llDBList.DB,llDBList.port,loSession,loStatement,0) Returns lbOK
+	Do $DefineList(llStrings,'tomStrings')
+	Do llStrings.$SetSession(loSession,loStatement)
+	Do llStrings.$fetchForLibrary()
+	Do llStrings.$setSession(#NULL,#NULL,kTrue)
+	
+	;  we only want the actual string table entries from omStrings
+	;  starting with STRINGID which is column 9
+	For lnCount from 9 to llStrings.$colcount step 1
+		Do llData.$cols.$add(llStrings.$cols.[lnCount].$name,kCharacter,kSimplechar)
+	End For
+	
+	Do llData.$merge(llStrings,kTrue,kFalse,kTrue)
+	
+	
+	Do llTables.$cols.$add('name',kCharacter,kSimplechar)
+	Do llTables.$cols.$add('path',kCharacter,kSimplechar)
+	Do StringTable.$gettablelist(llTables)
+	Do llTables.$search($ref.name='allstrings',1,0,0,0) Returns lnLine
+	If lnLine
+		Do StringTable.$loadlistfromtable('allstrings') Returns llAllStrings
+		Do StringTable.$unloadstringtable('allstrings')
+		Do llData.$merge(llAllStrings,kTrue,kFalse,kFalse)
+	End If
+	
+	Do StringTable.$loadtablefromlist('allstrings',,llData) Returns lnStringTableResult     ;; this will automatically remove all duplicates based on STRINGID
+	
+	;  set the language     ;; copied from OpenStringTable method - trConfig may not be populated yet !
+	If $ctask.trConfig.Language<>''
+		Calculate lcDefaultColumn as $ctask.trConfig.Language
+	Else
+		Calculate lcDefaultColumn as 'en'
+	End If
+	Do StringTable.$setcolumn(lcDefaultColumn) Returns lnResult
+	If lnResult<>1
+		Send to trace log {Error setting default column in string table "allstrings"}
+	End If
+	;  Do StringTable.$loadlistfromtable('allstrings') Returns llAllStrings
+	
+End If

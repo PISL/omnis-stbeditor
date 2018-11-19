@@ -1,0 +1,6 @@
+If pList.$line=0
+	Do pList.$first(pSelectedOnly)
+Else
+	Do pList.$next(pList.[pList.$line],pSelectedOnly)
+End If
+Quit method pList.$line

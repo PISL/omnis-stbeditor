@@ -1,0 +1,5 @@
+Calculate icPrefix as 'SLV_'
+Calculate icPrimarykey as ''
+Calculate icDateColumn as 'SLV_CWHEN'
+Do inherited      ;; 2015-08-07 GRS moved here because inherited sets ibHasSequence to kTrue
+Calculate ibHasSequence as kFalse

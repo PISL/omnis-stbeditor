@@ -1,0 +1,84 @@
+;  was an abstract method to be overloaded
+;  GRS 26/2/2014 now generic as we have the $ForeignKeys method in each table class
+;  GRS 7/3/2014 added pcExclude
+;  RSM 13/6/14 select count(*) assumes check of ref against primary key but ssysUnitSynonyms breaks this assumnption
+
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Calculate ldtStart as #D
+	Do ioWeb.$callFetch(lnCountTotal,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pcExclude),lnCountTotal.$type,0,ilRESTextensions))
+	Calculate inServiceMS as ddiff(kCentiSecond,ldtStart,#D)*10
+	Calculate inRESTserverMS as ioWeb.inServerTime
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method 99
+		End If
+		Quit method lnCountTotal
+	Else
+		Quit method kFalse
+	End If
+End If
+
+;  get all immediate child tables of the current table based on the $ForeignKeys of each table class
+Do irefCORETASK.$GetChildTables($cinst.$servertablenames) Returns llTables
+
+If pcExclude<>''
+	Do llTables.$search(pos(con(',',mid($ref.CTABLE,pos('.',$ref.CTABLE)+1),','),con(',',pcExclude,',')),1,0,1,1)
+	Do llTables.$remove(kListDeleteSelected)
+End If
+
+Calculate lnPrimary as $cinst.[$cinst.icPrimarykey]
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not($cinst.ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+;  now check all child tables for rows linked to the current parent record ($cinst.icPrimaryKey value)
+Do ilTablesWithChildren.$clear()
+
+Calculate llTables.$line as 0
+While $Loop(llTables)
+	;  begin     ;; RSM 13/6/14
+	Calculate lcTemp as llTables.CHAIN
+	Calculate lcColForeign as upp(strtok(nam(lcTemp),'='))     ;; same as llTables.CCOLUMN
+	Calculate lcColLocal as upp(strtok(nam(lcTemp),'='))
+	Calculate lnDataType as $cinst.$cols.[lcColLocal].$coltype
+	
+	If lnDataType=kInteger
+		Calculate lnValue as $cinst.[lcColLocal]
+		Calculate lcValue as ''
+	Else
+		Calculate lcValue as $cinst.[lcColLocal]
+		Calculate lnValue as 0
+	End If
+	
+	Calculate icStatementType as 'SELECT'     ;; reset here as $recordStats clears it
+	
+	Begin statement
+	;  Sta: select count(*) from [llTables.CTABLE] where [llTables.CCOLUMN] = @[lnPrimary]
+	If lnValue<>0
+		;  Sta: select count(*) from [pick(pos('.',llTables.CTABLE)=0,'',icPGschema)][llTables.CTABLE] where [lcColForeign] = @[lnValue]
+		Sta: {select count(*) from [llTables.CTABLE] where [lcColForeign] = @[lnValue]}
+	Else
+		;  Sta: select count(*) from [pick(pos('.',llTables.CTABLE)=0,'',icPGschema)][llTables.CTABLE] where [lcColForeign] = @[lcValue]
+		Sta: {select count(*) from [llTables.CTABLE] where [lcColForeign] = @[lcValue]}
+	End If
+	;  end     ;; RSM 13/6/14
+	End statement
+	Do $cinst.$executesqlandfetchinto(lnCountTable) Returns lbOK
+	Calculate lnCountTotal as lnCountTotal+lnCountTable
+	If lnCountTable>0
+		Do ilTablesWithChildren.$add(llTables.CTABLE,lnCountTable)
+	End If
+End While
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lnCountTotal

@@ -1,0 +1,20 @@
+Calculate icErrorMessage as ''
+;  Calculate pBodyPartID as 0
+If len(plAttachments.filepath)=0
+	;  This attachment is not required
+	Quit method kTrue
+End If
+Switch plAttachments.attachAs
+	Case cAttachAsFile
+		Do method $createattachmentasfile (plAttachments) Returns lbOK
+		Quit method lbOK
+	Case cAttachAsCharacter
+		Do method $createattachmentascharacter (plAttachments) Returns lbOK
+		Quit method lbOK
+	Case cAttachAsBinary
+		Do method $createattachmentasbinary (plAttachments) Returns lbOK
+		Quit method lbOK
+End Switch
+;  OK message  {Invalid attach type ([plAttachAs.iAttachAsId]) - should never get to here}
+Calculate icErrorMessage as con('Invalid attach type ',plAttachments.attachAs,' - should never get to here')
+Quit method kFalse

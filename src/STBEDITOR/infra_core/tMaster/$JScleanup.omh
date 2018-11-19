@@ -1,0 +1,4 @@
+;  abstract method, should be overloaded in subclass
+;  designed to clean up rows that have been manipulated by the Javascript client
+;  which converts all NULL values to empty strings or zeroes
+Breakpoint {tut! tut! You shouldn't be here.}

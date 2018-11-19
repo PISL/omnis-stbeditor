@@ -1,0 +1,29 @@
+If pNewList.$linecount=0
+	;  Quit method
+End If
+
+Calculate lcTemp as pTransposeCols
+While lcTemp<>''
+	Calculate lcTransposeCol1 as strtok(nam(lcTemp),',')
+	Calculate lnAccumulate as 0
+	
+	While $Loop(pTransposeList)
+		Calculate lcColName as con(lcTransposeCol1,pTransposeList.[pTransposeValCol])
+		Calculate lnAccumulate as lnAccumulate+pNewList.[lcColName]
+	End While
+	
+	Calculate pNewList.TOTAL_[lcTransposeCol1] as lnAccumulate
+	
+End While
+
+If pWithPercentCols     ;; pNewList
+	While $Loop(pTransposeList)
+		Calculate lcTemp as pTransposeCols
+		While lcTemp<>''
+			Calculate lcToken as strtok(nam(lcTemp),',')
+			Calculate lcTransposeCol1 as con(lcToken,pTransposeList.[pTransposeValCol])
+			
+			Calculate pNewList.[lcTransposeCol1]_PERCENT as pNewList.[lcTransposeCol1]/pNewList.TOTAL_[lcToken]*100
+		End While
+	End While
+End If

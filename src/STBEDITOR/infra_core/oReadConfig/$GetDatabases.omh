@@ -1,0 +1,22 @@
+If ilDBList.$linecount>0
+	Do llDBCols.$cols.$add('DB_KEY',kCharacter,kSimplechar,50)
+	Do llDBCols.$merge(ilDBList,kTrue)
+	Do llDBCols.$cols.DB_KEY.$removeduplicates(kTrue)
+	While $Loop(llDBCols)
+		Do llDBs.$cols.$add(llDBCols.DB_KEY,kCharacter,kSimplechar,1000)
+	End While
+	Do ilDBList.$sort($ref.DB_NO,0)
+	Calculate ilDBList.$line as 0
+	Calculate lcDB as ''
+	While $Loop(ilDBList)
+		If ilDBList.DB_NO<>lcDB
+			Calculate lcDB as ilDBList.DB_NO
+			Do llDBs.$add()
+			Calculate llDBs.$line as llDBs.$linecount
+		End If
+		Calculate llDBs.[ilDBList.DB_KEY] as ilDBList.DB_VALUE
+	End While
+	Quit method llDBs
+Else
+	Quit method ''
+End If

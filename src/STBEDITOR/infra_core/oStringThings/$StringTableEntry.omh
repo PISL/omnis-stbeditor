@@ -1,0 +1,21 @@
+If pos('.',pStringTableCode)=0
+	;  prefix table entry with allstrings
+	Calculate pStringTableCode as con('allstrings.',pStringTableCode)
+End If
+
+Calculate lcValMessage as StringTable.$gettext(pStringTableCode)
+If lcValMessage<0     ;; -ve number is a string table error
+	;  Calculate lcValMessage as StringTable.$gettext(con(pStringTableCode,'_LBL'))
+	;  If lcValMessage<0     ;; -ve number is a string table error
+	If pDefaultMessage<>''
+		Calculate pMessage as pDefaultMessage
+		Quit method kTrue
+	Else
+		Calculate pMessage as lcValMessage     ;; leave error message
+	End If
+	;  End If
+Else
+	Calculate pMessage as lcValMessage
+	Quit method kTrue
+End If
+Quit method kFalse

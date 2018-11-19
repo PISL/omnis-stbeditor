@@ -1,0 +1,67 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	Do ioWeb.$callFetch($cinst,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(plClass,plFunction),$cinst.$type,0,$cinst.ilRESTextensions))
+	Calculate lrWebResponse as ioWeb.irResponse
+	If lrWebResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method kTrue
+	Else
+		Quit method kFalse
+	End If
+End If
+
+Calculate lcPredicate as 'where '
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+;  Breakpoint
+Do toStrings.$ListToString(plClass,'OMG_CLASS',',',"'",kTrue) Returns lcClasses
+Do toStrings.$ListToString(plFunction,'OMG_FUNCTION',',',"'",kTrue) Returns lcFunctions
+Do toStrings.$ListToString(plLanguages,'lang',',','',kTrue) Returns lcOtherLanguagesVisible
+
+Begin statement (Carriage return)
+Sta: {select [$cinst.$selectnames()]}
+Sta: {from  [$cinst.$servertablenames()]}
+Sta: {join [lrGroup.$servertablenames] on OMG_SEQ = OMS_OMG_REF}
+If lcClasses<>''
+	Sta: {[lcPredicate]   OMG_CLASS = ANY (array[[[lcClasses]])}     ;; convert the lcClasses string to an array but it does not work when using a bind variable :-(
+	Calculate lcPredicate as ' and '
+End If
+If lcFunctions<>''
+	Sta: {[lcPredicate]   OMG_FUNCTION = ANY (array[[[lcFunctions]])}
+	Calculate lcPredicate as ' and '
+End If
+If pcSearchString<>''
+	If pos('%',pcSearchString)
+		;  user has provided their own wildcards     ;; so leave untouched
+	Else
+		Calculate pcSearchString as con('%',pcSearchString,'%')
+	End If
+	
+	Sta: {[lcPredicate]   (}
+	Sta: {STRINGID ilike @[pcSearchString]}
+	Sta: {or en ilike @[pcSearchString]}
+	While lcOtherLanguagesVisible<>''
+		Sta: {or [strtok(nam(lcOtherLanguagesVisible),',')] ilike @[pcSearchString]}
+	End While
+	Sta: {)}
+	Calculate lcPredicate as ' and '
+End If
+Sta: {order by STRINGID}
+End statement
+
+Do $cinst.$executesqlandfetch() Returns lbOK
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lbOK

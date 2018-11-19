@@ -1,0 +1,22 @@
+;  Breakpoint
+If pList.$line>0
+	;  Calculate tlDatabases as pList
+	If tlDatabases.DAM='OMSQLDAM'
+		;  make sure the Omnis datafile actually exists
+		If pos(sys(9),tlDatabases.Host)>0
+			Do FileOps.$doesfileexist(tlDatabases.Host) Returns lbOK
+		Else
+			Do FileOps.$doesfileexist(con(tConstants.HostDirectory,tlDatabases.Host)) Returns lbOK
+		End If
+		If lbOK
+			Do FileOps.$splitpathname(tlDatabases.Host,lcDrive,lcPath,lcFile,lcExtn)
+			Calculate tConstants.HostDB as con(tConstants.HostDirectory,lcFile,lcExtn)
+		Else
+			;  problem with config file - give user option to correct things
+			Open window instance wSysDbOptions
+			Quit method
+		End If
+	End If
+	
+	Do method Startup_2     ;; login window
+End If

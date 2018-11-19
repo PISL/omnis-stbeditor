@@ -1,0 +1,121 @@
+{
+	"classtype": "kObjectclass",
+	"internalversion": 7,
+	"designtaskname": "Startup_Task",
+	"cvardefs": [
+		{
+			"name": "cAPIKey",
+			"order": 1,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000,
+			"initval": "\"### ENTER a valid Google Translate API key here ###\"",
+			"desc": "Obtain a Google Translate API key for this value"
+		}
+	],
+	"ivardefs": [
+		{
+			"name": "icErrorText",
+			"order": 5,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "icJSON",
+			"order": 7,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "icSourceLang",
+			"order": 2,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 10,
+			"initval": "'en'"
+		},
+		{
+			"name": "icTargetLang",
+			"order": 3,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 10
+		},
+		{
+			"name": "icURL",
+			"order": 10,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000,
+			"initval": "con('https://translation.googleapis.com/language/translate/v2?key=',cAPIKey,'&source=',icSourceLang,'&target=',icTargetLang)"
+		},
+		{
+			"name": "ilEscapedChars",
+			"order": 12,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ilHeaders",
+			"order": 1,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "iorefRest",
+			"order": 4,
+			"type": "kObjectref",
+			"subtype": "oRest",
+			"sublen": 0
+		},
+		{
+			"name": "irJSON",
+			"order": 6,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "irResponse",
+			"order": 9,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "irResponseHeaders",
+			"order": 8,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "lcWhiteSpace",
+			"order": 11,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000,
+			"initval": "'                                                                                                                                                      '"
+		}
+	],
+	"properties": {
+		"collectperformancedata": false,
+		"componenticon": 0,
+		"componenttype": "kCompStoreHidden",
+		"createdate": "2017-05-03 12:02:19",
+		"desc": "",
+		"editor": "",
+		"editordata": "",
+		"external": true,
+		"issupercomponent": false,
+		"moddate": "2018-11-19 15:48:34",
+		"selfcontained": false,
+		"showascheckedout": false,
+		"userinfo": "",
+		"version": "2"
+	}
+}

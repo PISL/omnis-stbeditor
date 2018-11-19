@@ -1,0 +1,32 @@
+;  Breakpoint     ;; pcwhere   ilLinkTables
+;  Makes a select including any additional columns added with $AddLinkedCols
+
+If pos('ORDER BY ',upp(pcWhere))>0     ;; e.g. pWhere='order by this and that'
+	Calculate lcOrderBy as mid(pcWhere,pos('ORDER BY ',upp(pcWhere)),len(pcWhere))
+	Calculate pcWhere as mid(pcWhere,1,pos('ORDER BY ',upp(pcWhere))-1)
+End If
+
+
+Calculate lcSQL as con(lcSQL,'select ',iHint,$cinst.$selectnames,icForeignCols,chr(13))
+Calculate lcSQL as con(lcSQL,'from ',$cinst.$servertablenames,chr(13))
+
+Calculate ilLinkTables.$line as 0
+While $Loop(ilLinkTables)
+	Calculate lcSQL as con(lcSQL,pick(ilLinkTables.OUTER,'','left '),'join ',ilLinkTables.TABLE,' on ',ilLinkTables.JOIN,chr(13))
+	If len(ilLinkTables.EXTRAQUERYTEXT)>0
+		;  Calculate pcWhere as con(pcWhere,pick(len(pcWhere)>0,'',' and '),ilLinkTables.EXTRAQUERYTEXT)
+		Calculate lcSQL as con(lcSQL,pick(len(lcSQL)>0,'',' and '),ilLinkTables.EXTRAQUERYTEXT,chr(13))
+	End If
+End While
+
+If pcWhere<>''
+	If pos('WHERE',upp(replaceall(pcWhere,' ','')))=1
+		;  OK
+	Else
+		Calculate pcWhere as con('where ',pcWhere)
+	End If
+End If
+
+Calculate lcSQL as con(lcSQL,pcWhere,chr(13),lcOrderBy)
+
+Quit method lcSQL

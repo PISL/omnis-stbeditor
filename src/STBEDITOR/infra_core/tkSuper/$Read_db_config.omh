@@ -1,0 +1,26 @@
+;  check if we have read this from the SQLite libini file
+Do toConfig.$GetDatabases() Returns tlDatabases
+
+If tlDatabases.$linecount>0
+	Calculate tlDatabases.$line as 0
+	While $Loop(tlDatabases)
+		Calculate lbValid as kFalse
+		If tlDatabases.validIf<>''
+			Test for valid calculation {tlDatabases.validIf}
+			If flag true
+				Calculate lbValid as eval(tlDatabases.validIf)
+				;  at the end of the loop we want to remove lines that HAVE BEEN TESTED   and   FAILED
+				;  not all lines will have a validIf calculation
+				If not(lbValid)
+					Calculate tlDatabases.[tlDatabases.$line].$selected as kTrue
+				End If
+			End If
+		End If
+	End While
+	Do tlDatabases.$remove(kListDeleteSelected)
+	
+	Calculate tlDatabases.$line as 1
+	Calculate $cinst.irConfigFile as tlDatabases     ;; this is required for $OpenSessionPool to work
+Else
+	Calculate tlDatabases.$line as 0
+End If

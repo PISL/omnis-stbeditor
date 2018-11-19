@@ -1,0 +1,14 @@
+Calculate lcNewString as pStringIn
+If mid(pStringIn,1,2)='Mc'
+	Calculate lcNewString as con(mid(pStringIn,1,2),upp(mid(pStringIn,3,1)),mid(pStringIn,4,99))
+Else If pos(' De ',pStringIn)>0     ;; e.g. Van De Post
+	Calculate lcNewString as con(mid(pStringIn,1,pos(' De ',pStringIn)),'de ',mid(pStringIn,pos(' De ',pStringIn)+4,99))
+Else If pos(' Der ',pStringIn)>0
+	Calculate lcNewString as con(mid(pStringIn,1,pos(' Der ',pStringIn)),'der ',mid(pStringIn,pos(' Der ',pStringIn)+5,99))
+Else If pos("O'",pStringIn)>0     ;; O'Hanrahan
+	Calculate lcNewString as con(mid(pStringIn,1,2),upp(mid(pStringIn,3,1)),mid(pStringIn,4,99))
+Else If pos("D'",pStringIn)>0     ;; D'Amelio
+	Calculate lcNewString as con(mid(pStringIn,1,2),upp(mid(pStringIn,3,1)),mid(pStringIn,4,99))
+End If
+
+Quit method lcNewString

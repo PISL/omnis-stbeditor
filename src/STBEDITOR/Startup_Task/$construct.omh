@@ -1,0 +1,16 @@
+Calculate ibLibraryHasBeenUpdated as pLibraryHasBeenUpdated
+Calculate trEnvironment as prEnvironment
+
+Do inherited
+
+Calculate lcHostDB as sys(10)     ;; path of this library
+Calculate lcHostDB as mid(lcHostDB,1,rpos(sys(9),lcHostDB))
+Calculate tConstants.HostDirectory as lcHostDB
+Calculate tConstants.HostDB as con(tConstants.HostDirectory,$clib().$name,'.df1')
+
+Do toConfig.$GetSysPrefs($clib().$name()) Returns ilSysPrefs
+
+Do $cinst.$Read_db_config     ;; tlDatabases
+
+
+Do method Startup_2

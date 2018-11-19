@@ -1,0 +1,146 @@
+Quit method kFalse     ;; delete this method - it belongs in server table MEC_User
+
+;  basic parameter check
+If $cinst.GO_ADDR_COUNTRY<>''
+	;  proceed
+Else
+	Calculate lnResponse as 99
+	Quit method lnResponse
+End If
+
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Do ioWeb.$callFetch(lnCount,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(),$cinst.$type,0,ilRESTextensions))
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method kTrue
+	Else
+		Quit method kFalse
+	End If
+End If
+
+;  convert all content to upper case for checking
+Calculate $cinst.GO_MEC_ID as upp($cinst.GO_MEC_ID)
+Calculate $cinst.GO_NAME_FULL as upp($cinst.GO_NAME_FULL)
+Calculate $cinst.GO_NAME_SHORT as upp($cinst.GO_NAME_SHORT)
+Calculate $cinst.GO_COMM_PH as upp($cinst.GO_COMM_PH)
+Calculate $cinst.GO_COMM_EMAIL as upp($cinst.GO_COMM_EMAIL)
+Calculate $cinst.GO_COMPANY_NO as upp($cinst.GO_COMPANY_NO)
+Calculate $cinst.GO_VAT_NO as upp($cinst.GO_VAT_NO)
+Calculate $cinst.GO_SURNAME as upp($cinst.GO_SURNAME)
+Calculate $cinst.GO_FIRSTNAMES as upp($cinst.GO_FIRSTNAMES)
+Calculate $cinst.GO_MMN as upp($cinst.GO_MMN)
+Calculate $cinst.GO_ID_TYPE as upp($cinst.GO_ID_TYPE)
+Calculate $cinst.GO_ID_CODE as upp($cinst.GO_ID_CODE)
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+If $cinst.GO_COMPANY_NO<>''
+	;  company registration
+	Begin statement
+	Sta: {select count(*)}
+	Sta: {from  [$cinst.$servertablenames]}
+	Sta: {where  upper(GO_ADDR_COUNTRY) = @[$cinst.GO_ADDR_COUNTRY]}
+	Sta: {and      upper(GO_COMPANY_NO) = @[$cinst.GO_COMPANY_NO]}
+	End statement
+	Do $cinst.$executesqlandfetchinto(lnCount) Returns lbOK
+	
+	Calculate lnResponse as min(80+lnCount,89)
+	Calculate lbCheckApplied as kTrue
+End If
+If lnCount=0
+	If $cinst.GO_VAT_NO<>''
+		;  sole trader who has registered for VAT
+		Begin statement
+		Sta: {select count(*)}
+		Sta: {from  [$cinst.$servertablenames]}
+		Sta: {where  upper(GO_ADDR_COUNTRY) = @[$cinst.GO_ADDR_COUNTRY]}
+		Sta: {and      upper(GO_VAT_NO) = @[$cinst.GO_VAT_NO]}
+		End statement
+		Do $cinst.$executesqlandfetchinto(lnCount) Returns lbOK
+		
+		Calculate lnResponse as min(70+lnCount,79)
+		Calculate lbCheckApplied as kTrue
+	End If
+	If lnCount=0
+		If $cinst.GO_NAME_FULL<>''&$cinst.GO_ADDR_POSTCODE<>''
+			;  name of business     ;; this test needs more attention - NAME_FULL for small traders, nationally, would produce many duplicates
+			Begin statement
+			Sta: {select count(*)}
+			Sta: {from  [$cinst.$servertablenames]}
+			Sta: {where  upper(GO_ADDR_COUNTRY) = @[$cinst.GO_ADDR_COUNTRY]}
+			Sta: {and      upper(GO_NAME_FULL) = @[$cinst.GO_NAME_FULL]}
+			If $cinst.GO_COMPANY_NO<>''
+				;  then name of business should be unique nationally
+			Else
+				;  for a sole trader then we test unique name within a smaller boundary
+				Sta: {and      upper(GO_ADDR_POSTCODE) = @[$cinst.GO_ADDR_POSTCODE]}
+			End If
+			End statement
+			Do $cinst.$executesqlandfetchinto(lnCount) Returns lbOK
+			
+			Calculate lnResponse as min(60+lnCount,69)
+			Calculate lbCheckApplied as kTrue
+		End If
+		If lnCount=0
+			;  individuals
+			If $cinst.GO_ID_TYPE<>''&$cinst.GO_ID_CODE<>''
+				;  check unique document ID
+				Begin statement
+				Sta: {select count(*)}
+				Sta: {from  [$cinst.$servertablenames]}
+				Sta: {where  upper(GO_ADDR_COUNTRY) = @[$cinst.GO_ADDR_COUNTRY]}
+				;  exclude SURNAME & FIRSTNAME from check because
+				;  these would be the easiest values to alter if someone was registering multiple times.
+				Sta: {and      upper(GO_ID_TYPE) = @[$cinst.GO_ID_TYPE]}
+				Sta: {and      upper(GO_ID_CODE) = @[$cinst.GO_ID_CODE]}
+				End statement
+				Do $cinst.$executesqlandfetchinto(lnCount) Returns lbOK
+				
+				Calculate lnResponse as min(50+lnCount,59)
+				Calculate lbCheckApplied as kTrue
+			End If
+			If lnCount=0
+				If $cinst.GO_DOB>dat('1 JAN 1920')&$cinst.GO_MMN<>''
+					;  check DOB with MMN     ;; this check may need refining
+					Begin statement
+					Sta: {select count(*)}
+					Sta: {from  [$cinst.$servertablenames]}
+					Sta: {where  upper(GO_ADDR_COUNTRY) = @[$cinst.GO_ADDR_COUNTRY]}
+					;  exclude SURNAME & FIRSTNAME from check because
+					;  these would be the easiest values to alter if someone was registering multiple times.
+					
+					;  But the same is true of DOB and MMN if somneone is trying to break the system.
+					
+					Sta: {and      upper(GO_SURNAME) = @[$cinst.GO_SURNAME]}
+					;  Sta: and      upper(GO_FIRSTNAMES) = @[$cinst.GO_FIRSTNAMES]
+					Sta: {and      upper(GO_DOB) = @[$cinst.GO_DOB]}
+					Sta: {and      upper(GO_MMN) = @[$cinst.GO_MMN]}     ;; mothers mainden name
+					End statement
+					Do $cinst.$executesqlandfetchinto(lnCount) Returns lbOK
+					
+					Calculate lnResponse as min(40+lnCount,49)
+					Calculate lbCheckApplied as kTrue
+				End If
+			End If
+		End If
+	End If
+End If
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+If not(lbCheckApplied)
+	Calculate lnResponse as 95
+End If
+Quit method lnResponse

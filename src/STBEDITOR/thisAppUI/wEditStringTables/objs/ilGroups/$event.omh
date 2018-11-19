@@ -1,0 +1,62 @@
+On evClick     ;; Event Parameters - pRow ( Itemreference )
+	Calculate icStringSearch as ''
+	;  reset selected classes count in case we have come from a full text search
+	Calculate inSelectedClasses as ilGroupClasses.$totc(ilGroupClasses.$line>0,kTrue)
+	Calculate lnCountSelected as ilGroups.$totc(ilGroups.$line>0,kTrue)
+	;  filter ilGroups
+	If lnCountSelected<>inSelectedGroups
+		Calculate inSelectedGroups as lnCountSelected
+		Do method fetchStrings
+	End If
+	If ibDragDropOn&lnCountSelected<>1
+		Do ilGatherMultipleStringEntriesForDragDrop.$clear()
+		Calculate ibDragDropOn as kFalse
+		Do $cinst.$behaviour()
+	End If
+	
+On evDrop
+	;  We will be "dragging" via a 3rd party button (because the data grid does not drag at all)
+	;  the row in ilStrings.[inVertCell] to a new function group
+	Do lrGroupFrom.$cols.$add(ilGroups.OMG_SEQ)
+	Do lrGroupFrom.$cols.$add(ilGroups.OMG_CLASS)
+	Do lrGroupFrom.$cols.$add(ilGroups.OMG_FUNCTION)
+	Calculate lrGroupTo as lrGroupFrom
+	
+	Calculate llFrom as ilGroups
+	Do llFrom.$first(kTrue)
+	Calculate lrGroupFrom.OMG_SEQ as llFrom.OMG_SEQ
+	Calculate lrGroupFrom.OMG_CLASS as llFrom.OMG_CLASS
+	Calculate lrGroupFrom.OMG_FUNCTION as llFrom.OMG_FUNCTION
+	
+	Calculate llFrom.$line as mouseover(kMLine)
+	Calculate lrGroupTo.OMG_SEQ as llFrom.OMG_SEQ
+	Calculate lrGroupTo.OMG_CLASS as llFrom.OMG_CLASS
+	Calculate lrGroupTo.OMG_FUNCTION as llFrom.OMG_FUNCTION
+	
+	If ilGatherMultipleStringEntriesForDragDrop.$linecount>1
+		Yes/No message Confirm action {MOVE the [ilGatherMultipleStringEntriesForDragDrop.$linecount] string table entry(ies)[kCr]from [lrGroupFrom.OMG_FUNCTION][kCr]to[kCr][lrGroupTo.OMG_FUNCTION] ?}
+	Else
+		Yes/No message Confirm action {MOVE the string table entry [ilStrings.[inVertCell].STRINGID][kCr]from [lrGroupFrom.OMG_FUNCTION][kCr]to[kCr][lrGroupTo.OMG_FUNCTION] ?}
+	End If
+	If flag true
+		Do $DefineList(lrString,'tomStrings')
+		
+		Calculate ilGatherMultipleStringEntriesForDragDrop.$line as 0
+		While $Loop(ilGatherMultipleStringEntriesForDragDrop)
+			Do lrString.$clear()
+			Do lrString.$fetch_pk(ilGatherMultipleStringEntriesForDragDrop.OMS_SEQ)
+			If lrString.OMS_SEQ>0
+				Calculate lrString.OMS_OMG_REF as lrGroupTo.OMG_SEQ
+				Do lrString.$update() Returns lbOK
+				If not(lbOK)
+					Breakpoint
+				End If
+			End If
+		End While
+	Else
+		
+	End If
+	Do ilGatherMultipleStringEntriesForDragDrop.$clear()
+	
+	Do $cinst.$behaviour()
+	Do $cinst.$redraw()

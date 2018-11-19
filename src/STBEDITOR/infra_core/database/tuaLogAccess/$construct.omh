@@ -1,0 +1,6 @@
+Calculate icPrefix as 'ULA_'
+;  this is a link table with multiple foreign keys
+Calculate icForeignKey as 'ULA_USR_REF'
+;  Calculate icForeignKey as 'UR_ROL_REF'
+
+Do inherited

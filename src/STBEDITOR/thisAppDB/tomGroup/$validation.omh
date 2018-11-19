@@ -1,0 +1,23 @@
+Calculate icValidationMessage as ''
+Do ilValidation.$clear()
+
+If $cinst.OMG_CLASS<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'OMG_CLASS missing')
+	Do ilValidation.$add('OMG_CLASS_LBL','VAL_MISSING','OMG_CLASS missing',0)
+End If
+
+If $cinst.OMG_FUNCTION<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'OMG_FUNCTION missing')
+	Do ilValidation.$add('OMG_FUNCTION_LBL','VAL_MISSING','OMG_FUNCTION missing',0)
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

@@ -1,0 +1,16 @@
+;  OK message  {[ddiff(kSecond,idtLastAboutNowFetch,ldtAboutNow)]}
+If idtLastAboutNow>dat('1 JAN 2000')
+	
+	If ddiff(kSecond,idtLastFetch,#D)>5
+		Do method $ServerTime Returns ldtAboutNow
+		Calculate idtLastAboutNow as ldtAboutNow     ;; idtLastAboutNow will be used if the call comparison above Returnｓ false
+		Calculate idtLastFetch as #D     ;; use local time for the 5 second comparison in case of a time difference between the app server and postgres server
+	Else
+		Calculate ldtAboutNow as idtLastAboutNow     ;; return the last fetched server time
+	End If
+Else
+	Do method $ServerTime Returns ldtAboutNow
+	Calculate idtLastAboutNow as ldtAboutNow
+	Calculate idtLastFetch as #D     ;; use local time for the 5 second comparison in case of a time difference between the app server and postgres server
+End If
+Quit method ldtAboutNow

@@ -1,0 +1,23 @@
+;  2017-04-28 GRS weird scope issue - $Loop not getting called so rewrote to use For Each Line...
+;  2017-06-19 GRS fixed a long standing bug with the first list value(s) empty; the column  delimiter was not being added to lcResult
+
+If pSelectedLinesOnly
+	For pList.$line from 1 to pList.$linecount step 1
+		If pList.$selected
+			Calculate lnLine as lnLine+1
+			Calculate lcResult as con(lcResult,pick(lcResult<>''|lnLine>1,'',pDelimColumn),pDelimData,pList.[pColumn],pDelimData)
+		End If
+	End For
+Else
+	For pList.$line from 1 to pList.$linecount step 1
+		Calculate lnLine as lnLine+1
+		Calculate lcResult as con(lcResult,pick(lcResult<>''|lnLine>1,'',pDelimColumn),pDelimData,pList.[pColumn],pDelimData)
+	End For
+End If
+Quit method lcResult
+
+;  this is the code that stopped working
+Calculate pList.$line as 0
+While $Loop(pList,pSelectedLinesOnly)
+	Calculate lcResult as con(lcResult,pick(lcResult<>'','',pDelimColumn),pDelimData,pList.[pColumn],pDelimData)
+End While

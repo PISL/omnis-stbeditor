@@ -1,0 +1,18 @@
+;  placeholder     ;; needs to be expanded when we have decided on translation method
+Do llMonths.$cols.$add('id',kInteger,kShortint)
+Do llMonths.$cols.$add('name',kCharacter,kSimplechar,100)
+
+Do llMonths.$add(1,'January')
+Do llMonths.$add(2,'February')
+Do llMonths.$add(3,'March')
+Do llMonths.$add(4,'April')
+Do llMonths.$add(5,'May')
+Do llMonths.$add(6,'June')
+Do llMonths.$add(7,'July')
+Do llMonths.$add(8,'August')
+Do llMonths.$add(8,'September')
+Do llMonths.$add(10,'October')
+Do llMonths.$add(11,'November')
+Do llMonths.$add(12,'December')
+
+Quit method llMonths

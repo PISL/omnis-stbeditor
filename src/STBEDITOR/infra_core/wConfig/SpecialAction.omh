@@ -1,0 +1,44 @@
+If ilSpecialActions.code='ALTER_DB_NO'
+	;  Breakpoint
+	If icLineFrom<>''&icLineTo<>''
+		If icLineFrom<>icLineTo
+			;  Problem!     ;; Swapping DB_NO from 1 to 2 and from 2 to 1 will vilate a DB constraint within SQLLite database.
+			;  To solve this the user must change DB_NO = x to a number that does not already exist in DB_NO in the database.
+			Do ilEditdata.$search($ref.DB_NO=icLineFrom,1,0,0,0) Returns lbFirstLineNoExist
+			Do ilEditdata.$search($ref.DB_NO=icLineTo,1,0,0,0) Returns lbSecondLineNoExists
+			If lbFirstLineNoExist&lbSecondLineNoExists
+				OK message Duplicate key warning! {You cannot alter two existing DB_NO's within the same table.  It will generate a database error.}
+				Quit method kFalse
+			End If
+			
+			;  ilDBdata is master list of entries,  ilEditdata is the list currently displayed to user
+			Calculate ilEditdata.$line as 0
+			While $Loop(ilEditdata)
+				If ilEditdata.DB_NO=icLineFrom
+					Calculate ilEditdata.DB_NO as icLineTo
+				Else If ilEditdata.DB_NO=icLineTo
+					Calculate ilEditdata.DB_NO as icLineFrom
+				End If
+			End While
+			
+			;  because $behaviour copies ilDBdata onto ilEditdata     ;; we have to put our results back into ilDBlist now
+			Calculate [ilOptionList.listVar] as ilEditdata
+			;  The $Save method relies on $returnChecksum() method to detect a change.
+			;  Do $cinst.$returnChecksum(ilEditdata) Returns #1
+			
+			;  If a dozen 1's are changed to 3 and the 2's remain the same then a different checksum is generated.
+			;  Unfortunately the binchecksum function within Omnis does not detect a change if a dozen 1's become 2 and a dozen 2's become 1.
+			;  So to force a checksum change we will manually alter the checksum figure here.
+			Calculate ilOptionList.checksum as ilOptionList.checksum*2
+			
+			Quit method kTrue
+		Else
+			OK message Incomplete action! {Line from and line to must have different values.}
+			Quit method kFalse
+		End If
+	Else
+		OK message Incomplete action! {Line from and line to must both be set}
+		Quit method kFalse
+	End If
+End If
+Quit method kFalse

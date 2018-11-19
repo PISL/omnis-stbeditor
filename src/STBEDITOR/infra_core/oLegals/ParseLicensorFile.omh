@@ -1,0 +1,60 @@
+;  parse the xml contents to extract the data
+Calculate lXML.$parservalidates as kFalse
+Calculate lRawXML as chartoutf8(pVersionFileContents)
+Do lXML.$loadbinary(lRawXML,lErrorText) Returns lOK
+;  Do lXML.$savelist(llContents,lErrorText,kTrue)
+Do lXML.$savetree(llContents,lErrorText,kTrue,kTrue,kTrue)
+
+;  Text: <name>[prLicensor.name]</name> (Platform newline)
+Do llContents.$search($ref.path='/licensor/name',1,0,0,0) Returns lbFound
+If lbFound
+	Calculate pretLicensor.name as llContents.value
+End If
+
+;  Text: <address>[prLicensor.address]</address> (Platform newline)
+Do llContents.$search($ref.path='/licensor/address',1,0,0,0) Returns lbFound
+If lbFound
+	Calculate pretLicensor.address as llContents.value
+End If
+;  Text: <registered_office>[prLicensor.registered_office]</registered_office> (Platform newline)
+Do llContents.$search($ref.path='/licensor/registered_office',1,0,0,0) Returns lbFound
+If lbFound
+	Calculate pretLicensor.registered_office as llContents.value
+End If
+
+;  Text: <country_code>[prLicensor.country_code]</country_code> (Platform newline)
+Do llContents.$search($ref.path='/licensor/country_code',1,0,0,0) Returns lbFound
+If lbFound
+	Calculate pretLicensor.country_code as llContents.value
+End If
+;  Text: <company_no>[prLicensor.company_no]</company_no> (Platform newline)
+Do llContents.$search($ref.path='/licensor/company_no',1,0,0,0) Returns lbFound
+If lbFound
+	Calculate pretLicensor.company_no as llContents.value
+End If
+;  Text: <VAT_no>[prLicensor.VAT_no]</VAT_no> (Platform newline)
+Do llContents.$search($ref.path='/licensor/VAT_no',1,0,0,0) Returns lbFound
+If lbFound
+	Calculate pretLicensor.VAT_no as llContents.value
+End If
+
+;  Text: <phone_sales>[prLicensor.phone_sales]</phone_sales> (Platform newline)
+Do llContents.$search($ref.path='/licensor/phone_sales',1,0,0,0) Returns lbFound
+If lbFound
+	Calculate pretLicensor.phone_sales as llContents.value
+End If
+;  Text: <phone_support>[prLicensor.phone_support]</phone_support> (Platform newline)
+Do llContents.$search($ref.path='/licensor/phone_support',1,0,0,0) Returns lbFound
+If lbFound
+	Calculate pretLicensor.phone_support as llContents.value
+End If
+;  Text: <email_sales>[prLicensor.email_sales]</email_sales> (Platform newline)
+Do llContents.$search($ref.path='/licensor/email_sales',1,0,0,0) Returns lbFound
+If lbFound
+	Calculate pretLicensor.email_sales as llContents.value
+End If
+;  Text: <email_support>[prLicensor.email_support]</email_support> (Platform newline)
+Do llContents.$search($ref.path='/licensor/email_support',1,0,0,0) Returns lbFound
+If lbFound
+	Calculate pretLicensor.email_support as llContents.value
+End If

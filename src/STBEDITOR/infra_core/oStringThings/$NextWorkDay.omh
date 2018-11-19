@@ -1,0 +1,52 @@
+;  public holidays support added 23/6/2010
+If clHolidays.$linecount>0
+	;  defined and established
+Else
+	;  Do $DefineList(llHolidays,'tREFERENCE')
+	Do toValues.$initInherited('HOLIDAYS') Returns llHolidays
+	Do llHolidays.$sort($ref.RFO_DATE,0)
+	Calculate clHolidays as llHolidays
+End If
+
+;  next work day is worked out from todays date unless it is in the future
+If pStartDate>=#D
+	Calculate ldDate as pStartDate     ;; date of reminders beig displayed
+Else
+	Calculate ldDate as #D
+End If
+Repeat
+	
+	If pNoOfDays>0
+		Calculate ldDate as dadd(kDay,1,ldDate)
+		
+		;  if this date is either a public holiday or a weekend     ;; move the date on but don't count the work days
+		Repeat
+			Do clHolidays.$search($ref.RFO_DATE=ldDate,1,0,0,0) Returns lbIsPublicHoliday
+			If lbIsPublicHoliday
+				Calculate ldDate as dadd(kDay,1,ldDate)
+			End If
+		Until not(lbIsPublicHoliday)
+		
+		If dtw(ldDate)+0=6|dtw(ldDate)+0=7     ;; it is a weekend
+			;  do not decrement the days count
+		Else
+			Calculate pNoOfDays as pNoOfDays-1     ;; adjusting dates forward
+		End If
+		
+	Else If pNoOfDays<0
+		Calculate ldDate as dadd(kDay,-1,ldDate)
+		Repeat
+			Do clHolidays.$search($ref.RFO_DATE=ldDate,1,0,0,0) Returns lbIsPublicHoliday
+			If lbIsPublicHoliday
+				Calculate ldDate as dadd(kDay,-1,ldDate)
+			End If
+		Until not(lbIsPublicHoliday)
+		
+		If dtw(ldDate)+0=6|dtw(ldDate)+0=7     ;; it is a weekend
+			;  do not decrement the days count
+		Else
+			Calculate pNoOfDays as pNoOfDays+1     ;; adjusting dates backward
+		End If
+	End If
+Until pNoOfDays=0
+Quit method ldDate

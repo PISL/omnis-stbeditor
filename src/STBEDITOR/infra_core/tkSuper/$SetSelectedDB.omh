@@ -1,0 +1,2 @@
+Do tlDatabases.$search($ref.Name=lrSelected.Name,1,0,0,0)
+Calculate irConfigFile as tlDatabases

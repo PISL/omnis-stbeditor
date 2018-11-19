@@ -1,0 +1,22 @@
+Calculate pCodes as con(pCodes,pick(pCodes<>'','',pDelimiterCodes),pStringTableCode)
+
+;  see if we are using allstrings first
+Calculate lcValMessage as StringTable.$gettext(pStringTableCode)
+If lcValMessage<0     ;; -ve number is a string table error
+	Calculate lcValMessage as StringTable.$gettext(con($clib().$name,'.',pStringTableCode))
+	If lcValMessage<0     ;; -ve number is a string table error
+		If pDefaultMessage<>''
+			Calculate pMessage as con(pMessage,pick(pMessage<>'','',pDelimiterMessage),pDefaultMessage)
+			Quit method kTrue
+		Else
+			Calculate pMessage as con(pMessage,pick(pMessage<>'','',pDelimiterMessage),lcValMessage)     ;; leave error message
+		End If
+	Else
+		Calculate pMessage as con(pMessage,pick(pMessage<>'','',pDelimiterMessage),lcValMessage)
+		Quit method kTrue
+	End If
+Else
+	Calculate pMessage as con(pMessage,pick(pMessage<>'','',pDelimiterMessage),lcValMessage)
+	Quit method kTrue
+End If
+Quit method kFalse

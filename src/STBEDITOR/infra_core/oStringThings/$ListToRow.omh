@@ -1,0 +1,16 @@
+Do pList.$cols.$findname(pcColContent) Returns liColRef
+If liColRef
+	;  good
+Else
+	Quit method
+End If
+
+Calculate pList.$line as 0
+While $Loop(pList)
+	Calculate lcColName as pList.[pcColName]
+	;  Do lRow.$cols.$add(lcColName,liColRef.$coltype,liColRef.$colsubtype,liColRef,$colsublen)
+	Do lRow.$cols.$add(lcColName,kCharacter,kSimplechar,1000)
+	Calculate lRow.[lcColName] as pList.[pcColContent]
+End While
+
+Quit method lRow

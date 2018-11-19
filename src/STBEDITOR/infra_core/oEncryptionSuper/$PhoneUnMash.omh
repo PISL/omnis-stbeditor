@@ -1,0 +1,10 @@
+Calculate lcOrig as pPhone
+Calculate lcBegin as mid(lcOrig,1,3)
+Calculate lcTheRest as mid(lcOrig,4,99)
+
+Do method $CharCycle (lcTheRest,2,kTrue) Returns lcCycled
+Do method $CharShift (lcCycled,2) Returns lcShift
+
+Calculate lcMashed as con(lcBegin,lcCycled)
+
+Quit method lcMashed

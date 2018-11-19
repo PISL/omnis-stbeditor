@@ -1,0 +1,20 @@
+If ilIniList.$linecount>0     ;; we have either (1) already read the inifile or (2) got the values from the SQLite libini
+	Quit method kTrue
+End If
+
+Calculate icErrorText as ''
+Calculate icIniFilePath as pcIniFilePath
+Do method _ReadFile (icIniFilePath) Returns lbFlag
+If lbFlag
+	;  merge different line delimiter formats to single CR
+	Calculate icIniText as replaceall(icIniText,chr(10),chr(13))
+	Calculate icIniText as replaceall(icIniText,chr(13,13),chr(13))
+	;  create INI lines list
+	Repeat
+		Calculate lcLineText as strtok('icIniText',chr(13))
+		Do ilIniTextLinesList.$add(lcLineText)
+	Until len(icIniText)<1
+	;  create ini vars list
+	Do method _PopulateINILIst Returns lbFlag
+End If
+Quit method lbFlag

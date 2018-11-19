@@ -1,0 +1,31 @@
+If 1=0     ;; Studio 8.0.1 bug - losing scope with task
+	Do $ctask.$DefineList(ilBaseGlobal,'tsysReferenceGlobal')     ;; tConstants
+	Do $ctask.$DefineList(ilBaseLocal,'tsysReferenceLocal')
+	Do $ctask.$DefineList(ilBaseOrg,'tsysReferenceOrg')
+	Do $ctask.$DefineList(ilBaseUser,'tsysReferenceUser')
+	
+	Do $ctask.$Defineist(ilIPs,'tIpAddresses')
+Else
+	Do ilBaseGlobal.$definefromsqlclass('tsysReferenceGlobal')
+	Do ilBaseLocal.$definefromsqlclass('tsysReferenceLocal')
+	Do ilBaseOrg.$definefromsqlclass('tsysReferenceOrg')
+	Do ilBaseUser.$definefromsqlclass('tsysReferenceUser')
+	
+	Do ilIPs.$definefromsqlclass('tIpAddresses')
+End If
+
+Calculate irErrorSQL as ilBaseGlobal.irErrorSQL
+
+If clGlobal.$colcount=0
+	;  to build up a cache of REFERENCE values when running through WebService
+	Calculate clGlobal as ilBaseGlobal
+	Calculate clLocal as ilBaseLocal
+	Calculate clOrganisation as ilBaseOrg
+	Calculate clUser as ilBaseUser
+	
+	;  initialise a class case with a comma.  Each requested class is surrounded by a comma.
+	Calculate ccClassesG as ','
+	Calculate ccClassesL as ccClassesG
+	Calculate ccClassesO as ccClassesG
+	Calculate ccClassesU as ccClassesG
+End If

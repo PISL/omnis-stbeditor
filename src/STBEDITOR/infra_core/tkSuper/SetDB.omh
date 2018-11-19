@@ -1,0 +1,17 @@
+;  need this to access irConfigFile
+Set reference lrefTask to $itasks.[$clib().$name]
+
+;  Do pSessionObjRef.$database.$assign(lrefTask.irConfigFile.dbdatabase)
+;  Do pSessionObjRef.$port.$assign(lrefTask.irConfigFile.dbport)
+;  Do pSessionObjRef.$quotedidentifier.$assign(kFalse)
+
+;  Calculate lrConfig as lrefTask.tlDatabases
+Do pSessionObjRef.$database.$assign(lrefTask.irConfigFile.DB)
+Do pSessionObjRef.$port.$assign(lrefTask.irConfigFile.port)
+Do pSessionObjRef.$quotedidentifier.$assign(kFalse)
+Do pSessionObjRef.$options.$assign(con('application_name=Omnis_',sys(1),'_',$clib().$name))
+Do pSessionObjRef.$clearcustomtypes()
+;  Do pSessionObjRef.$addcustomtype(65533,'JSON')
+Do pSessionObjRef.$addcustomtype(100000000,'JSONB')
+
+;  Do pSessionObjRef.$usetimezone.$assign(kTrue)     ;; buggers up timestamp without timezone columns !

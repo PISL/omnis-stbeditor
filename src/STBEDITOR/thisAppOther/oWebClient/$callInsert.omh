@@ -1,0 +1,42 @@
+;  call oRest.$master_post
+;  Breakpoint {pParams}
+Do pParamsRow.$cols.$add('sid',kCharacter,kSimplechar,100)
+Calculate pParamsRow.sid as tConstants.RESTsessionID
+
+;  convert params row to JSON and then use $encryptchar to reduce the hex paramter length
+Do method $prepareToSend (#NULL,OJSON.$listorrowtojson(pParamsRow,kUniTypeCharacter,lcErrorText)) Returns lrParams
+
+Calculate lcURI as con(tConstants.REST_URI,'master')
+
+Do ioRest.$init(lcURI,kOWEBhttpMethodPost,ilHeaders,OJSON.$listorrowtojson(lrParams,kUniTypeCharacter,lcErrorText))
+
+Calculate ldStartTime as #D
+Do ioRest.$run() Returns lbStatus
+Calculate inServiceCallTime as ddiff(kCentiSecond,ldStartTime,#D)*10     ;; milliseconds
+
+If lbStatus
+	Do ioRest.$returnVal(irResponseHeaders,irResponse,irJSON) Returns icJSON
+	
+	If irResponse.httpStatusCode<>200
+		;  do some error reporting here
+		Calculate pErrorField.ErrorCode as irResponse.httpStatusCode
+		Calculate pErrorField.NativeErrorCode as irResponse.httpStatusCode
+		Calculate pErrorField.NativeErrorText as irResponseHeaders.omniserror
+		Calculate lbOK as kFalse
+	Else
+		Calculate lbinResponse as binfromhex(irJSON.data)     ;; convert the return to binary and put it into a row variable
+		Do $cinst.$extractData(lbinResponse) Returns lrResult     ;; decrypt and return the original server data row
+		Calculate inServerTime as lrResult.elapsed
+		If lrResult.ok
+			;  successful update
+			Calculate lrInsertedRow as lrResult.data
+			Do pResultField.$assignrow(lrInsertedRow)
+			Calculate lbOK as kTrue
+		Else
+			Do pErrorField.$assignrow(lrResult.error)
+			Calculate lbOK as kFalse
+		End If
+	End If
+End If
+
+Quit method lbOK

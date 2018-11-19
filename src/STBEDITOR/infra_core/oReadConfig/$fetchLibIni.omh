@@ -1,0 +1,13 @@
+Do ilIniList.$clear()
+
+Do $DefineList(ilIniRaw,'tIniLib')
+Do ilIniRaw.$setSession(ioSessionIni,ioStatementIni)
+Do ilIniRaw.$fetch_all()
+Do ilIniRaw.$sort($ref.LIB_NAME,0,$ref.LIB_SEQ,0)
+
+Calculate ilIniRaw.$line as 0
+While $Loop(ilIniRaw)
+	If ilIniRaw.LIB_VALUE<>''
+		Do ilIniList.$add(ilIniRaw.LIB_NAME,ilIniRaw.LIB_KEY,ilIniRaw.LIB_VALUE)
+	End If
+End While

@@ -1,0 +1,32 @@
+;  does the tag have attributes?
+Calculate lnTagStart as pos(con('<',pTag,'>'),pString)
+If lnTagStart=0
+	;  then it probably does have attributes
+	Calculate lnTagStart as pos(con('<',pTag,' '),pString)
+	If lnTagStart=0
+		Quit method ''
+	End If
+	Calculate lnTagWithAttributesEnd as pos('>',mid(pString,lnTagStart,kFetchAll))
+End If
+Calculate lnTagEnd as pos(con('</',pTag,'>'),pString)
+If lnTagEnd=0&lnTagWithAttributesEnd>0
+	;  tag does not have content     ;; the "content" is within the attributes
+	;  and the tag is terminated with a  />
+	Calculate lnTagEnd as pos(con('/>'),pString)
+End If
+
+If lnTagWithAttributesEnd>0
+	Calculate lnBeginData as lnTagStart+lnTagWithAttributesEnd
+Else
+	Calculate lnBeginData as lnTagStart+len(pTag)+2
+End If
+Calculate lcTemp as mid(pString,lnBeginData,lnTagEnd-lnBeginData)
+
+If pDotNetPandering
+	If lcTemp=''
+		Calculate lcTemp as mid(pString,pos(con('&LT;',pTag,'&GT;'),upp(pString))+len(pTag)+2,999999)
+		Calculate lcTemp as mid(lcTemp,1,pos(con('&LT;/',pTag,'&GT;'),upp(lcTemp))-1)
+	End If
+End If
+
+Quit method lcTemp

@@ -1,0 +1,49 @@
+;  GRS 5/8/14  method now redundant, encapsulated in $insert()
+;  ### refactor candidate
+Breakpoint {should never get here}
+Quit method kFalse
+
+If icForeignKey<>''
+	If $cinst.[icForeignKey]>0
+		;  valid
+	Else If $cinst.[icForeignKey]<>''
+		;  valid
+	Else
+		;  OK message  {Foreign key [icForeignKey] has no value}
+		;  Breakpoint
+		Calculate lcSubject as con('table class error in ',$cinst().$name)
+		Calculate lcMessage as con('table class error in ',$cinst().$name,kCr,'Foreign key ',icForeignKey,' has no value')
+		Do $AppError(lcMessage,lcSubject)
+		Quit method kFalse
+	End If
+End If
+
+Do $cinst.$InsertCols()
+
+Calculate lbOK as kFalse
+If icPrimarykey<>''
+	If $cinst.[icPrimarykey]>0
+		;  do not generate another pkey
+		Calculate lbOK as kTrue
+	Else
+		If ibHasSequence
+			Do $ctask.$NextSeqNo($cinst.$servertablenames,1,P_COMMIT) Returns lnSequence
+			If lnSequence>0
+				Calculate $cinst.[icPrimarykey] as lnSequence
+				Calculate lnPrimaryKeyVal as lnSequence
+				Calculate lbOK as kTrue
+			End If
+		Else
+			Calculate lbOK as kTrue
+		End If
+	End If
+Else
+	Calculate lbOK as kTrue
+End If
+
+If lbOK
+	Do $cinst.$insert(P_COMMIT,pDoNotReportTheseErrors) Returns lbOK
+	Quit method lbOK
+Else
+	Quit method lbOK
+End If

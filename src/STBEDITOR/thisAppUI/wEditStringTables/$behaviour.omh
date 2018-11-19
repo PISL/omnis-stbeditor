@@ -1,0 +1,38 @@
+;  if there are only one each of OMG_CLASS and OMG_FUNCTION selected we can allow the string list to be extended
+;  and we can display the library list to add/remove links
+
+Calculate lbSingleGroup as totc(ilGroups,#LSEL)=1&totc(ilGroupClasses,#LSEL)=1&not(len(icStringSearch))
+
+Calculate $cinst.$objs.ilStrings.$extendable as lbSingleGroup
+
+If lbSingleGroup
+	Do ilGroups.$search($ref.$selected,1,0,0,0)
+	Do ilLinks.$fetchOnGroup(ilGroups.OMG_SEQ)
+	Do ilLibraries.$search(0)
+	For ilLinks.$line from 1 to ilLinks.$linecount step 1
+		Do ilLibraries.$search($ref.OML_SEQ=ilLinks.OLG_OML_REF,1,0,1,0)
+	End For
+	Do ilLibraries.$sort($ref.$selected,1,$ref.OML_NAME,0)
+	Do ilLibraries.$first(kTrue)
+End If
+Calculate $cinst.$objs.ilLibraries.$visible as lbSingleGroup
+
+Calculate $cinst.$objs.DragList.$visible as ibDragDropOn
+Calculate $cinst.$objs.pbDragDrop.$enabled as inSelectedGroups=1     ;; we do not want to be moving from multiple groups in one fell swoop
+Calculate $cinst.$objs.pbDragDrop.$text as pick(ibDragDropOn,'drag drop on',con('click in the list below to add//double click the right list to remove//click here to cancel'))     ;; the button is to toggle value on/off
+Calculate $cinst.$objs.pbDragDrop.$top as pick(ibDragDropOn,97,65)     ;; the button is to toggle value on/off
+Calculate $cinst.$objs.pbDragDrop.$height as pick(ibDragDropOn,23,55)     ;; the button is to toggle value on/off
+Calculate $cinst.$objs.pbDragDrop.$width as pick(ibDragDropOn,120,220)     ;; the button is to toggle value on/off
+
+Calculate $cinst.$bobjs.1044.$visible as ilStrings.$linecount<>inStringCount
+Calculate $cinst.$objs.inStringCount.$visible as ilStrings.$linecount<>inStringCount
+
+If totc(ilGroupClasses,#LSEL)=1&totc(ilGroups,#LSEL)=1
+	;  Then there is no confusion about entering new entries.
+	;  So let the user auto extend the list for something new.
+	Calculate $cinst.$objs.ilStrings.$extendable as kTrue
+Else
+	Calculate $cinst.$objs.ilStrings.$extendable as kFalse
+End If
+
+Do $cinst.$redraw()

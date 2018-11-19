@@ -1,0 +1,18 @@
+Calculate lnLengthDelimiter as len(P_DELIMITER)
+
+Calculate %LEN as len(P_SOURCE)
+For %COUNT from %LEN to 1 step -1
+	If mid(P_SOURCE,%COUNT,lnLengthDelimiter)=P_DELIMITER
+		Calculate lcResult as mid(P_SOURCE,%COUNT+lnLengthDelimiter,99999)
+		
+		If pbRemoveFromSource
+			Calculate P_SOURCE as mid(P_SOURCE,1,len(P_SOURCE)-len(lcResult)-1)     ;; -1 to remove trailing delimiter so this method behaves like strtok()
+		End If
+		
+		Quit method lcResult
+	End If
+End For
+
+;  there was no delimiter detected so return whole string with flag false
+Calculate lcResult as P_SOURCE
+Quit method lcResult

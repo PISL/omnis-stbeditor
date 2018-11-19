@@ -1,0 +1,96 @@
+;  compares two row vars and reports back modified cols
+If pExcludeTheseCols<>''
+	;  surrounding comma separated column list with commas allows the efficient test below to work
+	Calculate pExcludeTheseCols as con(',',pExcludeTheseCols,',')
+End If
+If pOnlyTestTheseCols<>''
+	;  surrounding comma separated column list with commas allows the efficient test below to work
+	Calculate pOnlyTestTheseCols as con(',',pOnlyTestTheseCols,',')
+End If
+
+For lnColCount from 1 to pOrig.$colcount step 1
+	Calculate lcColName as pOrig.$cols.[lnColCount].$name()
+	Calculate lbTestThisCol as kFalse
+	
+	If pOnlyTestTheseCols<>''
+		If pos(con(',',lcColName,','),pOnlyTestTheseCols)>0
+			Calculate lbTestThisCol as kTrue
+		End If
+		
+	Else If pExcludeTheseCols<>''
+		If pos(con(',',lcColName,','),pExcludeTheseCols)>0
+			Calculate lbTestThisCol as kFalse
+		Else
+			Calculate lbTestThisCol as kTrue
+		End If
+		
+	Else If pcOnlyTestColsWithThisPrefix<>''
+		;  make sure prefix includes _ delimiter
+		If pos('_',pcOnlyTestColsWithThisPrefix)=0
+			Calculate pcOnlyTestColsWithThisPrefix as con(pcOnlyTestColsWithThisPrefix,'_')
+		End If
+		
+		If mid(lcColName,1,pos('_',lcColName))=pcOnlyTestColsWithThisPrefix
+			Calculate lbTestThisCol as kTrue
+		Else
+			Calculate lbTestThisCol as kFalse
+		End If
+		
+	Else
+		Calculate lbTestThisCol as kTrue
+	End If
+	
+	If lbTestThisCol
+		Calculate lbModified as kFalse
+		
+		If pOrig.$cols.[lnColCount].$coltype=kBinary
+			;  we started getting runtime character as binary errors about 10/12/2010
+			;  so this code was added to explicitly handle binary comparisons
+			Calculate lbinOrig as pOrig.C[lnColCount]
+			Calculate lbinNew as pNew.C[lnColCount]
+			
+			;  If isnull(lbinOrig)&isnull(lbinNew)
+			;  no change
+			;  Else If pNullAndEmptyAreSame&binlength(lbinOrig)=binlength(lbinNew)&binlength(lbinNew)=0
+			;  no change
+			;  Else If isnull(lbinOrig)&not(isnull(lbinNew))
+			;  Calculate lbModified as kTrue
+			;  Else If not(isnull(lbinOrig))&isnull(lbinNew)
+			;  Calculate lbModified as kTrue
+			;  Else
+			Calculate lbModified as not(bincompare(lbinOrig,lbinNew))     ;; bincompare() Returnｓ true if they are equal
+			;  End If
+		Else
+			If pos('JSON',upp(pOrig.C[lnColCount].$name))>0
+				Calculate lcValOrig as OJSON.$formatjson(pOrig.C[lnColCount])
+				Calculate lcValNew as OJSON.$formatjson(pNew.C[lnColCount])
+			Else
+				Calculate lcValOrig as pOrig.C[lnColCount]
+				Calculate lcValNew as pNew.C[lnColCount]
+			End If
+			
+			If isnull(lcValOrig)&isnull(lcValNew)
+				;  no change
+			Else If pNullAndEmptyAreSame&len(lcValOrig)=len(lcValNew)&len(lcValNew)=0
+				;  no change
+			Else If isnull(lcValOrig)&not(isnull(lcValNew))
+				Calculate lbModified as kTrue
+			Else If not(isnull(lcValOrig))&isnull(lcValNew)
+				Calculate lbModified as kTrue
+			Else If lcValOrig<>lcValNew
+				Calculate lbModified as kTrue
+			End If
+		End If
+		
+		If lbModified
+			Calculate lnModifiedColsCount as lnModifiedColsCount+1
+			Calculate lcModifiedCols as con(lcModifiedCols,pick(lcModifiedCols<>'','',','),lcColName)
+		End If
+	End If
+End For
+
+If pReturnColNames
+	Quit method lcModifiedCols
+Else
+	Quit method lnModifiedColsCount
+End If

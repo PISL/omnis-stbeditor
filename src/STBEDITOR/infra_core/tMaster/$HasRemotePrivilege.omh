@@ -1,0 +1,44 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Calculate ldtStart as #D
+	Do ioWeb.$callFetch(lbHasPrivilege,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pcPriv),lbHasPrivilege.$type,0,ilRESTextensions))
+	Calculate inServiceMS as ddiff(kCentiSecond,ldtStart,#D)*10
+	Calculate inRESTserverMS as ioWeb.inServerTime
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method lbHasPrivilege
+	Else
+		Quit method kFalse
+	End If
+End If
+
+;  returns boolean based on whether or not the current user has the privilege on the remote db foreign table
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Calculate lcForeignTable as con($cinst.$servertablenames,icRemoteDB)
+
+Calculate icStatementType as 'SELECT'
+
+Begin statement
+Sta: {select has_table_privilege(@[lcForeignTable], @[pcPriv])}
+End statement
+Do $cinst.$executesqlandfetchinto(lbHasPrivilege) Returns lbOK
+
+If not(lbOK)
+	Calculate lbHasPrivilege as kFalse
+End If
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lbHasPrivilege

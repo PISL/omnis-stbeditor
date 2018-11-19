@@ -1,0 +1,8 @@
+;  rmm_wsl: generate the tree and text for display in the log
+Calculate lXML.$parservalidates as kFalse
+Calculate lRawXML as chartoutf8(pRawXML)
+Do lXML.$loadbinary(lRawXML,lErrorText) Returns lOK
+Do lXML.$savetree(pTreeXML,lErrorText,kTrue)
+;  Calculate lXML.$outputencoding as kXMLEncodingUTF8
+;  Do lXML.$savebinary(lUTF8,lErrorText)
+;  Do utf8tochar(lUTF8) Returns pTextXML

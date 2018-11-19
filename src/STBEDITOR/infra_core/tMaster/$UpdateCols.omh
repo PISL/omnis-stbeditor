@@ -1,0 +1,20 @@
+If icPrefix<>''     ;; ### 2015-03-05 removing invalid items causing debug log entries
+	Do $cinst.$cols.$findname(con(icPrefix,'MWHEN')) Returns lrefCol
+	If lrefCol
+		Calculate $cinst.[icPrefix]MWHEN as $AboutNow()
+	End If
+	
+	Do $cinst.$cols.$findname(con(icPrefix,'MBY')) Returns lrefCol
+	If lrefCol
+		Calculate $cinst.[icPrefix]MBY as $ctask.trCurrUser.USR_NAME     ;; ccConsoleUser
+	End If
+	
+	Do $cinst.$cols.$findname(con(icPrefix,'MCOUNT')) Returns lrefCol
+	If lrefCol
+		If isnull($cinst.[icPrefix]MCOUNT)
+			Calculate $cinst.[icPrefix]MCOUNT as 1
+		Else
+			Calculate $cinst.[icPrefix]MCOUNT as $cinst.[icPrefix]MCOUNT+1
+		End If
+	End If
+End If

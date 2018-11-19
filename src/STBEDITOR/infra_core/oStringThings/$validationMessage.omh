@@ -1,0 +1,57 @@
+;  must support backward compatability     ;; for a while
+;  plValidation structure is defined in tMaster.$construct     ;; object, issue, severity, default
+;  new structure - ilValidation has entries.
+;  old structure - prValidated.icValidationMessage has a message to present
+Calculate llValidation as prValidated.ilValidation
+If llValidation.$linecount=0
+	Calculate lcError as prValidated.icValidationMessage
+	Calculate lbMessageToReport as lcError<>''
+Else
+	Calculate llValidation.$line as 0
+	While $Loop(llValidation)
+		;  look for OBJECT message     ;; should be found in StringTable schemas
+		;  should be in "allstrings" but that will be added in $StringTableEntry
+		Do method $StringTableEntry (llValidation.object,lcObject) Returns lbValid
+		If not(lbValid)
+			Do method $StringTableEntry (con('schemas.',llValidation.object),lcObject) Returns lbValid
+			If not(lbValid)
+				Do method $StringTableEntry (con('labels.',llValidation.object),lcObject) Returns lbValid
+				If not(lbValid)
+					Do method $StringTableEntry (con('messages.',llValidation.object),lcObject) Returns lbValid
+				End If
+			End If
+		End If
+		If lbValid     ;; we have a valid object
+			;  look for ISSUE message     ;; different StringTable priority
+			;  try "allstrings" first
+			Do method $StringTableEntry (llValidation.object,lcObject) Returns lbValid
+			If not(lbValid)
+				Do method $StringTableEntry (con('messages.',llValidation.issue),lcIssue) Returns lbValid
+				If not(lbValid)
+					Do method $StringTableEntry (con('labels.',llValidation.issue),lcIssue) Returns lbValid
+					If not(lbValid)
+						Do method $StringTableEntry (con('schemas.',llValidation.issue),lcIssue) Returns lbValid
+					End If
+				End If
+			End If
+		End If
+		If lbValid
+			Calculate lcEntry as con(lcObject,' ',lcIssue)
+		Else
+			Calculate lcEntry as llValidation.default     ;; if there is no defaul then this will be empty
+		End If
+		
+		If llValidation.severity=0     ;; error
+			Calculate lcError as con(lcError,pick(lcError<>'','',', '),lcEntry)
+			Calculate lbMessageToReport as kTrue
+		Else If llValidation.severity=1     ;; warning
+			Calculate lcWarning as con(lcWarning,pick(lcWarning<>'','',', '),lcEntry)
+			Calculate lbMessageToReport as kTrue
+		End If
+	End While
+End If
+
+Calculate pretError as lcError
+Calculate pretWarning as lcWarning
+
+Quit method lbMessageToReport

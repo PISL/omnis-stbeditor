@@ -1,0 +1,157 @@
+Switch pnRegType
+	Case 0     ;; unset
+		
+	Case 1,2     ;; organisation, sole trader
+		If $cinst.GO_NAME_FULL<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_NAME_FULL missing')
+			Do ilValidation.$add('GO_NAME_FULL_LBL','VAL_MISSING','GO_NAME_FULL missing',0)
+		End If
+		
+		If $cinst.GO_ADDR_STREET<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_ADDR_STREET missing')
+			Do ilValidation.$add('GO_ADDR_STREET_LBL','VAL_MISSING','GO_ADDR_STREET missing',0)
+		End If
+		If $cinst.GO_ADDR_TOWN<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_ADDR_TOWN missing')
+			Do ilValidation.$add('GO_ADDR_TOWN_LBL','VAL_MISSING','GO_ADDR_TOWN missing',0)
+		End If
+		If $cinst.GO_ADDR_POSTCODE<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_ADDR_POSTCODE missing')
+			Do ilValidation.$add('GO_ADDR_POSTCODE_LBL','VAL_MISSING','GO_ADDR_POSTCODE missing',0)
+		End If
+		If $cinst.GO_ADDR_COUNTRY<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_ADDR_COUNTRY missing')
+			Do ilValidation.$add('GO_ADDR_COUNTRY_LBL','VAL_MISSING','GO_ADDR_COUNTRY missing',0)
+		End If
+		
+		If $cinst.GO_COMM_PH<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_COMM_PH missing')
+			Do ilValidation.$add('GO_COMM_PH_LBL','VAL_MISSING','GO_COMM_PH missing',0)
+		End If
+		
+		If pnRegType=2     ;; sole trader or individual
+			;  do not check for GOMPANY NO
+		Else
+			If $cinst.GO_COMPANY_NO<>''
+				;  good
+			Else
+				Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_COMPANY_NO missing')
+				Do ilValidation.$add('GO_COMPANY_NO_LBL','VAL_MISSING','GO_COMPANY_NO missing',0)
+			End If
+			;  GO_VAT_NO     ;; cannot be mandatory
+		End If
+		
+	Case 3     ;; individual
+		If $cinst.GO_SURNAME<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_SURNAME missing')
+			Do ilValidation.$add('GO_SURNAME_LBL','VAL_MISSING','GO_SURNAME missing',0)
+		End If
+		
+		If $cinst.GO_FIRSTNAMES<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_FIRSTNAMES missing')
+			Do ilValidation.$add('GO_FIRSTNAMES_LBL','VAL_MISSING','GO_FIRSTNAMES missing',0)
+		End If
+		
+		If $cinst.GO_DOB>dat('1 JAN 1910')&$cinst.GO_DOB<dim(#D,-120)     ;; must be at least 10 years old
+			;  good
+		Else If isclear($cinst.GO_DOB)
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_DOB missing')
+			Do ilValidation.$add('GO_DOB_LBL','VAL_MISSING','GO_DOB missing',0)
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'invalid GO_DOB')
+			Do ilValidation.$add('GO_DOB_LBL','VAL_INVALID','invalid GO_DOB',0)
+		End If
+		
+		If $cinst.GO_ADDR_TOWN<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_ADDR_TOWN missing')
+			Do ilValidation.$add('GO_ADDR_TOWN_LBL','VAL_MISSING','GO_ADDR_TOWN missing',0)
+		End If
+		
+		If $cinst.GO_ADDR_POSTCODE<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_ADDR_POSTCODE missing')
+			Do ilValidation.$add('GO_ADDR_POSTCODE_LBL','VAL_MISSING','GO_ADDR_POSTCODE missing',0)
+		End If
+		
+		If $cinst.GO_ADDR_COUNTRY<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_ADDR_COUNTRY missing')
+			Do ilValidation.$add('GO_ADDR_COUNTRY_LBL','VAL_MISSING','GO_ADDR_COUNTRY missing',0)
+		End If
+		
+		If $cinst.GO_COMM_PH<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_COMM_PH missing')
+			Do ilValidation.$add('GO_COMM_PH_LBL','VAL_MISSING','GO_COMM_PH missing',0)
+		End If
+		
+		;  documentary ID requirement relaxed until system actually needs it.
+		;  We don't want to scare people off in the demonstrations at the beginning.
+		If $cinst.GO_ID_TYPE<>''
+			;  good
+		Else
+			;  Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_IND_ID_TYPE missing')
+		End If
+		If $cinst.GO_ID_CODE<>''
+			;  good
+		Else
+			;  Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_IND_ID_NUMBER missing')
+		End If
+		;  but we will still insist on MMN for security reasons when accessing the record.
+		If $cinst.GO_MMN<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_MMN missing')
+			Do ilValidation.$add('GO_MMN_LBL','VAL_MISSING','GO_MMN missing',0)
+		End If
+		If $cinst.GO_SEX<>''
+			;  good
+		Else
+			Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_SEX missing')
+			Do ilValidation.$add('GO_SEX_LBL','VAL_MISSING','GO_SEX missing',0)
+		End If
+		
+	Default
+		
+End Switch
+
+;  simple validation of email address
+If $cinst.GO_COMM_EMAIL<>''
+	Do $objects.oFormatData.$newref() Returns loFormatData
+	Do loFormatData.$FormatEmail($cinst.GO_COMM_EMAIL) Returns lcEmailValid
+	If isclear(lcEmailValid)
+		;  good
+	Else
+		Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_COMM_EMAIL invalid')
+		Do ilValidation.$add('GO_COMM_EMAIL','VAL_INVALID','GO_COMM_EMAIL invalid',0)
+	End If
+	Do loFormatData.$deleteref()
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

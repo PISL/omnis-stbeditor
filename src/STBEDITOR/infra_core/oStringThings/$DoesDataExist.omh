@@ -1,0 +1,76 @@
+;  looks at the columns of a row var and determines whether there is anything in the row
+If pcExcludeTheseCols<>''
+	;  surrounding comma separated column list with commas allows the efficient test below to work
+	Calculate pcExcludeTheseCols as con(',',pcExcludeTheseCols,',')
+End If
+If pcOnlyTestTheseCols<>''
+	;  surrounding comma separated column list with commas allows the efficient test below to work
+	Calculate pcOnlyTestTheseCols as con(',',pcOnlyTestTheseCols,',')
+End If
+
+For lnColCount from 1 to prRow.$colcount step 1
+	Calculate lcColName as prRow.$cols.[lnColCount].$name()
+	Calculate lbTestThisCol as kFalse
+	
+	If pcOnlyTestTheseCols<>''
+		If pos(con(',',lcColName,','),pcOnlyTestTheseCols)>0
+			Calculate lbTestThisCol as kTrue
+		End If
+		
+	Else If pcExcludeTheseCols<>''
+		If pos(con(',',lcColName,','),pcExcludeTheseCols)>0
+			Calculate lbTestThisCol as kFalse
+		Else
+			Calculate lbTestThisCol as kTrue
+		End If
+	Else
+		Calculate lbTestThisCol as kTrue
+	End If
+	
+	If lbTestThisCol
+		Calculate lbDataExists as kFalse
+		
+		If prRow.C[lnColCount].$type=kInteger|prRow.C[lnColCount].$type=kNumber
+			Calculate lnColVal as prRow.C[lnColCount]
+			
+			If pbNullAndEmptyAreSame&isclear(lnColVal)
+				;  no data
+			Else If isnull(lnColVal)
+				;  no data
+			Else
+				Calculate lbDataExists as kTrue
+			End If
+			
+		Else If prRow.C[lnColCount].$type=kBinary|prRow.C[lnColCount].$type=kPicture
+			Calculate lbinColVal as prRow.C[lnColCount]
+			
+			If isnull(lbinColVal)
+				;  no data
+			Else
+				Calculate lbDataExists as kTrue
+			End If
+			
+		Else
+			Calculate lcColVal as prRow.C[lnColCount]
+			
+			If pbNullAndEmptyAreSame&isclear(lcColVal)
+				;  no data
+			Else If isnull(lcColVal)
+				;  no data
+			Else
+				Calculate lbDataExists as kTrue
+			End If
+		End If
+		
+		If lbDataExists
+			Calculate lnModifiedColsCount as lnModifiedColsCount+1
+			Calculate lcModifiedCols as con(lcModifiedCols,pick(lcModifiedCols<>'','',','),lcColName)
+		End If
+	End If
+End For
+
+If pbReturnColNames
+	Quit method lcModifiedCols
+Else
+	Quit method lnModifiedColsCount
+End If

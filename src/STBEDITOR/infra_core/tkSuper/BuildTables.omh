@@ -1,0 +1,8 @@
+
+Calculate ilTables as #NULL
+Do ilTables.$cols.$add('TABLE',kCharacter,kSimplechar,100)
+Do ilTables.$cols.$add('DESC',kCharacter,kSimplechar,100)
+
+Do $clib.$tables.$sendall(ilTables.$add(mid($ref.$name,2,99),$ref.$desc))
+
+Quit method ilTables

@@ -1,0 +1,3 @@
+If tConstants.debugMode
+	Send to trace log {[#T]   [pcMessage]}
+End If

@@ -1,0 +1,37 @@
+;  remove all occurrences of <TAG> and </TAG>     ;; actually its anything between < and >
+While pos(pEndChar,pStringIn)>pos(pStartChar,pStringIn)
+	Calculate lnStart as pos(pStartChar,pStringIn)
+	If lnStart>1
+		Calculate lcStart as mid(pStringIn,1,lnStart-1)
+		Calculate pStringIn as mid(pStringIn,lnStart,kFetchAll)
+	Else
+		Calculate lcStart as ''
+		;  Calculate pStringIn as mid(pStringIn,1,lnStart-1)
+	End If
+	
+	Calculate lcTheTag as mid(pStringIn,1,pos(pEndChar,pStringIn))
+	If pScanForInTagContent
+		Do method $ExtractCertainTagContent (lcTheTag) Returns lcIncludeThis
+	End If
+	
+	;  convert certain tags to certain characters
+	;  some  non printing  Word character values
+	;  ;  chr(9) = tab   chr(11) = soft new line  chr(12) = page break  chr(14) = column break
+	If pConvertCertainTags
+		Switch upp(lcTheTag)
+			Case '<P>'
+				Calculate lcStart as con(lcStart,kCr)
+			Case '<BR>'
+				Calculate lcStart as con(lcStart,' ')
+			Case '<LI>'
+				Calculate lcStart as con(lcStart,con(kCr,'* '))
+		End Switch
+	End If
+	
+	If pScanForInTagContent&lcIncludeThis<>''
+		Calculate pStringIn as con(lcStart,chr(11),lcIncludeThis,chr(11),mid(pStringIn,pos(pEndChar,pStringIn)+len(pEndChar),kFetchAll))
+	Else
+		Calculate pStringIn as con(lcStart,mid(pStringIn,pos(pEndChar,pStringIn)+len(pEndChar),kFetchAll))
+	End If
+End While
+Quit method pStringIn

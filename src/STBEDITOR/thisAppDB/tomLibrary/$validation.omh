@@ -1,0 +1,16 @@
+Calculate icValidationMessage as ''
+Do ilValidation.$clear()
+
+If $cinst.OML_NAME<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'OML_NAME missing')
+	Do ilValidation.$add('OML_NAME_LBL','VAL_MISSING','OML_NAME missing',0)
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

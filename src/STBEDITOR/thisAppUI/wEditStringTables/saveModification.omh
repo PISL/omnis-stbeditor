@@ -1,0 +1,95 @@
+If not(pbCalledFromEvAfter)     ;; pVertCell does on exist on evAfter
+	Calculate $cinst.irCurrentRecord as ilStrings.[pVertCell]
+	Calculate $cinst.irCurrentOriginal as $cinst.irCurrentRecord
+	Do method getColumnName ($cinst.$objs.ilStrings.$columnnames,pHorzCell) Returns lcColName
+Else If inVertCell
+	Calculate $cinst.irCurrentRecord as ilStrings.[inVertCell]
+	Calculate $cinst.irCurrentOriginal as $cinst.irCurrentRecord
+	Do method getColumnName ($cinst.$objs.ilStrings.$columnnames,inHorzCell) Returns lcColName
+Else
+	Breakpoint
+	Quit method
+End If
+;  if this is the "en" column that has changed, warn that this action will clear all translations
+If lcColName='en'
+	;  check for translations
+	For lnColNo from 11 to irCurrentRecord.$colcount step 1     ;; 11th column is the first translation
+		If len(irCurrentRecord.C[lnColNo])>0
+			Calculate lbTranslationsExist as kTrue
+			Break to end of loop
+		End If
+	End For
+	If lbTranslationsExist
+		No/Yes message Warning {Changing the English string will result in all translations being cleared.//Continue?}
+		If flag false
+			Quit event handler (Discard event)
+		Else
+			Calculate lbClearTranslations as kTrue
+		End If
+	End If
+End If
+If pEventCode=evCellChanging
+	Calculate irCurrentRecord.[lcColName] as pCellData
+Else     ;; evAfter
+	Calculate irCurrentRecord.[lcColName] as ilStrings.[inVertCell].C[inHorzCell+inAcColsOffset]     ;; irCurrentRecord.[lcColName] has, in fact, already been updated
+End If
+
+;  if this is a translated column that has been manually entered
+;  we need to record the fact so we do not overwrite it with Google translations
+;  but if the column has been cleared, we need to remove it from COLS_MODIFIED
+
+If lcColName<>'STRINGID'&lcColName<>'en'
+	If len(irCurrentRecord.[lcColName])>0
+		;  add it to COLS_MODIFIED
+		If pos(con(',',lcColName,','),irCurrentRecord.OMS_COLS_MODIFIED)
+			;  already recorded, nothing to do
+		Else If len(irCurrentRecord.OMS_COLS_MODIFIED)>0
+			Calculate irCurrentRecord.OMS_COLS_MODIFIED as con(irCurrentRecord.OMS_COLS_MODIFIED,lcColName,',')
+		Else
+			Calculate irCurrentRecord.OMS_COLS_MODIFIED as con(',',lcColName,',')
+		End If
+	Else
+		;  remove it from COLS_MODIFIED
+		Calculate lnPos as pos(con(',',lcColName,','),irCurrentRecord.OMS_COLS_MODIFIED)
+		If lnPos
+			;  remove it
+			Calculate irCurrentRecord.OMS_COLS_MODIFIED as con(mid(irCurrentRecord.OMS_COLS_MODIFIED,1,lnPos),mid(irCurrentRecord.OMS_COLS_MODIFIED,lnPos+len(lcColName)+2))
+			If len(irCurrentRecord.OMS_COLS_MODIFIED)=1     ;; just a comma left
+				Calculate irCurrentRecord.OMS_COLS_MODIFIED as ''
+			End If
+		End If
+	End If
+End If
+
+If lbClearTranslations
+	;  we have altered the English txt
+	For lnColNo from 11 to irCurrentRecord.$colcount step 1     ;; 11th column is the first translation
+		Calculate irCurrentRecord.C[lnColNo] as #NULL
+	End For
+	Calculate irCurrentRecord.OMS_COLS_MODIFIED as #NULL
+End If
+
+If isclear(irCurrentRecord.STRINGID)
+	Yes/No message  {Delete this entry?}
+	If flag true
+		Do irCurrentRecord.$delete() Returns lbOK
+		If lbOK
+			;  great
+			Do ilStrings.$remove(pVertCell) Returns icContentsOrig
+			Do $cobj.$redraw()
+		End If
+	End If
+Else
+	Do toStrings.$HasRowBeenModified(irCurrentOriginal,irCurrentRecord) Returns lbModified
+	If lbModified
+		Do irCurrentRecord.$update() Returns lbOK
+		If lbOK
+			;  great
+			Do ilStrings.[pVertCell].$assignrow(irCurrentRecord)
+			Calculate $cinst.irCurrentOriginal as $cinst.irCurrentRecord
+		Else
+			Do ilStrings.[pVertCell].C[pHorzCell+inAcColsOffset] Returns icContentsOrig
+			OK message SQL Error {[irCurrentRecord.irErrorSQL.NativeErrorText]}
+		End If
+	End If
+End If

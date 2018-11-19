@@ -1,0 +1,12 @@
+Calculate lnDbVersionNo as left(pSessVersion,rpos('.',pSessVersion)-1)
+
+Do $codes.cVersion.$methods.$makelist($ref.$name) Returns llMethods     ;; cannot use $cando with a code method
+If llMethods.$search($ref.C1='$getDbVersion',1,0,0,0)
+	Do code method cVersion/$getDbVersion Returns lnMinVersion
+	If lnDbVersionNo>=lnMinVersion
+		;  great!
+	Else
+		;  if there is a version number mismatch, each library should handle it with a $DbVersionMismatch() method
+		Do $cinst.$DbVersionMisMatch(lnDbVersionNo,lnMinVersion)
+	End If
+End If

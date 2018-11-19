@@ -1,0 +1,15 @@
+;  GRS 14/2/14
+;       ;; modified to use the DB sequence to return the PK
+;  RSM  30/5/14     ;; added use of pcIgnoreTheseErrors when cloning/copying permissions from one role to another
+
+If isnull($cinst.USR_ACTIVE)
+	Calculate $cinst.USR_ACTIVE as 1
+End If
+
+Do inherited Returns lbOK     ;; insert the record normally
+
+If lbOK     ;; now store the hashed password
+	Do $cinst.$setPassword() Returns lbOK
+End If
+
+Quit method lbOK

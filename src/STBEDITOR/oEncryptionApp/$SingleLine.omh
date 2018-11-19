@@ -1,0 +1,13 @@
+Calculate pLine as upp(pLine)
+Calculate pLine as trim(pLine)     ;; spaces
+
+Calculate pLine as trim(pLine,kTrue,kTrue,kLf)     ;; line feeds
+Calculate pLine as trim(pLine,kTrue,kTrue,kCr)     ;; carriage Returnｓ
+;  repeat for CR/LF and LF/CR combinations
+Calculate pLine as trim(pLine,kTrue,kTrue,kLf)     ;; line feeds
+Calculate pLine as trim(pLine,kTrue,kTrue,kCr)     ;; carriage Returnｓ
+
+Calculate pLine as trim(pLine)     ;; more spaces
+Calculate pLine as replaceall(pLine,'  ',' ')     ;; double spaces to single spaces
+
+Quit method pLine

@@ -1,0 +1,13 @@
+Do $cinst.$ImmediateSession(pobjSession,pobjStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(pobjSession,pobjStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Do pobjSession.$transactionmode.$assign(kSessionTranManual) Returns lbOK
+If lbOK
+	Do $cinst.$executesqldirect(con('begin',pick(pcName<>'','',' '),pcName)) Returns lbOK
+End If
+
+Quit method lbOK

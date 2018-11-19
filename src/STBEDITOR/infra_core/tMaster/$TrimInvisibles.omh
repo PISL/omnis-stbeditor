@@ -1,0 +1,15 @@
+Calculate lnLength as len(pString)
+If lnLength>0
+	Calculate lbTrimmed as kFalse
+	Calculate lnPos as lnLength+1
+	Repeat
+		Calculate lnPos as lnPos-1
+		If unicode(pString,lnPos)>0
+			;  valid character
+			Calculate lbTrimmed as kTrue
+		End If
+	Until lbTrimmed|lnPos=1
+	
+	Calculate lcString as mid(pString,1,lnPos)
+End If
+Quit method lcString

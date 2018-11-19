@@ -1,0 +1,13 @@
+Switch inDiffType
+	;  all key columns will be used for data differences, selected key columns for fetching new records only
+	Case 0     ;; NEW
+		Do ilComparisonCols.$search(1)
+		Calculate icComparisonCols as toStrings.$ListToString(ilComparisonCols,'colName',',',#NULL,kTrue)
+		
+	Default
+		Do ilKeyCols.$search(1)
+		Calculate icKeyCols as toStrings.$ListToString(ilKeyCols,'colName',',',#NULL,kTrue)
+		
+End Switch
+
+Do $cinst.$behaviour()

@@ -1,0 +1,9 @@
+If ccOutServer<>''
+	Calculate ibInitialised as kTrue
+End If
+If clFromCache.$linecount=0
+	Calculate clFromCache as ''
+	Do clFromCache.$cols.$add('code',kCharacter,kSimplechar,15)
+	Do clFromCache.$cols.$add('attributes',kRow)
+	Do clFromCache.$cols.$add('GO_SEQ',kInteger,k32bitint)
+End If

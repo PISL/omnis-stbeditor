@@ -1,0 +1,40 @@
+;  Calculate lcExpressionBegin as '^^'
+;  Calculate lcExpressionEnd as '~~'
+Calculate lcExpressionBegin as '[%'
+Calculate lcExpressionEnd as '%]'
+
+Calculate lcNewContent as ''
+Calculate lcTemp as pSource
+Calculate lnPosStart as pos(lcExpressionBegin,lcTemp)
+If lnPosStart>0
+	While lnPosStart
+		Calculate lcBefore as mid(lcTemp,1,lnPosStart-1)
+		Calculate lcTemp as mid(lcTemp,lnPosStart+2,kFetchAll)
+		Calculate lnPosEnd as pos(lcExpressionEnd,lcTemp)
+		;  Calculate fMemDocs.MWFIELD as upp(mid(lcTemp,1,lnPosEnd-1))
+		Calculate lcCalculation as mid(lcTemp,1,lnPosEnd-1)     ;; if we convert to upper case, table prefixes get converted and Omnis cannot resolve
+		
+		If len(lcNewContent)
+			If len(lcBefore)
+				Calculate lcNewContent as con(lcNewContent,lcBefore,eval(lcCalculation))
+			Else
+				Calculate lcNewContent as con(lcNewContent,eval(lcCalculation))
+			End If
+		Else
+			If len(lcBefore)
+				Calculate lcNewContent as con(lcBefore,eval(lcCalculation))
+			Else     ;; fMemCurrUser._CurrUserTeamPhone
+				Calculate lcNewContent as eval(lcCalculation)
+			End If
+		End If
+		Calculate lcTemp as mid(lcTemp,lnPosEnd+2,kFetchAll)
+		Calculate lnPosStart as pos(lcExpressionBegin,lcTemp)
+	End While
+	If lcTemp<>''
+		Calculate lcNewContent as con(lcNewContent,lcTemp)
+	End If
+Else
+	Calculate lcNewContent as pSource
+End If
+
+Quit method lcNewContent

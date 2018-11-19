@@ -1,0 +1,138 @@
+{
+	"classtype": "kTask",
+	"internalversion": 17,
+	"superclass": "tkSuper",
+	"tvardefs": [
+		{
+			"name": "tcLicence",
+			"order": 10,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 10
+		},
+		{
+			"name": "tConstants",
+			"order": 6,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "tContext",
+			"order": 9,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "tlDatabases",
+			"order": 8,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "toSTB_cols",
+			"order": 15,
+			"type": "kObject",
+			"subtype": ".StringTable.StringTable",
+			"sublen": 0
+		},
+		{
+			"name": "toSTB_gui",
+			"order": 14,
+			"type": "kObject",
+			"subtype": ".StringTable.StringTable",
+			"sublen": 0
+		},
+		{
+			"name": "toSTB_menus",
+			"order": 13,
+			"type": "kObject",
+			"subtype": ".StringTable.StringTable",
+			"sublen": 0
+		},
+		{
+			"name": "trCurrUser",
+			"order": 7,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "trEnvironment",
+			"order": 18,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "tSession",
+			"order": 2,
+			"type": "kObject",
+			"subtype": ".OMSQLDAM.OMSQLSESS",
+			"sublen": 0
+		}
+	],
+	"cvardefs": [
+		{
+			"name": "ccDatabase",
+			"order": 1,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100
+		},
+		{
+			"name": "cnPort",
+			"order": 2,
+			"type": "kInteger",
+			"subtype": "k32bitint",
+			"sublen": 0
+		}
+	],
+	"ivardefs": [
+		{
+			"name": "ibLibraryHasBeenUpdated",
+			"order": 17,
+			"type": "kBoolean",
+			"subtype": 0,
+			"sublen": 0
+		},
+		{
+			"name": "icVerbalReportingVoice",
+			"order": 14,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 30
+		},
+		{
+			"name": "ilSysPrefs",
+			"order": 3,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "oSTBerrors",
+			"order": 16,
+			"type": "kObject",
+			"subtype": "oErrorsSTB",
+			"sublen": 0
+		}
+	],
+	"properties": {
+		"collectperformancedata": false,
+		"componenticon": 0,
+		"componenttype": "kCompStoreHidden",
+		"createdate": "2017-05-03 12:02:18",
+		"desc": "",
+		"editor": "",
+		"editordata": "",
+		"external": false,
+		"issupercomponent": false,
+		"moddate": "2018-11-19 15:48:34",
+		"showascheckedout": false,
+		"userinfo": "",
+		"version": "2"
+	}
+}

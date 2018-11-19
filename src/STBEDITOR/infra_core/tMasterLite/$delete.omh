@@ -1,0 +1,20 @@
+;  overloaded to ignore tlDatabases.DAM='WebService'
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Begin statement
+Sta: {delete from [$cinst.$servertablenames()]}
+Sta: {[$cinst.$wherenames()]}
+End statement
+Do $cinst.$executesql() Returns lbOK
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lbOK

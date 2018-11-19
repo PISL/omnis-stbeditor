@@ -1,0 +1,167 @@
+;  pbExpressDaysAsPersonDays
+;  As a default, a person is expected to work 1575 hours per year, not more.
+;  - If you divide this by 12 (months), the resulting average monthly working hours are 131,25.
+;  at 8 hrs / day = 16.40625 days per month
+;  at 7.5 hours / day = 17.5 days per month
+Do $cinst.$HoursInWorkDay() Returns lcnHoursPerDay
+Do $cinst.$PersonMonthDaysInMonth() Returns lcnWorkDaysInMonth
+
+Switch pUnitIn
+	Case kSecond
+		Calculate lnDays as int(pUnits/60/60/24)
+		Calculate lnHours as int((pUnits-(lnDays*60*60*24))/60/60)     ;; int(pUnits/60/60)
+		Calculate lnMinutes as int((pUnits-(lnDays*60*60*24)-(lnHours*60*60))/60)
+		Calculate lnSeconds as (pUnits-(lnDays*60*60*24)-(lnHours*60*60)-(lnMinutes*60))
+		
+	Case kMinute
+		If pbExpressDaysAsPersonDays
+			Calculate lnDays as int(pUnits/60/lcnHoursPerDay)
+			Calculate lnHours as int((pUnits-(lnDays*60*lcnHoursPerDay))/60)     ;; int(pUnits/60)
+			Calculate lnMinutes as int((pUnits-(lnDays*60*lcnHoursPerDay)-(lnHours*60)))
+			Calculate lnSeconds as (pUnits-(lnDays*60*lcnHoursPerDay)-(lnHours*60)-(lnMinutes))*60     ;; this will round
+			If lnDays>(lcnWorkDaysInMonth*3)     ;; anything more than 3 months uses Pm
+				Calculate lnMonths as (lnDays/lcnWorkDaysInMonth)-0.4999999     ;; floor()
+				Calculate lnDays as lnDays-(lnMonths*lcnWorkDaysInMonth)
+			End If
+		Else
+			Calculate lnDays as int(pUnits/60/24)
+			Calculate lnHours as int((pUnits-(lnDays*60*24))/60)     ;; int(pUnits/60)
+			Calculate lnMinutes as int((pUnits-(lnDays*60*24)-(lnHours*60)))
+			Calculate lnSeconds as (pUnits-(lnDays*60*24)-(lnHours*60)-(lnMinutes))*60     ;; this will round
+		End If
+		
+	Case kHour
+		If pbExpressDaysAsPersonDays
+			Calculate lnDays as int(pUnits/lcnHoursPerDay)
+			Calculate lnHours as int((pUnits-(lnDays*lcnHoursPerDay)))     ;; int(pUnits)
+			Calculate lnMinutes as int((pUnits-(lnDays*lcnHoursPerDay)-lnHours)*60)
+			Calculate lnSeconds as (pUnits-(lnDays*lcnHoursPerDay)-lnHours-(lnMinutes/60))*60*60     ;; this will round
+		Else
+			Calculate lnDays as int(pUnits/24)
+			Calculate lnHours as int((pUnits-(lnDays*24)))     ;; int(pUnits)
+			Calculate lnMinutes as int((pUnits-(lnDays*24)-lnHours)*60)
+			Calculate lnSeconds as (pUnits-(lnDays*24)-lnHours-(lnMinutes/60))*60*60     ;; this will round
+		End If
+		
+	Case kDay
+		If pbExpressDaysAsPersonDays
+			Breakpoint {you cannot express a unit greater than an hour in person days}
+		End If
+		If pLargerUnitsOver>0&pUnits>pLargerUnitsOver
+			Calculate lnYears as rnd((pUnits/365.25)-0.4999999,0)
+			Calculate lnMonths as rnd(((pUnits-(lnYears*365.25))/30)-0.499999,0)
+			If pOmitWeeksWithLargerUnits
+				Calculate lnWeeks as 0     ;; this will include all weeks as days in next statement
+			Else
+				Calculate lnWeeks as rnd(((pUnits-(lnYears*365.25)-(lnMonths*30))/7)-0.499999,0)
+			End If
+			Calculate lnDays as pUnits-(lnYears*365.25)-(lnMonths*30)-(lnWeeks*7)
+		Else
+			Calculate lnDays as int(pUnits)
+			Calculate lnHours as int((pUnits-lnDays)*24)
+			Calculate lnMinutes as int((pUnits-lnDays-(lnHours/24))*60*24)
+			Calculate lnSeconds as (pUnits-lnDays-(lnHours/24)-(lnMinutes/60/24))*60*60*24     ;; this will round
+		End If
+End Switch
+
+If lnYears>0
+	If lnYears>1
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnYears,pick(pCompleteWords,'y',' years'))
+	Else
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnYears,pick(pCompleteWords,'y',' year'))
+	End If
+	Calculate lnCountUnits as lnCountUnits+1
+End If
+If pLargerUnitsCutoff>0&lnCountUnits>=pLargerUnitsCutoff
+	Quit method lcReturn
+End If
+
+If lnMonths>0
+	If pbExpressDaysAsPersonDays
+		If lnMonths>1
+			Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnMonths,pick(pCompleteWords,'Pm','person months'))
+		Else
+			Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnMonths,pick(pCompleteWords,'Pm','person month'))
+		End If
+	Else
+		If lnMonths>1
+			Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnMonths,pick(pCompleteWords,'m',' months'))
+		Else
+			Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnMonths,pick(pCompleteWords,'m',' month'))
+		End If
+	End If
+	Calculate lnCountUnits as lnCountUnits+1
+End If
+If pLargerUnitsCutoff>0&lnCountUnits>=pLargerUnitsCutoff
+	Quit method lcReturn
+End If
+
+If lnWeeks>0
+	If lnWeeks>1
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnWeeks,pick(pCompleteWords,'w',' weeks'))
+	Else
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnWeeks,pick(pCompleteWords,'w',' week'))
+	End If
+	Calculate lnCountUnits as lnCountUnits+1
+End If
+If pLargerUnitsCutoff>0&lnCountUnits>=pLargerUnitsCutoff
+	Quit method lcReturn
+End If
+
+If lnDays>0
+	If pbExpressDaysAsPersonDays
+		If lnDays>1
+			Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnDays,pick(pCompleteWords,'Pd','person days'))
+		Else
+			Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnDays,pick(pCompleteWords,'Pd','person day'))
+		End If
+	Else
+		If lnDays>1
+			Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnDays,pick(pCompleteWords,'d',' days'))
+		Else
+			Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnDays,pick(pCompleteWords,'d',' day'))
+		End If
+	End If
+	Calculate lnCountUnits as lnCountUnits+1
+End If
+If pLargerUnitsCutoff>0&lnCountUnits>=pLargerUnitsCutoff
+	Quit method lcReturn
+End If
+
+If lnHours>0
+	If lnHours>1
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnHours,pick(pCompleteWords,'h',' hours'))
+	Else
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnHours,pick(pCompleteWords,'h',' hour'))
+	End If
+	Calculate lnCountUnits as lnCountUnits+1
+End If
+If pLargerUnitsCutoff>0&lnCountUnits>=pLargerUnitsCutoff
+	Quit method lcReturn
+End If
+
+If lnMinutes>0
+	If lnMinutes>1
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnMinutes,pick(pCompleteWords,'m',' minutes'))
+	Else
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnMinutes,pick(pCompleteWords,'m',' minute'))
+	End If
+	Calculate lnCountUnits as lnCountUnits+1
+End If
+If pLargerUnitsCutoff>0&lnCountUnits>=pLargerUnitsCutoff
+	Quit method lcReturn
+End If
+
+If lnSeconds>0
+	If lnSeconds>1
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnSeconds,pick(pCompleteWords,'s',' seconds'))
+	Else
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnSeconds,pick(pCompleteWords,'s',' second'))
+	End If
+	Calculate lnCountUnits as lnCountUnits+1
+End If
+If pLargerUnitsCutoff>0&lnCountUnits>=pLargerUnitsCutoff
+	Quit method lcReturn
+End If
+
+Quit method lcReturn

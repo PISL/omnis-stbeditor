@@ -1,0 +1,15 @@
+If icUSERNAME<>''<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'Name missing')
+End If
+If icUSERPASSWORD<>''
+	;  provided
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'Password missing')
+End If
+If lcMessage<>''
+	OK message  {Cannot proceed due to: [lcMessage]}
+	Quit method kFalse
+End If
+Quit method kTrue

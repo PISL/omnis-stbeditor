@@ -1,0 +1,10 @@
+;  2016-12-08 GRS added this to avoid the JSON duplicate name errors in TRACKER client server
+Do $cinst.$cols.$findname('DisplayName') Returns lrefCol
+If lrefCol
+	Quit method
+End If
+
+If tlDatabases.DAM='WebService'
+	Do ilRESTextensions.$add('am',$cmethod().$name)
+End If
+Do $cinst.$cols.$add('DisplayName',kCharacter,kSimplechar,100)

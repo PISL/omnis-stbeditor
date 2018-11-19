@@ -1,0 +1,18 @@
+Do prData.$cols.$findname('address') Returns liColRef
+If liColRef
+	Calculate lcValue as prData.address
+Else
+	Do prData.$cols.$findname('senderAddress') Returns liColRef
+	If liColRef
+		Calculate lcValue as prData.senderAddress
+	Else
+		Do prData.$cols.$findname('fromAddress') Returns liColRef
+		If liColRef
+			Calculate lcValue as prData.fromAddress
+		Else
+			Calculate lcValue as pcDefault
+		End If
+	End If
+End If
+
+Quit method lcValue

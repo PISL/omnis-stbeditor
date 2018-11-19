@@ -1,0 +1,70 @@
+;  call oRest.$master_get
+Do pParamsRow.$cols.$add('sid',kCharacter,kSimplechar,100)
+Calculate pParamsRow.sid as tConstants.RESTsessionID
+
+;  check the params: if datatype = kList, clear it before fetching
+If pParamsRow.C4=kList
+	If pResultField.$linecount     ;; without this, if pResultfield is empty, we get oConstants instantiating 3 times !?!?
+		Do pResultField.$clear()
+	End If
+End If
+
+Do method $prepareToSend (pParamsRow) Returns lrParams
+
+;  Calculate lcURI as con(tConstants.REST_URI,'master/',lrParams.C1)
+Calculate lcURI as con(tConstants.REST_URI,'master?pRequest=',lrParams.C1)
+
+Do ioRest.$init(lcURI,kOWEBhttpMethodGet,ilHeaders,'')     ;; OJSON.$formatjson()
+
+Calculate ldStartTime as #D
+Do ioRest.$run() Returns lbStatus
+Calculate inServiceCallTime as ddiff(kCentiSecond,ldStartTime,#D)*10     ;; milliseconds
+
+If lbStatus
+	Do ioRest.$returnVal(irResponseHeaders,irResponse,irJSON) Returns icJSON
+	
+	If irResponse.httpStatusCode<>200
+		;  do some error reporting here
+		Calculate pErrorField.ErrorCode as irResponse.httpStatusCode
+		Calculate pErrorField.NativeErrorCode as irResponse.httpStatusCode
+		Calculate pErrorField.NativeErrorText as irResponseHeaders.omniserror
+		Calculate lbOK as kFalse     ;; programmer is expected to pickup oWebClient.irResponse to inform user of result
+	Else
+		Calculate lbinResponse as binfromhex(irJSON.data)     ;; convert the return to binary and put it into a row variable
+		Do $cinst.$extractData(lbinResponse) Returns lrResult     ;; decrypt and return the original server data row
+		Calculate inServerTime as lrResult.elapsed
+		
+		Switch pParamsRow.C4
+			Case kRow
+				If pParamsRow.C5=0     ;; into $cinst
+					Do pResultField.$assignrow(lrResult.C1)
+				Else
+					Calculate pResultField as lrResult.C1
+				End If
+			Case kList
+				If pParamsRow.C5=0     ;; into $cinst
+					Do pResultField.$merge(lrResult.C1)
+				Else
+					Calculate pResultField as lrResult.C1
+				End If
+			Case kInteger
+				Calculate pResultField as lrResult.C1
+			Case kNumber
+				Calculate pResultField as lrResult.C1
+			Case kDate
+				Calculate pResultField as lrResult.C1
+			Case kBoolean
+				Calculate pResultField as lrResult.C1
+			Case kCharacter
+				Calculate pResultField as lrResult.C1
+			Default
+				Breakpoint
+		End Switch
+		;  Calculate pErrorField as lrResult.C2     ;; irErrorSQL
+		Do pErrorField.$assignrow(lrResult.C2)
+		
+		Calculate lbOK as kTrue
+	End If
+End If
+
+Quit method lbOK

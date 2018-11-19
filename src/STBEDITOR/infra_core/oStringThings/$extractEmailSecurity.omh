@@ -1,0 +1,49 @@
+Calculate lcVarName as ''
+
+Do prData.$cols.$findname('secure') Returns liColRef
+If liColRef
+	If isnumber(prData.secure)
+		Calculate lcValue as prData.secure
+		Calculate lbReturnNumber as kTrue
+	Else
+		Calculate lcVarName as con('kOWEBsmtpSecure',prData.secure)     ;; e.g. kOWEBsmtpSecureNotSecure
+	End If
+	
+Else
+	Do prData.$cols.$findname('smtpSecure') Returns liColRef
+	If liColRef
+		If isnumber(prData.smtpSecure)
+			Calculate lcValue as prData.smtpSecure
+			Calculate lbReturnNumber as kTrue
+		Else
+			Calculate lcVarName as con('kOWEBsmtpSecure',prData.smtpSecure)
+		End If
+		
+	Else
+		Do prData.$cols.$findname('secureValue') Returns liColRef
+		If liColRef
+			If isnumber(prData.smtpSecure)
+				Calculate lcValue as prData.secureValue
+				Calculate lbReturnNumber as kTrue
+			Else
+				Calculate lcVarName as con('kOWEBsmtpSecure',prData.secureValue)
+			End If
+			
+		Else
+			Calculate lcValue as pcDefault
+		End If
+	End If
+End If
+
+If lcVarName<>''
+	Test for valid calculation {eval(lcVarName)}
+	If flag true
+		Calculate lcValue as eval(lcVarName)
+	Else
+		Breakpoint
+		;  Calculate icErrorMessage as con('Error invalid secureValue ',': ',kDq,lcVarName,kDq)
+		Quit method #NULL     ;; 0 is a valid value to return from this method
+	End If
+End If
+
+Quit method lcValue

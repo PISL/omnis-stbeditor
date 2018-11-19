@@ -1,0 +1,8 @@
+;  not sure if this will be of any practical use
+Calculate lXML.$parservalidates as kFalse
+Do lXML.$loadbinary(pRawXML,icError) Returns lbOK
+If lbOK
+	Do lXML.$savelist(pListXML,lErrorText,kTrue) Returns lbOK
+End If
+
+Quit method lbOK

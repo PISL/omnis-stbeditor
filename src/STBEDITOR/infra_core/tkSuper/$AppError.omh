@@ -1,0 +1,11 @@
+Do $cinst.$ProcedureStack() Returns lcDiagnosticInfo
+If trCurrUser.$colcount>0
+	Calculate lcUserName as con(' - ',trCurrUser.USR_NAME)
+Else
+	Calculate lcUserName as con(' - console')
+End If
+If pLogThis
+	Do method $LogError ('APP_ERROR',pSubjectSuffix,pMessage)
+End If
+Do $SendEmail(tConstants.EmailAddressWebmaster,con($clib().$name,' Web App Error',pick(pSubjectSuffix<>'','',': '),pSubjectSuffix,lcUserName),con(pMessage,kCr,kCr,lcDiagnosticInfo),#NULL,#NULL,#NULL,#NULL)
+;  Do $SendEmailBackground(tConstants.EmailAddressWebmaster,con($clib().$name,' Web App Error',pick(pSubjectSuffix<>'','',': '),pSubjectSuffix,lcUserName),con(pMessage,kCr,kCr,lcDiagnosticInfo),#NULL,#NULL,#NULL,#NULL,kTrue)

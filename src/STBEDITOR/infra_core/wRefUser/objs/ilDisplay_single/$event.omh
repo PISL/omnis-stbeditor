@@ -1,0 +1,14 @@
+On evClick     ;; Event Parameters - pRow ( Itemreference )
+	If ilData.$linecount=0
+		Do ilData.$add()
+		Calculate ilData.$line as ilData.$linecount
+	End If
+	Calculate ilData.RFL_CLASS as ilPreferences.RFO_VALUE     ;; added RSM 31 OCT 14
+	Calculate ilData.RFL_VALUE as ilDisplay.code
+	Calculate ilData.RFL_DESC as ilDisplay.desc
+	
+	If ilPreferences.RFO_VALUE='POPUP_ALERT_SND'
+		Do method $SoundSelected (ilDisplay)
+	End If
+	
+	Do $cinst.$redraw()

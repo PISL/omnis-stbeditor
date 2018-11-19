@@ -1,0 +1,8 @@
+Do ilData.$sortMultipleCols($crecipient().$name,kTrue) Returns lrData
+If lrData.position>0
+	If lrData.position=99
+		Calculate $crecipient.$text as $crecipient.$userinfo
+	Else
+		Calculate $crecipient.$text as con($crecipient.$userinfo,' ',pick(lrData.direction,'^','v'),' ',lrData.position)
+	End If
+End If

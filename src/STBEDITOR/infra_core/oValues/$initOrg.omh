@@ -1,0 +1,90 @@
+Do irErrorSQL.$clear()
+Calculate lList as ilBaseOrg
+Calculate llFixed as ilBaseOrg
+If not(pbExcludeFixed)
+	Do method FixedValues (pcREF_CLASS,llFixed)
+End If
+
+If $ctask.tlDatabases.DAM='WebService'
+	;  utilise a cache of reference values
+	
+	;  Have we searched on this class already?
+	;  Because of $initInherited method there will many instances of records being fetched from Org, Local and Global
+	;  and there being records only in one of those tables.  This check prevents repeated fetched for nothing.
+	If pcREF_VALUE<>''
+		If pos(con(',',pcREF_CLASS,'/',pcREF_VALUE,','),ccClassesO)
+			Calculate lbAlreadyFetched as kTrue
+		End If
+	Else If pos(con(',',pcREF_CLASS,','),ccClassesO)
+		Calculate lbAlreadyFetched as kTrue
+	End If
+	
+	If lbAlreadyFetched
+		If pcREF_VALUE<>''
+			Do clOrganisation.$search($ref.RFO_CLASS=pcREF_CLASS&$ref.RFO_VALUE=pcREF_VALUE,1,0,1,0) Returns lnFirstSelectedLine
+		Else
+			Do clOrganisation.$search($ref.RFO_CLASS=pcREF_CLASS,1,0,1,0) Returns lnFirstSelectedLine
+		End If
+		If lnFirstSelectedLine     ;; totc(clOrganisation,#LSEL)>0
+			Do lList.$merge(clOrganisation,kFalse,kTrue)
+			Do clOrganisation.$search(0) Returns lbFound     ;; clear any selected lines
+			Calculate lbFoundInCache as kTrue
+		End If
+	End If
+End If
+
+If lList.$linecount=0&not(lbAlreadyFetched)
+	;  only fetch from db if there is nothing in local list
+	If llFixed.$linecount>0
+		Do lList.$FetchClass(pcREF_CLASS,pcREF_VALUE,kTrue,kTrue,pnGO_SEQ)     ;; if there are fixed values then there is the chance that db values will override
+	Else
+		Do lList.$FetchClass(pcREF_CLASS,pcREF_VALUE,pbIncludeNonActive,kTrue,pnGO_SEQ)     ;; class, value, incl.non.active, append, go_seq
+	End If
+	If lList.irErrorSQL.NativeErrorText<>''
+		Calculate irErrorSQL as lList.irErrorSQL
+		Quit method
+	End If
+End If
+
+If $ctask.tlDatabases.DAM='WebService'
+	If not(lbFoundInCache)
+		;  build up a cache of reference values
+		Do clOrganisation.$merge(lList)
+		
+		If not(lbAlreadyFetched)
+			;  Build up a cache of requested CLASSES so repeated calls to a class that fetches nothing is not repeated.
+			If pcREF_VALUE<>''
+				Calculate ccClassesO as con(ccClassesO,pcREF_CLASS,'/',pcREF_VALUE,',')
+			Else
+				Calculate ccClassesO as con(ccClassesO,pcREF_CLASS,',')
+			End If
+		End If
+	End If
+End If
+
+If llFixed.$linecount>0
+	Calculate llFixed.$line as 0
+	;  While $Loop(llFixed)     ;; Studio 8.0.1 bug - losing scope with task
+	For llFixed.$line from 1 to llFixed.$linecount step 1
+		Do lList.$search($ref.RFO_VALUE=llFixed.RFO_VALUE,1,0,0,0) Returns lbFound
+		If lbFound
+			If not(lList.RFO_ACTIVE)
+				;  then user has disabled this entry
+				Calculate lList.[lList.$line].$selected as kTrue
+				Calculate llFixed.[llFixed.$line].$selected as kTrue
+			Else
+				;  don't duplicate rows
+				Calculate lList.[lList.$line].$selected as kTrue     ;; fixed entry takes precedence
+			End If
+		End If
+		;  End While
+	End For
+	
+	Do llFixed.$remove(kListDeleteSelected)
+	Do lList.$remove(kListDeleteSelected)
+	
+	Do lList.$merge(llFixed)
+	Do lList.$sort($ref.RFO_ORDER,0,$ref.RFO_VALUE,0)
+End If
+
+Quit method lList

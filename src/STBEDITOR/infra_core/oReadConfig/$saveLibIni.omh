@@ -1,0 +1,36 @@
+;  Breakpoint
+
+Do lrIni.$SetSession(ioSessionIni,ioStatementIni)
+
+Do ilIniRaw.$search(0)     ;; deselect all lines
+
+Calculate plNewValues.$line as 0
+While $Loop(plNewValues)
+	Calculate lrTemp as plNewValues
+	If len(lrTemp.LIB_KEY)>0
+		Do lrIni.$assignrow(lrTemp,kTrue)
+		If lrTemp.LIB_SEQ>0
+			Do ilIniRaw.$search($ref.LIB_SEQ=plNewValues.LIB_SEQ,1,0,0,0)
+			Calculate ilIniRaw.$selected as kTrue
+			Calculate lrTemp as ilIniRaw
+			If toStrings.$HasRowBeenModified(lrTemp,lrIni)
+				Do lrIni.$update()
+			End If
+		Else
+			Do lrIni.$insert() Returns lbOK
+		End If
+	End If
+End While
+
+Do ilIniRaw.$remove(kListDeleteSelected)
+If ilIniRaw.$linecount<>0
+	;  delete the remaining lines
+	Calculate ilIniRaw.$line as 0
+	While $Loop(ilIniRaw)
+		Calculate lrTemp as ilIniRaw
+		Do lrIni.$assignrow(lrTemp)
+		Do lrIni.$delete() Returns lbOK
+	End While
+End If
+
+Do $cinst.$fetchLibIni     ;; now get all the new values

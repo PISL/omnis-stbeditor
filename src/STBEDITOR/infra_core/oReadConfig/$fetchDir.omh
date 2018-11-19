@@ -1,0 +1,10 @@
+Do irDefDir.$setSession(ioSessionIni,ioStatementIni)
+Do irDefDir.$fetch_pk(pMethod) Returns lbOK
+
+If not(lbOK)&left(irDefDir.irErrorSQL.NativeErrorText,13)='no such table'
+	;  check error and create table if necessary
+	Do irDefDir.$createServerTable()
+	
+End If
+
+Quit method irDefDir.DD_PATH

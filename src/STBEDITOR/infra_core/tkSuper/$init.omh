@@ -1,0 +1,67 @@
+;  MDM.Startup_Task.$construct
+
+Calculate ibStartingUp as kTrue
+Calculate lcHostDB as sys(10)
+For lnPos from len(lcHostDB) to 1 step -1
+	If mid(lcHostDB,lnPos,1)=sys(9)
+		Break to end of loop
+	End If
+End For
+Do tConstants.$cols.$add('HostDirectory',kCharacter,kSimplechar,200)
+Do tConstants.$cols.$add('HostDB',kCharacter,kSimplechar,100)
+Calculate tConstants.HostDirectory as mid(lcHostDB,1,lnPos)
+;  Calculate tConstants.HostDB as con(tConstants.HostDirectory,'MDM_PAGES.df1')
+Calculate tConstants.HostDB as irConfigFile.dbhost
+
+Do $classes.$findname('wMessage_e') Returns irefMessageWinExists
+
+;  open a fresh progress log window
+If irefProgressLog
+	Do irefProgressLog.$close()
+End If
+;  Do $windows.wProgressLog.$openonce() Returns irefProgressLog
+;  Do irefProgressLog.$AddEntry(con('begin ',$cclass().$name,' ',$clib().$name),'push')
+Send to trace log {[con('begin startup: ',$cclass().$name,' ',$clib().$name)]}
+
+Do $setServerPort(lnServerPort) Returns lbOK     ;; set the port here in tkSuper, as each copy of Omnis must have its own port to avoid conflicts, even if it doesn't use it
+If lbOK
+	;  Do irefProgressLog.$AddEntry(con('Server port set to ',$prefs.$serverport))
+	Send to trace log {[con('Server port set to ',$prefs.$serverport)]}
+Else
+	;  Do irefProgressLog.$AddEntry(con('FAILED to set server port to ',lnServerPort,' , check other copies of Omnis'))
+	Send to trace log {[con('FAILED to set server port to ',lnServerPort,' , check other copies of Omnis')]}
+End If
+
+Do tConstants.$cols.$add('Started',kDate,kDatetime)
+Calculate tConstants.Started as #D
+
+Do tConstants.$cols.$add('DefaultLanguageCode',kCharacter,kSimplechar,3)
+Calculate tConstants.DefaultLanguageCode as 'en'
+Do tConstants.$cols.$add('DefaultLanguage',kCharacter,kSimplechar,3)
+Calculate tConstants.DefaultLanguage as 'English'
+
+Do tConstants.$cols.$add('debugMode',kBoolean)
+Calculate tConstants.debugMode as kFalse
+
+;  2015-08-25 GRS added as part of the updater project
+Do tConstants.$cols.$add('Version',kCharacter,kSimplechar,12)
+Do code method cVersion/$getVersion Returns tConstants.Version
+
+Do tConstants.$cols.$add('LogTaskStats',kBoolean)
+Do $cinst.$GetPref('LogTaskStats') Returns lcPref
+Calculate tConstants.LogTaskStats as eval(lcPref)
+
+;  Do method $OpenStringTable Returns lbOK     ;; (path,file) - default params for both
+;  If lbOK&irefProgressLog
+;  Send to trace log {string table opened}
+;  End If
+
+Load error handler $RunTimeError
+
+Do $BuildLinks Returns tlLinks     ;; Retrieves all the relational links from table classes $Links methods into the task list variable tlLinks
+Send to trace log (Diagnostic message) {building $links returned [tlLinks.$linecount] lines}
+
+Do ilConnectionAttempts.$cols.$add('name',kCharacter,kSimplechar,50)
+Do ilConnectionAttempts.$cols.$add('when',kDate,kDatetime)
+
+Do tConstants.$cols.$add('companyLogo',kBinary)     ;; to be populated in a sub class if applicable

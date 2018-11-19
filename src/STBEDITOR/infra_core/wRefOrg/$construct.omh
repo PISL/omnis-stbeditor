@@ -1,0 +1,15 @@
+Do toValues.$initOrg() Returns ilData
+If toValues.irErrorSQL.NativeErrorText<>''
+	OK message Database error {[toValues.irErrorSQL.NativeErrorText]}
+	Quit method
+Else
+	Do $DefineList(ilOrganisations,'tentGroupOrganisations')
+	Do ilOrganisations.$fetch_all()
+	If ilOrganisations.$linecount>0
+		Calculate ilOrganisations.$line as 1
+	End If
+	
+	Calculate icColPrefix as 'RFO_'
+	
+	Do inherited
+End If

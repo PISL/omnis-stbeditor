@@ -1,0 +1,4 @@
+Calculate lnPrimed as pClientId*cnPrimeNo
+Do $cinst.$CharShift(lnPrimed,2) Returns lcMashed
+;  Do method CharShift (lnPrimed,2) Returns lcMashed
+Quit method lcMashed

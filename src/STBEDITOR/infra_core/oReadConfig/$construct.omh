@@ -1,0 +1,22 @@
+;  Purpose: ReadWrite a SQLite db file for initialisation values (using .libini as the db file extension)
+
+;  this class should only be instantiated at startup in toConfig
+;  check and warn the developer
+If $cinst().$name<>'toConfig'
+	Breakpoint {DO NOT INSTANTIATE THIS OBJECT A SECOND TIME, USE toConfig}
+	Do $cinst.$close()
+End If
+
+;  init variables
+Calculate icIniText as ""
+Calculate icErrorText as ""
+Do ilIniTextLinesList.$define(lcLineText)
+Do ilIniList.$define(SectionName,KEY,VALUE)
+
+Do $cinst.$openDB()
+
+;  Do method fetchAllValues
+
+Do $DefineList(irDefDir,'tDefDirectory')
+
+Quit method

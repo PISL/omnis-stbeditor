@@ -1,0 +1,5 @@
+Do plList.$search($ref.[pSearchColumn]=pSearchValue,1,0,0,0) Returns lbFound     ;; Fees
+If lbFound
+	Calculate lcReturn as plList.[pReturnColumn]
+	Quit method lcReturn
+End If

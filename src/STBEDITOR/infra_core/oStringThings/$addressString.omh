@@ -1,0 +1,32 @@
+;  pass in a row variable that has column names that end in BUILDING, STREET, LOCALITY, TOWN, STATE, POSTCODE and COUNTRY
+;  and it will return a string with the address information     ;; in either single line or multiline format
+
+If pbMultiline
+	Calculate lcDelimiter as kCr
+Else
+	Calculate lcDelimiter as ', '
+End If
+
+If prAddress.[pcColPrefix]BUILDING<>''
+	Calculate lcString as con(lcString,pick(lcString<>'','',lcDelimiter),prAddress.[pcColPrefix]BUILDING)
+End If
+If prAddress.[pcColPrefix]STREET<>''
+	Calculate lcString as con(lcString,pick(lcString<>'','',lcDelimiter),prAddress.[pcColPrefix]STREET)
+End If
+If prAddress.[pcColPrefix]LOCALITY<>''
+	Calculate lcString as con(lcString,pick(lcString<>'','',lcDelimiter),prAddress.[pcColPrefix]LOCALITY)
+End If
+If prAddress.[pcColPrefix]TOWN<>''
+	Calculate lcString as con(lcString,pick(lcString<>'','',lcDelimiter),prAddress.[pcColPrefix]TOWN)
+End If
+If prAddress.[pcColPrefix]STATE<>''
+	Calculate lcString as con(lcString,pick(lcString<>'','',lcDelimiter),prAddress.[pcColPrefix]STATE)
+End If
+If prAddress.[pcColPrefix]POSTCODE<>''
+	Calculate lcString as con(lcString,pick(lcString<>'','',lcDelimiter),prAddress.[pcColPrefix]POSTCODE)
+End If
+If prAddress.[pcColPrefix]COUNTRY<>''
+	Calculate lcString as con(lcString,pick(lcString<>'','',lcDelimiter),prAddress.[pcColPrefix]COUNTRY)
+End If
+
+Quit method lcString

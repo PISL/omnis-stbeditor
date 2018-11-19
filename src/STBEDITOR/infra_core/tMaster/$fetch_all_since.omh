@@ -1,0 +1,8 @@
+If pdTimestamp>dat('1 JAN 2005')
+	Calculate lcWhereClause as con("where ",icPrefix,"MWHEN >= '",pdTimestamp,"' ")
+	Do method $fetch_ (lcWhereClause)
+Else
+	;  there are no records in the auto backup file so we want ALL records...     ;; leave lcWhereClause empty
+	Calculate lcWhereClause as ' '     ;; trick validation check of $fetch_ method
+	Do method $fetch_all
+End If

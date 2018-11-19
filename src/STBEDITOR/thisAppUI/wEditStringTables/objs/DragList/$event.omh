@@ -1,0 +1,3 @@
+On evDoubleClick     ;; Event Parameters - pRow ( Itemreference )
+	Do ilGatherMultipleStringEntriesForDragDrop.$remove(pLineNumber)
+	Do $cobj.$redraw()

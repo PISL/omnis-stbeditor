@@ -1,0 +1,7 @@
+;  If not($cinst.$objs.tabpane.$objs.[pObjName].$createattachment(iMessage,lBodyPartId))
+;  Quit method 1
+;  End If
+;  If lBodyPartId
+;  Do pAttachmentList.$add(lBodyPartId)
+;  End If
+;  Quit method 0

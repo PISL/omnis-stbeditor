@@ -1,0 +1,54 @@
+Breakpoint {this code is WIP and untested}     ;; 2016-02-03
+Quit method
+
+Do irErrorSQL.$clear()
+Do $cinst.$statementobject.$prepare() Returns lbPrepareOk     ;; tStatementObj
+If lbPrepareOk
+	Do $cinst.$statementobject.$rpc() Returns lbExecuteOk
+	If lbExecuteOk
+		If pAltObject.$colcount>0
+			Do $cinst.$statementobject.$fetch(pAltObject,kFetchAll,pAppend)
+		Else
+			;  Breakpoint     ;; !!! on tBlogAccess.$FetchAccessForBlog this can generate an inconvenent entry in the log
+			Do $cinst.$statementobject.$fetch($cinst,kFetchAll,pAppend)
+		End If
+	Else
+		Do $cinst.$sql_error()
+		;  Breakpoint {[#S1]  [#S2]}
+		If pos(con(',',irErrorSQL.NativeErrorCode,','),con(',',pDoNotReportTheseErrors,','))>0
+			;  do not report error
+			Calculate lbExecuteOk as kTrue
+		Else If pos(con(',',irErrorSQL.ErrorCode,','),con(',',pDoNotReportTheseErrors,','))>0
+			;  do not report error
+			Calculate lbExecuteOk as kTrue
+		Else
+			Do method ReportError
+		End If
+	End If
+Else
+	Calculate lbExecuteOk as kFalse
+	Do $cinst.$sql_error
+	;  Breakpoint {[#S1]  [#S2]}
+	If pos(con(',',irErrorSQL.NativeErrorCode,','),con(',',pDoNotReportTheseErrors,','))>0
+		;  do not report error
+	Else If pos(con(',',irErrorSQL.ErrorCode,','),con(',',pDoNotReportTheseErrors,','))>0
+		;  do not report error
+	Else
+		If ibThisIsProductionServer
+			Do method ReportError
+		Else
+			Breakpoint {[irErrorSQL.ErrorText]:  [irErrorSQL.NativeErrorText]}
+		End If
+	End If
+End If
+
+Calculate inRowsAffected as $cinst.$statementobject.$rowsaffected
+Calculate inRowsFetched as $cinst.$statementobject.$rowsfetched
+If trTaskStats.STS_TYPE='F'|trTaskStats.STS_TYPE='J'     ;; (F)at or (J)s client
+	Do $cinst.$recordStats()     ;; do not bother recording the method/parameters
+Else
+	Calculate llStack as sys(192)
+	Do $cinst.$recordStats(llStack.2.method,OJSON.$listtoobjectarray(llStack.2.params,kUniTypeCharacter))
+End If
+
+Quit method lbExecuteOk

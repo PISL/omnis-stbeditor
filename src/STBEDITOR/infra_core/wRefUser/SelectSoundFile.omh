@@ -1,0 +1,12 @@
+Do FileOps.$filelist(kFileOpsIncludeFiles,icPathForSoundFiles,kFileOpsInfoName,'*.wav') Returns llSoundFiles
+
+Do ilDisplay.$clear()
+;  Open window instance wGenListSelect ($cinst,'$SoundSelected','',llSoundFiles,'name')
+Calculate llSoundFiles.$line as 0
+While $Loop(llSoundFiles)
+	;  Do ilData.$add(#NULL,'POPUP_SOUND',upp(llSoundFiles.name),llSoundFiles.name,0,1)
+	Do ilDisplay.$add(llSoundFiles.name,upp(llSoundFiles.name),0,1)
+End While
+
+Do $cinst.$behaviour()
+Do $cinst.$redraw()

@@ -1,0 +1,33 @@
+Calculate ilValidation.$line as 0
+While $Loop(ilValidation)
+	;  lookup object name
+	;  if using allstrings, we do not need a prefix
+	Do toStrings.$StringTableEntry(ilValidation.object,lcObject) Returns lbValid
+	If not(lbValid)
+		;  #########################
+		;  and once allstrings is ubiquitous, this section can be removed     ;; ###
+		Do toStrings.$StringTableEntry(con('',ilValidation.object),lcObject) Returns lbValid
+		If not(lbValid)     ;; look in messages
+			Do toStrings.$StringTableEntry(con('',ilValidation.object),lcObject) Returns lbValid
+		End If
+		If lbValid
+			;  lookup issue description
+			Do toStrings.$StringTableEntry(con('',ilValidation.issue),lcIssue) Returns lbValid
+			If not(lbValid)     ;; look in messages
+				Do toStrings.$StringTableEntry(con('',ilValidation.issue),lcIssue) Returns lbValid
+			End If
+		End If
+	Else
+		;  #########################
+		Do toStrings.$StringTableEntry(ilValidation.issue,lcIssue) Returns lbValid
+	End If
+	
+	If lbValid
+		Calculate lcText as con(lcText,lcObject,' ',lcIssue,pick(ilValidation.$line=ilValidation.$linecount,', ',''))
+	Else
+		Calculate lcText as con(lcText,ilValidation.default,pick(ilValidation.$line=ilValidation.$linecount,', ',''))
+	End If
+	
+End While
+
+Quit method lcText

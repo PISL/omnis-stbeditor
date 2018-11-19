@@ -1,0 +1,6 @@
+If $sessionpools.[pPoolName].$ref
+	Set reference lrefSessionPool to $sessionpools.[pPoolName].$ref
+	Do $sessionpools.$remove(lrefSessionPool)
+	Quit method kTrue
+End If
+Quit method kFalse

@@ -1,0 +1,51 @@
+On evKey
+	;  Breakpoint
+	If #COMMAND&pKey='a'
+		Quit event handler (Discard event)
+	End If
+	
+On evClick     ;; Event Parameters - pRow ( Itemreference )
+	;  test for a link record
+	If totc(ilGroups,#LSEL)>1
+		OK message  {Multiple functions selected - cannot associate to a library.}
+		Quit method
+	End If
+	
+	Do ilLinks.$search($ref.OLG_OML_REF=ilLibraries.[pLineNumber].OML_SEQ,1,0,0,0) Returns lbFound
+	
+	If ilLibraries.[pLineNumber].$selected
+		If not(lbFound)
+			;  insert a link to the current omgroup record
+			Yes/No message Warning - adding a library link {Are you sure you want to associate function group [ilGroups.OMG_FUNCTION] to library [ilLibraries.[pLineNumber].OML_NAME] ?}
+			If flag true
+				;  make sure the one selected line in he list is the current line also
+				Do ilGroups.$first(kTrue)
+				
+				Do lrLink.$copydefinition(ilLinks)
+				Calculate lrLink.OLG_OML_REF as ilLibraries.[pLineNumber].OML_SEQ
+				Calculate lrLink.OLG_OMG_REF as ilGroups.OMG_SEQ
+				Do lrLink.$insert() Returns lbOK
+				If lbOK
+					Do ilLinks.$merge(list(lrLink))
+				End If
+			Else
+				;  deselect the line user clicked on
+				Calculate ilLibraries.[pLineNumber].$selected as kFalse
+			End If
+		End If
+	Else
+		;  delete the link record, if it exists
+		If lbFound
+			No/Yes message Warning - deleting a library link {Are you sure you want to disassociate function group [ilGroups.OMG_FUNCTION] from library [ilLibraries.[pLineNumber].OML_NAME] ?}
+			If flag true
+				Calculate lrLink as ilLinks
+				Do lrLink.$delete_pk() Returns lbOK
+				If lbOK
+					Do ilLinks.$remove(ilLinks.$line)
+				End If
+			Else
+				;  reselect the line user clicked on
+				Calculate ilLibraries.[pLineNumber].$selected as kTrue
+			End If
+		End If
+	End If

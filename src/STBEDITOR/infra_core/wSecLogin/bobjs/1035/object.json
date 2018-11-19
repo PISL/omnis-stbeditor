@@ -1,0 +1,30 @@
+{
+	"ident": 1035,
+	"order": 16392,
+	"objtype": "kText",
+	"properties": {
+		"align": "kLeftJst",
+		"backcolor": "RGB(238,238,238)",
+		"backpattern": 1,
+		"designactive": true,
+		"edgefloat": "kEFnone",
+		"fieldstyle": "wpHeadText",
+		"font": 6,
+		"fontsize": 14,
+		"fontstyle": "kBold",
+		"forecolor": "RGB(192,192,192)",
+		"height": 21,
+		"left": 24,
+		"objlink": 0,
+		"text": {
+			"type": 14,
+			"calc": "\u001B\u000200000001#Select database:"
+		},
+		"textcolor": "kColorWindowText",
+		"top": 42,
+		"userinfo": "",
+		"vertcentertext": false,
+		"visible": true,
+		"width": 128
+	}
+}

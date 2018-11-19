@@ -1,0 +1,9 @@
+Calculate ilOptionList.$line as 0
+While $Loop(ilOptionList)
+	If $cinst.$returnChecksum([ilOptionList.listVar])<>ilOptionList.checksum
+		Calculate lbModified as kTrue
+		Break to end of loop
+	End If
+End While
+
+Quit method lbModified

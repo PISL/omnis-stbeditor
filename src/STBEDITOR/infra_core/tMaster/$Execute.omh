@@ -1,0 +1,13 @@
+;
+;  If len(pcSQL)=0
+;  Get statement ccSQL
+;  Else
+;  Calculate ccSQL as pcSQL
+;  End If
+;  Do $ctask.tvStateObj.$prepare(ccSQL) Returns lbOK
+;  Do $ctask.tvStateObj.$execute() Returns lbOK
+;  Do $v3Error_Check() Returns lbOK
+;  If lbOK&pbCommit
+;  Do $ctask.tvSessObj.$commit
+;  End If
+;  Quit method lbOK

@@ -1,0 +1,36 @@
+;  Breakpoint
+Calculate lcTarget as mid(irefStringsGrid.$columnnames,rpos(',',irefStringsGrid.$columnnames)+1)
+Do ioTranslate.$setTarget(lcTarget)
+Do llData.$cols.$add('STRINGID',kCharacter,kSimplechar)
+Do llData.$cols.$add('en',kCharacter,kSimplechar)
+Do llData.$cols.$add(lcTarget,kCharacter,kSimplechar)
+
+Do ilStrings.$search(pos(con(',',lcTarget,','),$ref.OMS_COLS_MODIFIED)=0,1,0,1,1)
+Do llData.$merge(ilStrings,kTrue,kTrue)
+
+If llData.$linecount
+	Do ioTranslate.$getTextTranslations(llData,lcErrorText) Returns lbOK
+	If lbOK
+		;  copy the translations into ilStrings and save them
+		Calculate lrString as ilStrings
+		Calculate llData.$line as 0
+		While $Loop(llData)
+			If len(llData.[lcTarget])>0
+				Do ilStrings.$search($ref.STRINGID=llData.STRINGID,1,0,0,0)
+				Do lrString.$assignrow(ilStrings.[ilStrings.$line])
+				Calculate lrString.[lcTarget] as llData.[lcTarget]
+				Do lrString.$update() Returns lbOK
+				If lbOK
+					Do ilStrings.[ilStrings.$line].$assignrow(lrString)
+				End If
+			End If
+		End While
+	Else
+		OK message Translation Eror {[lcErrorText]}
+	End If
+	
+	Do $cinst.$behaviour()
+	
+Else
+	OK message  {There are no unmodified strings to translate.}
+End If

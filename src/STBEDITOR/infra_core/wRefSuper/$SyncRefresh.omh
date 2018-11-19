@@ -1,0 +1,14 @@
+If pnGO_SEQ>0     ;; this is being called from an RFO instance
+	If ilOrganisations.GO_SEQ=pnGO_SEQ
+		;  no need to refresh
+	Else
+		Do ilOrganisations.$search($ref.GO_SEQ=pnGO_SEQ,1,0,0,0)
+		Do ilData.$ClassList(ilOrganisations.GO_SEQ) Returns ilClasses
+		Do ilClasses.$sort($ref.RFO_CLASS,0)
+	End If
+End If
+
+Do ilClasses.$search($ref.[icColPrefix]CLASS=pcClass,1,0,0,0)
+Do $cinst.$Refresh()
+Do $cinst.$behaviour()
+Do $cinst.$redraw()

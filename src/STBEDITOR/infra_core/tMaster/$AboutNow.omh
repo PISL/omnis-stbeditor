@@ -1,0 +1,16 @@
+;  OK message  {[ddiff(kSecond,idtLastAboutNowFetch,ldtAboutNow)]}
+If idtLastServerTimeFetch>dat('1 JAN 2000')
+	
+	If ddiff(kSecond,$ctask.tdtLastServerTimeFetch,#D)>5
+		Do $cinst.$ServerTime() Returns ldtAboutNow
+		Calculate idtLastServerTimeFetch as #D
+		Calculate idtLastServerTime as ldtAboutNow
+	Else
+		Calculate ldtAboutNow as idtLastServerTime
+	End If
+Else
+	Do $cinst.$ServerTime() Returns ldtAboutNow
+	Calculate idtLastServerTimeFetch as #D
+	Calculate idtLastServerTime as ldtAboutNow
+End If
+Quit method ldtAboutNow

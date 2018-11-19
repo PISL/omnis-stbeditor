@@ -1,0 +1,413 @@
+{
+	"classtype": "kTable",
+	"internalversion": 12,
+	"designtaskname": "Startup_Task",
+	"cvardefs": [
+
+	],
+	"ivardefs": [
+		{
+			"name": "ibBlowWithHeader",
+			"order": 51,
+			"type": "kBoolean",
+			"subtype": 0,
+			"sublen": 0
+		},
+		{
+			"name": "ibGoodConnectionToDb",
+			"order": 18,
+			"type": "kBoolean",
+			"subtype": 0,
+			"sublen": 0,
+			"initval": "kFalse"
+		},
+		{
+			"name": "ibHasSequence",
+			"order": 3,
+			"type": "kBoolean",
+			"subtype": 0,
+			"sublen": 0,
+			"initval": "#NULL"
+		},
+		{
+			"name": "ibThisIsProductionServer",
+			"order": 16,
+			"type": "kBoolean",
+			"subtype": 0,
+			"sublen": 0,
+			"initval": "kTrue"
+		},
+		{
+			"name": "icChar",
+			"order": 19,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 255
+		},
+		{
+			"name": "icComparisonCols",
+			"order": 39,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "icDateColumn",
+			"order": 2,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100
+		},
+		{
+			"name": "icErrorMessage",
+			"order": 23,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 255
+		},
+		{
+			"name": "icForeignCols",
+			"order": 22,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "icForeignKey",
+			"order": 12,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 50
+		},
+		{
+			"name": "icForeignTable",
+			"order": 47,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100
+		},
+		{
+			"name": "icID",
+			"order": 24,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 4000
+		},
+		{
+			"name": "icInsertNames",
+			"order": 7,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "icKeyCols",
+			"order": 20,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "icLangCode",
+			"order": 54,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 3,
+			"desc": "default language code for the client"
+		},
+		{
+			"name": "icPGschema",
+			"order": 32,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100,
+			"initval": "''"
+		},
+		{
+			"name": "icPrefix",
+			"order": 14,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 10
+		},
+		{
+			"name": "icPrimarykey",
+			"order": 1,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 50
+		},
+		{
+			"name": "icRemoteDB",
+			"order": 21,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100,
+			"desc": "appended to $servertablenames to identify remote table"
+		},
+		{
+			"name": "icSearchString",
+			"order": 40,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 255,
+			"desc": "referenced in many sub classes for text search applied to multiple columns"
+		},
+		{
+			"name": "icSelectNames",
+			"order": 6,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "icStatementType",
+			"order": 10,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 20
+		},
+		{
+			"name": "icUpdateNames",
+			"order": 8,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "icValidationMessage",
+			"order": 31,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 255
+		},
+		{
+			"name": "icWhereNames",
+			"order": 9,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 1000
+		},
+		{
+			"name": "icWhichDatabase",
+			"order": 11,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 30
+		},
+		{
+			"name": "idDateNoTime",
+			"order": 13,
+			"type": "kDate",
+			"subtype": "kDate2000",
+			"sublen": 0
+		},
+		{
+			"name": "idDateTime",
+			"order": 15,
+			"type": "kDate",
+			"subtype": "kDatetime",
+			"sublen": 7
+		},
+		{
+			"name": "idFrom",
+			"order": 41,
+			"type": "kDate",
+			"subtype": "kDate2000",
+			"sublen": 0
+		},
+		{
+			"name": "idtLastServerTime",
+			"order": 37,
+			"type": "kDate",
+			"subtype": "kDatetime",
+			"sublen": 7
+		},
+		{
+			"name": "idtLastServerTimeFetch",
+			"order": 36,
+			"type": "kDate",
+			"subtype": "kDatetime",
+			"sublen": 7
+		},
+		{
+			"name": "idTo",
+			"order": 42,
+			"type": "kDate",
+			"subtype": "kDate2000",
+			"sublen": 0
+		},
+		{
+			"name": "iHint",
+			"order": 25,
+			"type": "kCharacter",
+			"subtype": "kSimplechar",
+			"sublen": 100000000
+		},
+		{
+			"name": "ilAssociatedSchemas",
+			"order": 35,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ilLinkTables",
+			"order": 33,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ilRESTextensions",
+			"order": 5,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "ilTablesWithChildren",
+			"order": 34,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0,
+			"desc": "defined in $construct and populated by $checkChildren"
+		},
+		{
+			"name": "ilValidation",
+			"order": 46,
+			"type": "kList",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "inCountDelete",
+			"order": 50,
+			"type": "kInteger",
+			"subtype": "k32bitint",
+			"sublen": 0
+		},
+		{
+			"name": "inCountInsert",
+			"order": 48,
+			"type": "kInteger",
+			"subtype": "k32bitint",
+			"sublen": 0
+		},
+		{
+			"name": "inCountUpdate",
+			"order": 49,
+			"type": "kInteger",
+			"subtype": "k32bitint",
+			"sublen": 0
+		},
+		{
+			"name": "inID",
+			"order": 27,
+			"type": "kInteger",
+			"subtype": "k32bitint",
+			"sublen": 0
+		},
+		{
+			"name": "inREAL",
+			"order": 4,
+			"type": "kNumber",
+			"subtype": "kFloatdp",
+			"sublen": 0
+		},
+		{
+			"name": "inRESTserverMS",
+			"order": 44,
+			"type": "kInteger",
+			"subtype": "k64bitint",
+			"sublen": 0
+		},
+		{
+			"name": "inRowsAffected",
+			"order": 53,
+			"type": "kInteger",
+			"subtype": "k32bitint",
+			"sublen": 0
+		},
+		{
+			"name": "inRowsFetched",
+			"order": 52,
+			"type": "kInteger",
+			"subtype": "k32bitint",
+			"sublen": 0
+		},
+		{
+			"name": "inServiceMS",
+			"order": 45,
+			"type": "kInteger",
+			"subtype": "k64bitint",
+			"sublen": 0
+		},
+		{
+			"name": "ioWeb",
+			"order": 43,
+			"type": "kObject",
+			"subtype": "oWebClient",
+			"sublen": 0
+		},
+		{
+			"name": "irefCORETASK",
+			"order": 26,
+			"type": "kItemref",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "irefCurrentInstance",
+			"order": 30,
+			"type": "kItemref",
+			"subtype": "",
+			"sublen": 0,
+			"desc": "Reference to the list or row instantiated from this class - Thanks to Jim P. EurOmnis 2014 for the idea"
+		},
+		{
+			"name": "irefSTARTTASK",
+			"order": 38,
+			"type": "kItemref",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "irErrorSQL",
+			"order": 17,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "___ROW1",
+			"order": 28,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "___ROW2",
+			"order": 29,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		}
+	],
+	"properties": {
+		"collectperformancedata": false,
+		"componenticon": 0,
+		"componenttype": "kCompStoreHidden",
+		"createdate": "2017-05-03 12:02:20",
+		"desc": "",
+		"editor": "",
+		"editordata": "",
+		"external": true,
+		"issupercomponent": false,
+		"moddate": "2017-07-26 16:23:48",
+		"showascheckedout": false,
+		"sqlclassname": "",
+		"userinfo": "",
+		"version": "2"
+	}
+}

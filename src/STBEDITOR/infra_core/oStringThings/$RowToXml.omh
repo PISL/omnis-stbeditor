@@ -1,0 +1,46 @@
+
+If pbFirstIteration
+	Begin text block
+End If
+
+For lnColNo from 1 to pRow.$colcount step 1
+	Calculate lcColName as pRow.$cols.[lnColNo].$name
+	Calculate lrInnerRow as ''
+	Calculate llInnerList as ''
+	Calculate lcColValue as ''
+	
+	If pRow.$cols.[lnColNo].$type=kRow
+		Calculate lrInnerRow as pRow.[lcColName]
+		
+		Text: {<row_[lcColName]>}     ;; begin row
+		Do method $RowToXml (lrInnerRow,kFalse)     ;; recursive call
+		Text: {</row_[lcColName]>}     ;; end row
+		
+	Else If pRow.$cols.[lnColNo].$type=kList
+		Calculate llInnerList as pRow.[lcColName]
+		
+		Text: {<array_[lcColName]>}     ;; begin list
+		;  for each line in list
+		Calculate llInnerList.$line as 0
+		While $Loop(llInnerList)
+			Calculate lrInnerRow as llInnerList
+			Text: {<row_[lcColName]>}     ;; begin row (in list)
+			Do method $RowToXml (lrInnerRow,kFalse)     ;; recursive call
+			Text: {</row_[lcColName]>}     ;; end row (in list)
+		End While
+		Text: {</array_[lcColName]>}     ;; end list
+		
+	Else
+		Calculate lcColValue as pRow.[lcColName]
+		Text: {<[lcColName]>[lcColValue]</[lcColName]>}     ;; single value name/column pair
+	End If
+	
+End For
+
+If pbFirstIteration
+	End text block
+	Get text block lcXmlContent
+	Calculate lcXmlContent as con('<xml>',lcXmlContent,'</xml>')     ;; complete xml doxument syntax
+	
+	Quit method lcXmlContent
+End If

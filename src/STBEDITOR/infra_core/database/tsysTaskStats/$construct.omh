@@ -1,0 +1,5 @@
+Calculate icPrefix as 'STS_'
+Calculate icPrimarykey as 'STS_SEQ'
+;  Calculate icForeignKey as 'STS_GO_REF'
+
+Do inherited

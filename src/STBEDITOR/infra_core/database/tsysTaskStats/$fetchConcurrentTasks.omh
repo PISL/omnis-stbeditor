@@ -1,0 +1,65 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Do ioWeb.$callFetch($cinst,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pnCF_SEQ,pdFrom,pdTo),$cinst.$type,0,ilRESTextensions))
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method kTrue
+	Else
+		Quit method kFalse
+	End If
+End If
+
+Do $cinst.$cols.$findname('ULA_GO_NAME') Returns liColRef
+If liColRef
+	Calculate lbJoinToLogAccess as kTrue
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Calculate pdTo as dadd(kDay,1,pdTo)     ;; so Short date picks up rows from datetime column
+
+Begin statement
+Sta: {select [$cinst.$selectnames()]}
+If lbJoinToLogAccess
+	Sta: {, ULA_GO_NAME}
+End If
+Sta: {from  [$cinst.$servertablenames]}
+If lbJoinToLogAccess
+	Sta: {left outer join [lruaLogAccess.$servertablenames] on STS_ULA_REF = ULA_SEQ}
+End If
+Sta: {where STS_START between @[pdFrom] and @[pdTo]}
+If pcCriteria<>''
+	Sta: {and   [pcCriteria]}
+Else
+	;  some sort of concurrency
+	Sta: {and    ( STS_COUNT_START > 1 or STS_COUNT_END > 1 )}
+End If
+Sta: {and    STS_GO_REF = @[trGroupOrg.GO_SEQ]}
+End statement
+
+Do $cinst.$executesqlandfetch() Returns lbOK
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Do $cinst.$cols.$findname('durationTask') Returns liColRef
+If liColRef
+	If $cinst.$type=kList
+		While $Loop($cinst)
+			Do $cinst.$calculatedCols()
+		End While
+	Else
+		Do $cinst.$calculatedCols()
+	End If
+End If
+
+Quit method lbOK

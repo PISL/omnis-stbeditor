@@ -1,0 +1,135 @@
+Do FileOps.$doesfileexist(icPathLicensee) Returns lbFound
+If not(lbFound)
+	;  details of customer !
+	;  if absent, assume it is myself
+	Calculate lrLicencee.LCEE_TYPE as llContents.value
+	Calculate lrLicencee.LCEE_PERSON as 'Robert S. Mostyn'
+	Calculate lrLicencee.LCEE_COMPANY as 'Platform Independent Systems Ltd'
+	Calculate lrLicencee.LCEE_ADDR_BUILDING as ''
+	Calculate lrLicencee.LCEE_ADDR_STREET as '2 Kennel Cottages'
+	Calculate lrLicencee.LCEE_ADDR_LOCALITY as 'Shendish'
+	Calculate lrLicencee.LCEE_ADDR_TOWN as 'Hemel Hempstead'
+	Calculate lrLicencee.LCEE_ADDR_COUNTY as 'Hertfordshire'
+	Calculate lrLicencee.LCEE_ADDR_POSTCODE as 'HP3 0AB'
+	Calculate lrLicencee.LCEE_ADDR_COUNTRY as 'United Kingdom'
+	Calculate lrLicencee.LCEE_LANG as 'en'
+	Calculate lrLicencee.LCEE_PHONE_L as '+44 1442 41 2232'
+	Calculate lrLicencee.LCEE_PHONE_M as '+44 7595 22 00 24'
+	Do method $GetMAC Returns lrLicencee.LCEE_MAC
+	Calculate lrLicencee.LCEE_PASSWD as ''
+	Calculate lrLicencee.LCEE_SEQ as ''
+	Calculate lrLicencee.LCEE_CWHEN as ''
+	Calculate lrLicencee.LCEE_MWHEN as ''
+Else
+	;  we have been here before so read the ini file
+	Do loFileOps.$openfile(icPathLicensee) Returns lbFileIsOpen
+	If lbFileIsOpen
+		Do loFileOps.$readcharacter(kUniTypeUTF8,lcContents) Returns lbReadOK
+		Do loFileOps.$closefile()     ;; Returnｓ nothing
+		
+		;  Breakpoint
+		;  parse the xml contents to extract the data
+		Calculate lXML.$parservalidates as kFalse
+		Calculate lRawXML as chartoutf8(lcContents)
+		Do lXML.$loadbinary(lRawXML,lErrorText) Returns lOK
+		;  put contents of xml into Omis list
+		Do lXML.$savetree(llContents,lErrorText,kTrue,kTrue,kTrue)
+		
+		;  extract values
+		Do llContents.$search($ref.path='/licencee',1,0,0,0) Returns lbFound
+		If lbFound
+			Do llContents.$search($ref.path='/licencee/TYPE',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_TYPE as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/PERSON',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_PERSON as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/COMPANY',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_COMPANY as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/BUILDING',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_ADDR_BUILDING as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/STREET',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_ADDR_STREET as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/LOCALITY',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_ADDR_LOCALITY as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/TOWN',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_ADDR_TOWN as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/COUNTY',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_ADDR_COUNTY as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/POSTCODE',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_ADDR_POSTCODE as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/COUNTRY',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_ADDR_COUNTRY as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/LANGUAGE',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_LANG as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/PHONE_L',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_PHONE_L as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/PHONE_M',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_PHONE_M as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/MAC',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_MAC as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/PASSWORD',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_PASSWD as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/SEQ',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_SEQ as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/CWHEN',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_CWHEN as llContents.value
+			End If
+			
+			Do llContents.$search($ref.path='/licencee/MWHEN',1,0,0,0) Returns lbFound
+			If lbFound
+				Calculate lrLicencee.LCEE_MWHEN as llContents.value
+			End If
+		End If
+		
+	End If
+End If
+Calculate irOriginalLicencee as lrLicencee
+Quit method lrLicencee

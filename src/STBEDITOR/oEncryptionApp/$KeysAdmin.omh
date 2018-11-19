@@ -1,0 +1,16 @@
+Calculate lcTemplate as '721635984'
+Calculate lcWrap1 as con(chr(91),chr(100),chr(81),chr(55),chr(111),chr(70),chr(61),chr(23),chr(55),chr(125),chr(99),chr(88))
+Calculate lcWrap2 as lcWrap1
+For lnStep from 1 to len(pOfficeCode) step 1
+	Calculate lcWrap1 as con(mid(lcWrap1,1,mid(lcTemplate,lnStep,1)),mid(pOfficeCode,lnStep,1),mid(lcWrap1,mid(lcTemplate,lnStep,1)+1,99))
+	Calculate lcWrap2 as con(mid(lcWrap2,1,mid(lcTemplate,lnStep,1)+1),mid(pOfficeCode,lnStep,1),mid(lcWrap2,mid(lcTemplate,lnStep,1)+2,99))
+End For
+
+Calculate lcTemp as pOfficeLogNo
+For lnStep from 1 to len(lcTemp) step 1
+	Calculate lcWrap1 as con(mid(lcWrap1,1,mid(lcTemplate,lnStep,1)),mid(lcTemp,lnStep,1),mid(lcWrap1,mid(lcTemplate,lnStep,1)+1,99))
+	Calculate lcWrap2 as con(mid(lcWrap2,1,mid(lcTemplate,lnStep,1)+1),mid(lcTemp,lnStep,1),mid(lcWrap2,mid(lcTemplate,lnStep,1)+2,99))
+End For
+
+Calculate pReturn1 as lcWrap1
+Calculate pReturn2 as lcWrap2

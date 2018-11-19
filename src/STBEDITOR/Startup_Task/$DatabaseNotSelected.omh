@@ -1,0 +1,5 @@
+Do $imenus.$findname('mApplications') Returns lrefMenu
+If lrefMenu
+	Do lrefMenu.$LibraryAboutToClose($clib().$name)
+End If
+Close library {[$clib().$name]}

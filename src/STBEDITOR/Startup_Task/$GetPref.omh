@@ -1,0 +1,7 @@
+;  return a library specific preference value (optionally first setting the value)
+;  Parameters: (pcKEY [,pcVALUE] )     ;; pcKEY (mandatory) preference name, pcVALUE (optional) when passed sets the preference value
+Do ilSysPrefs.$search($ref.KEY=pcKEY,1,0,0,0) Returns liLine
+If not(isclear(pcVALUE))
+	Calculate ilSysPrefs.VALUE as pcVALUE
+End If
+Quit method ilSysPrefs.VALUE

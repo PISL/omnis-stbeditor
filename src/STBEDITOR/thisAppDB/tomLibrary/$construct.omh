@@ -1,0 +1,5 @@
+Calculate icPrefix as 'OML_'
+Calculate icPrimarykey as 'OML_SEQ'
+Calculate ibHasSequence as kTrue
+
+Do inherited

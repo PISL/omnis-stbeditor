@@ -1,0 +1,19 @@
+For lnColNo from 1 to $cinst.$colcount step 1
+	Calculate lcColName as $cinst.$cols.[lnColNo].$name
+	If $cinst.[lcColName].$type=kCharacter
+		If $cinst.[lcColName]<>''
+			Calculate lcWhereClause as con(lcWhereClause,pick(lcWhereClause<>'','',' and '),lcColName," like '",$cinst.[lcColName],"%'")
+		End If
+	Else If $cinst.[lcColName].$type=kNumber|$cinst.[lcColName].$type=kInteger
+		If $cinst.[lcColName]<>0
+			Calculate lcWhereClause as con(lcWhereClause,pick(lcWhereClause<>'','',' and '),lcColName," = ",$cinst.[lcColName])
+		End If
+	Else If $cinst.[lcColName].$type=kDate
+		If $cinst.[lcColName]<>''
+			Calculate lcWhereClause as con(lcWhereClause,pick(lcWhereClause<>'','',' and '),lcColName," = '",$cinst.[lcColName],"'")
+		End If
+	End If
+	
+End For
+
+Quit method lcWhereClause

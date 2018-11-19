@@ -1,0 +1,68 @@
+;  Enter your initialization code here
+;  Breakpoint
+
+Do ilOptionList.$cols.$add('code',kCharacter,kSimplechar,50)
+Do ilOptionList.$cols.$add('desc',kCharacter,kSimplechar,50)
+Do ilOptionList.$cols.$add('listVar',kCharacter,kSimplechar,25)
+Do ilOptionList.$cols.$add('checksum',kInteger,k64bitint)
+
+Do $cinst.$loadLists()
+
+If ilIniData.$linecount=0&ilDBData.$linecount=0&ilConfigData.$linecount=0     ;; the SQLite database has not yet been populated
+	Yes/No message Warning {The INI database has not yet been populated.  Do you wish to view the existing ini files?}
+	If flag true
+		;  read the site config file
+		Calculate lcPath as con($ctask.tConstants.HostDirectory,$clib().$name,'_config.xml')
+		Do FileOps.$doesfileexist(lcPath) Returns lbExists
+		If lbExists
+			Do loFileOps.$openfile(lcPath)
+			Do loFileOps.$readcharacter(kUniTypeUTF8,lcConfigContents)
+			Do loFileOps.$closefile()
+			Do $windows.wMessage_e.$open('*',kWindowStack,lcConfigContents)
+		End If
+		
+		;  read the db ini file
+		Calculate lcPath as con($ctask.tConstants.HostDirectory,$clib().$name,'_db.ini')
+		Do FileOps.$doesfileexist(lcPath) Returns lbExists
+		If lbExists
+			Do loFileOps.$openfile(lcPath)
+			Do loFileOps.$readcharacter(kUniTypeUTF8,lcConfigContents)
+			Do loFileOps.$closefile()
+			Do $windows.wMessage_e.$open('*',kWindowStack,lcConfigContents)
+		End If
+		
+		;  read the lib ini file
+		Calculate lcPath as con($ctask.tConstants.HostDirectory,$clib().$name,'.ini')
+		Do FileOps.$doesfileexist(lcPath) Returns lbExists
+		If lbExists
+			Do loFileOps.$openfile(lcPath)
+			Do loFileOps.$readcharacter(kUniTypeUTF8,lcConfigContents)
+			Do loFileOps.$closefile()
+			Do $windows.wMessage_e.$open('*',kWindowStack,lcConfigContents)
+		End If
+		
+	End If
+	
+End If
+
+If ilIniData.$linecount>0
+	Calculate inCurrentOption as 1
+Else If ilDBData.$linecount>0
+	Calculate inCurrentOption as 2
+Else If ilConfigData.$linecount>0
+	Calculate inCurrentOption as 3
+Else
+	Calculate inCurrentOption as 1
+End If
+Calculate ilOptionList.$line as inCurrentOption
+
+Do ilSpecialActions.$cols.$add('code',kCharacter,kSimplechar,15)
+Do ilSpecialActions.$cols.$add('desc',kCharacter,kSimplechar,50)
+Do ilSpecialActions.$cols.$add('whichOption',kCharacter,kSimplechar,15)     ;; comma separated ilOptionList.code values  e.g. DB_CONNECT, LIB_INIT, SITE_CONFIG
+Do ilSpecialActions.$cols.$add('controls',kCharacter,kSimplechar,255)
+
+Do ilSpecialActions.$add('ALTER_DB_NO','Alter DB_NO value to re-order list','DB_CONNECT','icLineFrom,icLineTo')
+Calculate ilSpecialActions.$smartlist as kTrue     ;; to use $filter
+Do method WhichSpecialActions
+
+Do $cinst.$behaviour()

@@ -1,0 +1,26 @@
+Calculate lnOptionLine as ilOptionList.$line
+
+Calculate ilOptionList.$line as 0
+While $Loop(ilOptionList)
+	If $cinst.$returnChecksum([ilOptionList.listVar])<>ilOptionList.checksum
+		;  this list has been modified
+		Switch ilOptionList.listVar
+			Case nam(ilConfigData)
+				Do toConfig.$saveConfigIni(ilConfigData)
+				Do toConfig.$GetList('ilConfigList') Returns ilConfigData
+				Calculate ilOptionList.checksum as $cinst.$returnChecksum(ilConfigData)
+			Case nam(ilDBData)
+				Do toConfig.$saveDBIni(ilDBData)
+				Do toConfig.$GetList('ilDBList') Returns ilDBData
+				Calculate ilOptionList.checksum as $cinst.$returnChecksum(ilDBData)
+			Default
+				Do toConfig.$saveLibIni(ilIniData)
+				Do toConfig.$GetList('ilIniRaw') Returns ilIniData
+				Calculate ilOptionList.checksum as $cinst.$returnChecksum(ilIniData)
+		End Switch
+	End If
+End While
+
+Calculate ilOptionList.$line as lnOptionLine
+
+Do $cinst.$behaviour()

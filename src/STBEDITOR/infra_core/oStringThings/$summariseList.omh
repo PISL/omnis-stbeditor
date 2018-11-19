@@ -1,0 +1,80 @@
+Do llResult.$cols.$add('group',kCharacter,kSimplechar,50)
+Do llResult.$cols.$add('value',kCharacter,kSimplechar,50)
+Do llResult.$cols.$add('count',kInteger,k32bitint)
+
+Do llResult.$cols.$add('widthGroup',kInteger,k32bitint)
+Do llResult.$cols.$add('widthValue',kInteger,k32bitint)
+Do llResult.$cols.$add('widthCount',kInteger,k32bitint)
+If pbAddProportion
+	Do llResult.$cols.$add('total',kInteger,k32bitint)
+	Do llResult.$cols.$add('proportion',kNumber,k2dpShortnum)
+End If
+Calculate llThisGroup as llResult
+
+Do pList.$search(0)
+
+Calculate lcTemp as pcSummaryCols
+While lcTemp<>''
+	Calculate lcToken as strtok(nam(lcTemp),',')
+	If lcToken<>''
+		Calculate llTemp as pList
+		Do llThisGroup.$clear()
+		Calculate lnMaxWidthGroup as 0
+		Calculate lnMaxWidthValue as 0
+		Calculate lnMaxWidthCount as 0
+		
+		Do llTemp.$cols.$findname(lcToken) Returns liColRef
+		If liColRef
+			Do llTemp.$cols.[lcToken].$removeduplicates(kTrue)
+			Calculate llTemp.$line as 0
+			While $Loop(llTemp)
+				If isnull(llTemp.[lcToken])
+					Do pList.$search(isnull($ref.[lcToken]),1,0,1,0)
+				Else
+					Do pList.$search($ref.[lcToken]=llTemp.[lcToken],1,0,1,0)
+				End If
+				Calculate lnCount as totc(pList,#LSEL)
+				Do pList.$search(0)
+				
+				If lnMaxWidthValue<len(llTemp.[lcToken])
+					Calculate lnMaxWidthValue as len(llTemp.[lcToken])
+				End If
+				If lnMaxWidthCount<len(lnCount)
+					Calculate lnMaxWidthCount as len(lnCount)
+				End If
+				
+				If pbCutLabel
+					If pos('_',lcToken)
+						Do llThisGroup.$add(mid(lcToken,pos('_',lcToken)+1,99),llTemp.[lcToken],lnCount,len(mid(lcToken,pos('_',lcToken)+1,99)))
+					Else
+						Do llThisGroup.$add(lcToken,llTemp.[lcToken],lnCount,len(lcToken))
+					End If
+				Else
+					Do llThisGroup.$add(lcToken,llTemp.[lcToken],lnCount,len(lcToken))
+				End If
+			End While
+			
+			Calculate lnTotal as llThisGroup.$cols.count.$total()
+			;  If lnTotal<>0
+			Calculate llThisGroup.$line as 0
+			While $Loop(llThisGroup)
+				If pbAddProportion
+					If lnTotal<>0
+						Calculate lnProportion as llThisGroup.count*100/lnTotal
+						Calculate llThisGroup.total as lnTotal
+						Calculate llThisGroup.proportion as lnProportion
+					End If
+				End If
+				Calculate llThisGroup.widthValue as lnMaxWidthValue
+				Calculate llThisGroup.widthCount as lnMaxWidthCount
+			End While
+			;  End If
+			
+			Do llResult.$merge(llThisGroup)
+		Else
+			Breakpoint {summary requested on column [lcToken] that doesn't exist}
+		End If
+	End If
+End While
+
+Quit method llResult

@@ -1,0 +1,23 @@
+Calculate icValidationMessage as ''
+Do ilValidation.$clear()
+
+If $cinst.STS_START>dat('1 JAN 2010')
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),' START time missing')
+	Do ilValidation.$add('STS_START_LBL','VAL_MISSING',' START time missing',0)
+End If
+
+If $cinst.STS_COUNT_START>0
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),' task count missing')
+	Do ilValidation.$add('STS_COUNT_START_LBL','VAL_MISSING',' task count missing',0)
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

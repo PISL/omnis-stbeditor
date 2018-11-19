@@ -1,0 +1,67 @@
+;  parameter check
+If pString<>''&pTagName<>''&pRowTag<>''&pListColsName<>''&pListColsType<>''
+	;  all columns mandatory and populated
+Else
+	Quit method #NULL
+End If
+
+Do method $TagContent (pString,pTagName) Returns lcContent
+
+;  prepare the result list
+Calculate lcParseTemp1 as pListColsName
+Calculate lcParseTemp2 as pListColsType
+While lcParseTemp1<>''
+	Calculate lcColName as strtok(nam(lcParseTemp1),',')
+	Calculate lcColType as strtok(nam(lcParseTemp2),',')
+	If lcColType<>''
+		;  set ok
+	Else
+		Calculate lcColType as 'char'     ;; kCharacter
+	End If
+	
+	Switch lcColType
+		Case 'char','kcharacter','kCharacter'     ;; kCharacter
+			Do llResult.$cols.$add(lcColName,kCharacter,kSimplechar,255)
+		Case 'number','knumber','kNumber'     ;; kNumber    k2dp is an arbitrary default
+			Do llResult.$cols.$add(lcColName,kNumber,kFloatdp)
+		Case 'boolean','kboolean','kBoolean'     ;; kBoolean
+			Do llResult.$cols.$add(lcColName,kBoolean)
+		Case '0dp','1dp','2dp','3dp','4dp','5dp','5dp','6dp','8dp','10dp','12dp','14dp'     ;; k0dp,k1dp,k2dp,k3dp,k4dp,k5dp,k6dp,k8dp,k10dp,k12dp,k14dp
+			Do llResult.$cols.$add(lcColName,kNumber,k[lcColType])
+		Case 'k0dp','k1dp','k2dp','k3dp','k4dp','k5dp','k5dp','k6dp','k8dp','k10dp','k12dp','k14dp'
+			Do llResult.$cols.$add(lcColName,kNumber,[lcColType])
+		Case 'date'     ;; kDate     kDate2000 is an arbitrary default
+			Do llResult.$cols.$add(lcColName,kDate,kDate2000)
+		Case 'datetime'     ;; kDatetime
+			Do llResult.$cols.$add(lcColName,kDate,kDatetime)
+		Case 'date1900','date1980','date2000'     ;; kDate1900,kDate1980,kDate2000
+			Do llResult.$cols.$add(lcColName,kDate,k[lcColType])
+		Case 'integer'     ;; kInteger
+			Do llResult.$cols.$add(lcColName,kInteger,k32bitint)
+		Default
+			;  should not get here !
+			Do llResult.$cols.$add(lcColName,kCharacter,kSimplechar,255)
+	End Switch
+End While
+
+;  result list prepared
+While lcContent<>''
+	Do method $TagContent (lcContent,pRowTag) Returns lcRowContent
+	If lcRowContent<>''
+		Do llResult.$add()
+		Calculate llResult.$line as llResult.$linecount
+		
+		Calculate lcParseTemp1 as pListColsName
+		While lcParseTemp1<>''
+			Calculate lcColNameName as strtok(nam(lcParseTemp1),',')
+			Do method $TagContent (lcRowContent,lcColNameName) Returns llResult.[lcColNameName]
+			Calculate lcColNameValue as strtok(nam(lcParseTemp1),',')
+			Do method $TagContent (lcRowContent,lcColNameValue) Returns llResult.[lcColNameValue]
+		End While
+		Do method $TagDelete (lcContent,pRowTag) Returns lcContent
+	Else
+		Break to end of loop
+	End If
+End While
+
+Quit method llResult

@@ -1,0 +1,1 @@
+Calculate $cinst.$objs.ilData.$enabled as (ilPreferences.RFO_VALUE<>'POPUP_ALERT_SND')

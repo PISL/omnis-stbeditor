@@ -1,0 +1,22 @@
+Calculate icValidationMessage as ''
+
+If $cinst.ULA_USR_REF>0
+	;  good
+Else
+	;  relaxed now that record is saved on opening task, prior to login
+	;  Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'ULA_USR_REF missing')
+End If
+
+If $cinst.ULA_LOGIN>dat('1 JAN 2010')
+	;  good
+Else
+	;  relaxed now that record is saved on opening task, prior to login
+	;  Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'ULA_LOGIN missing')
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

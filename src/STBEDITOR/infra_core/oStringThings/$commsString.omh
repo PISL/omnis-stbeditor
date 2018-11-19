@@ -1,0 +1,27 @@
+;  pass in a row variable that has column names that end in PH, FAX, EMAIL
+;  and it will return a string with the contact information
+If pRow.[pcColPrefix]PH<>''
+	If pbAbbrev
+		Calculate lcString as con(lcString,pick(lcString<>'','',pbConcat),'ph: ',pRow.[pcColPrefix]PH)
+	Else
+		Calculate lcString as con(lcString,pick(lcString<>'','',pbConcat),'phone: ',pRow.[pcColPrefix]PH)
+	End If
+End If
+
+If pRow.[pcColPrefix]FAX<>''
+	If pbAbbrev
+		Calculate lcString as con(lcString,pick(lcString<>'','',pbConcat),'fx: ',pRow.[pcColPrefix]FAX)
+	Else
+		Calculate lcString as con(lcString,pick(lcString<>'','',pbConcat),'fax: ',pRow.[pcColPrefix]FAX)
+	End If
+End If
+
+If pRow.[pcColPrefix]EMAIL<>''
+	If pbAbbrev
+		Calculate lcString as con(lcString,pick(lcString<>'','',pbConcat),'em: ',pRow.[pcColPrefix]EMAIL)
+	Else
+		Calculate lcString as con(lcString,pick(lcString<>'','',pbConcat),'email: ',pRow.[pcColPrefix]EMAIL)
+	End If
+End If
+
+Quit method lcString

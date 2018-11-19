@@ -1,0 +1,101 @@
+Do llTimePeriods.$cols.$add('code',kCharacter,kSimplechar,15)
+Do llTimePeriods.$cols.$add('desc',kCharacter,kSimplechar,40)
+
+Calculate lbInclude as kTrue
+If pcFilter<>''
+	If pos('DAY',pcFilter)
+		;  include
+	Else
+		Calculate lbInclude as kFalse
+	End If
+End If
+If lbInclude
+	Do llTimePeriods.$add('TODAY','today')
+	Do llTimePeriods.$add('YESTERDAY','yesterday')
+End If
+
+Calculate lbInclude as kTrue
+If pcFilter<>''
+	If pos('WEEK',pcFilter)
+		;  include
+	Else
+		Calculate lbInclude as kFalse
+	End If
+End If
+If lbInclude
+	Do llTimePeriods.$add('THIS_WEEK','this week')
+	Do llTimePeriods.$add('LAST_WEEK','last week')
+	Do llTimePeriods.$add('PRV_LAST_WEEK','previous to last week')
+End If
+
+Calculate lbInclude as kTrue
+If pcFilter<>''
+	If pos('FNIGHT',pcFilter)
+		;  include
+	Else
+		Calculate lbInclude as kFalse
+	End If
+End If
+If lbInclude
+	Do llTimePeriods.$add('THIS_FNIGHT','this fortnight')
+	Do llTimePeriods.$add('LAST_FNIGHT','last fortnight')
+	Do llTimePeriods.$add('PRV_LAST_FNIGHT','previous to last fortnight')
+End If
+
+Calculate lbInclude as kTrue
+If pcFilter<>''
+	If pos('MONTH',pcFilter)
+		;  include
+	Else
+		Calculate lbInclude as kFalse
+	End If
+End If
+If lbInclude
+	Do llTimePeriods.$add('THIS_MONTH','this month')
+	Do llTimePeriods.$add('LAST_MONTH','last month')
+	Do llTimePeriods.$add('PRV_LAST_MONTH','previous to last month')
+End If
+
+Calculate lbInclude as kTrue
+If pcFilter<>''
+	If pos('QTR',pcFilter)
+		;  include
+	Else
+		Calculate lbInclude as kFalse
+	End If
+End If
+If lbInclude
+	Do llTimePeriods.$add('THIS_QTR','this quarter')
+	Do llTimePeriods.$add('LAST_QTR','last quarter')
+	Do llTimePeriods.$add('PRV_LAST_QTR','previous to last quarter')
+End If
+
+Calculate lbInclude as kTrue
+If pcFilter<>''
+	If pos('YEAR',pcFilter)
+		;  include
+	Else
+		Calculate lbInclude as kFalse
+	End If
+End If
+If lbInclude
+	Do llTimePeriods.$add('THIS_YEAR','this year')
+	Do llTimePeriods.$add('LAST_YEAR','last year')
+	Do llTimePeriods.$add('PREV_YEAR','previous to last year')
+End If
+
+;  Do llTimePeriods.$add('PROJ_TO_DATE','project to date')
+Do llTimePeriods.$add('OTHER','other period')
+
+;  While $Loop(llTimePeriods)     ;; Studio 8.0.1 bug - losing scope with task
+For llTimePeriods.$line from 1 to llTimePeriods.$linecount step 1
+	Do toStrings.$StringTableEntry(con('',llTimePeriods.code),lcText) Returns lbValid
+	If lbValid
+		Calculate llTimePeriods.desc as lcText
+	Else
+		;  leave it with the original
+	End If
+	;  End While
+End For
+
+Quit method llTimePeriods

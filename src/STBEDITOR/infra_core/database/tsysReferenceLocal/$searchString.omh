@@ -1,0 +1,97 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	If pcReturnWhat='RESULT'
+		
+		Do ioWeb.$callFetch($cinst,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pcReturnWhat,pcSearchString,pcSearchColumn),$cinst.$type,0,ilRESTextensions))
+		If ioWeb.irResponse.httpStatusCode=200
+			;  the result should be in this object     ;; however there may be a SQL error
+			If irErrorSQL.NativeErrorText<>''
+				Quit method kFalse
+			End If
+			Quit method kTrue
+		Else
+			Quit method kFalse
+		End If
+	Else If pcReturnWhat='COUNT'
+		;  pass parameters to web service
+		;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+		Do ioWeb.$callFetch(lnCount,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pcReturnWhat,pcSearchString,pcSearchColumn),lnCount.$type,0,ilRESTextensions))
+		If ioWeb.irResponse.httpStatusCode=200
+			;  the result should be in this object     ;; however there may be a SQL error
+			If irErrorSQL.NativeErrorText<>''
+				Quit method kFalse
+			End If
+			Quit method lnCount
+		Else
+			Quit method kFalse
+		End If
+		
+	Else
+		Breakpoint
+	End If
+End If
+
+If isnumber(pcSearchString)
+	Calculate lbIsNumber as kTrue
+End If
+Calculate pcReturnWhat as upp(pcReturnWhat)
+Calculate pcSearchString as con('%',upp(pcSearchString),'%')     ;; this will make isnumber() inneffective
+If pcReturnWhat='COUNT'|pcReturnWhat='RESULT'
+	;  continue
+Else
+	Quit method
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Begin statement
+If pcReturnWhat='RESULT'
+	Sta: {select [$cinst.$selectnames()]}
+Else If pcReturnWhat='COUNT'
+	Sta: {select count(*)}
+End If
+
+Sta: {from  [$cinst.$servertablenames]}
+If pcSearchColumn<>''
+	If pcSearchColumn='C'
+		Sta: {where RFL_CLASS like @[pcSearchString]}
+	Else If pcSearchColumn='V'
+		Sta: {where RFL_VALUE like @[pcSearchString]}
+	Else If pcSearchColumn='D'
+		Sta: {where upper(RFL_DESC) like @[pcSearchString]}
+	Else If pcSearchColumn='H'
+		Sta: {where upper(RFL_CHAR) like @[pcSearchString]}
+	End If
+Else
+	;  cast the search net as widely as possible
+	Sta: {where RFL_CLASS like @[pcSearchString]}
+	Sta: {or       RFL_VALUE like @[pcSearchString]}
+	Sta: {or       upper(RFL_DESC) like @[pcSearchString]}
+	Sta: {or       upper(RFL_CHAR) like @[pcSearchString]}
+	If lbIsNumber
+		Sta: {or       cast(RFL_INT as text) like @[pcSearchString]}
+		Sta: {or       cast(RFL_NUMBER as text) like @[pcSearchString]}
+	End If
+End If
+End statement
+
+If pcReturnWhat='RESULT'
+	Do $cinst.$executesqlandfetch() Returns lbOK
+Else If pcReturnWhat='COUNT'
+	Do $cinst.$executesqlandfetchinto(lnCount) Returns lbOK
+End If
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+If pcReturnWhat='RESULT'
+	Quit method lbOK
+Else If pcReturnWhat='COUNT'
+	Quit method lnCount
+End If

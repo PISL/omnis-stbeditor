@@ -1,0 +1,26 @@
+;  we have opened a new libini file so create the tables
+
+Do $DefineList(lrRow,'tIniDB')
+Do lrRow.$SetSession(ioSessionIni,ioStatementIni)
+Do lrRow.$createServerTable() Returns lbOK
+
+If lbOK
+	Do $DefineList(lrRow,'tIniLib')
+	Do lrRow.$SetSession(ioSessionIni,ioStatementIni)
+	Do lrRow.$createServerTable() Returns lbOK
+	
+	If lbOK
+		Do $DefineList(lrRow,'tIniCfg')
+		Do lrRow.$SetSession(ioSessionIni,ioStatementIni)
+		Do lrRow.$createServerTable() Returns lbOK
+		
+	End If
+End If
+
+If not(lbOK)
+	Do ioSessionIni.$logoff()
+	Do FileOps.$deletefile(pcSQLfilePath)
+End If
+
+
+Quit method lbOK

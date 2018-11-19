@@ -1,0 +1,37 @@
+Do llWhereNames.$define(lcColName,lcColValue)
+Do $cinst.$wherenames() Returns lcWhereClause
+Calculate lcWhereClause as mid(lcWhereClause,7,999)     ;; delete "WHERE "
+While lcWhereClause<>''
+	;  Calculate lcColumnCriteria as strtok(nam(lcWhereClause),' and ')
+	If pos(' AND',upp(lcWhereClause))
+		Calculate lcColumnCriteria as mid(lcWhereClause,1,pos(' AND',upp(lcWhereClause))-1)
+		Calculate lcWhereClause as mid(lcWhereClause,pos(' AND',upp(lcWhereClause))+4,999)     ;; remove column criteria
+	Else
+		Calculate lcColumnCriteria as lcWhereClause
+		Calculate lcWhereClause as ''
+	End If
+	
+	Calculate lcColumnCriteria as trim(lcColumnCriteria)
+	Calculate lcColName as mid(lcColumnCriteria,1,pos('=',lcColumnCriteria)-1)
+	If pos('.',lcColName)     ;; remove the table name reference
+		Calculate lcColName as mid(lcColName,pos('.',lcColName)+1,99)
+	End If
+	
+	Calculate lcColValue as mid(lcColumnCriteria,pos('=',lcColumnCriteria)+3,99)     ;; omit "=@["
+	Calculate lcColValue as left(lcColValue,len(lcColValue)-1)     ;; omit trailing "]"
+	Calculate lcColValue as eval(lcColValue)     ;; the value !
+	
+	Do llWhereNames.$add(lcColName,lcColValue)
+End While
+
+If pbReturnString
+	Begin text block
+	While $Loop(llWhereNames)
+		Text: {[llWhereNames.lcColName]=[llWhereNames.lcColValue]} (Carriage return)
+	End While
+	Get text block lcDeconstructed
+	Calculate lcDeconstructed as left(lcDeconstructed,len(lcDeconstructed)-1)     ;; remove trailing kCr
+	Quit method lcDeconstructed
+Else
+	Quit method llWhereNames
+End If

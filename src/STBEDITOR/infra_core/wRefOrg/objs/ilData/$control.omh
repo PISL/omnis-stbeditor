@@ -1,0 +1,47 @@
+On evKey
+	If $cobj.$firstsel=$cobj.$lastsel
+		;  focus is at a character position and not selecting a portion of text
+		If $cobj.$firstsel=0|$cobj.$firstsel=len($cobj.$contents)
+			;  position of cursor is at beginning or end of data in $cobj
+			If len($cobj.$contents)>0
+				;  there is data in the cell
+				If $cobj.$firstsel=0&(pSystemKey=19|pSystemKey=17|pSystemKey=18)
+					;  left arrow while at beginning of text
+					Calculate lbDoCellJumping as kTrue
+				Else If $cobj.$firstsel=len($cobj.$contents)&(pSystemKey=20|pSystemKey=17|pSystemKey=18)
+					;  right arrow while at end of text
+					Calculate lbDoCellJumping as kTrue
+				End If
+			Else     ;; there is nothing in the field
+				Calculate lbDoCellJumping as kTrue
+			End If
+		End If
+	End If
+	
+	If lbDoCellJumping
+		If pSystemKey=17     ;; up arrow
+			If ilData.$line>1
+				Calculate ilData.$line as ilData.$line-1
+				Do $cinst.$redraw()
+			Else
+				Sound bell
+			End If
+		Else If pSystemKey=18     ;; down arrow
+			If ilData.$line<ilData.$linecount
+				Calculate ilData.$line as ilData.$line+1
+				Do $cinst.$redraw()
+			Else
+				Sound bell
+			End If
+		Else If pSystemKey=19     ;; left arrow
+			Queue tab (Shift)
+		Else If pSystemKey=20     ;; right arrow
+			Queue tab
+		End If
+	End If
+	
+On evBefore
+	Do $cinst.$behaviour()
+	
+On evAfter
+	Do $cinst.$behaviour()

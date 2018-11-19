@@ -1,0 +1,40 @@
+;  Breakpoint
+;  I presume the session pool will be destroyed by Omnis
+;  if Omnis were quitting, yes.    But if just the library was being closed down?  I don't think so.
+
+If tConstants.LogTaskStats
+	If trTaskStats.STS_SEQ>0
+		Calculate trTaskStats.STS_END as #D
+		Calculate trTaskStats.STS_GO_REF as trGroupOrg.GO_SEQ
+		Calculate trTaskStats.STS_ULA_REF as trLogAccess.ULA_SEQ
+		Do trTaskStats.$update() Returns lbOK
+	End If
+End If
+
+If trLogAccess.$colcount
+	If trLogAccess.ULA_SEQ>0
+		Calculate trLogAccess.ULA_LOGOUT as #D
+		Do trLogAccess.$update() Returns lbOK
+	End If
+End If
+
+If tlDatabases.DAM='WebService'
+	Calculate lrErrorSQL as trCurrUser.irErrorSQL
+	Do ioWeb.$logoff(lrErrorSQL) Returns lbOK
+	If ioWeb.irResponse.httpStatusCode=200
+		Quit method kTrue
+	Else
+		OK message Web service logoff error {[lrErrorSQL.NativeErrorText]}
+		Quit method kFalse
+	End If
+Else
+	Do $sessionpools.$findname(tlDatabases.Name) Returns lrefSessionToDestroy
+	If lrefSessionToDestroy
+		Do $sessionpools.$remove(lrefSessionToDestroy)
+	Else
+		Do $sessionpools.$findname($clib().$name) Returns lrefSessionToDestroy
+		If lrefSessionToDestroy
+			Do $sessionpools.$remove(lrefSessionToDestroy)
+		End If
+	End If
+End If

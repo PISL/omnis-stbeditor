@@ -1,0 +1,5 @@
+If not(isnull(iSmtp))
+	Do iSmtp.$cancel()
+	Quit method kTrue
+End If
+Quit method kFalse

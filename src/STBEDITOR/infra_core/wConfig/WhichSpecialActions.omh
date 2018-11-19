@@ -1,0 +1,3 @@
+Do ilSpecialActions.$unfilter(0)
+Do ilSpecialActions.$filter(pos(ilOptionList.code,$ref.whichOption))
+Calculate ilSpecialActions.$line as 0

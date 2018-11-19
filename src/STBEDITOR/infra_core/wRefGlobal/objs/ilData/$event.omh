@@ -1,0 +1,65 @@
+On evClick
+	Calculate lrData as ilData
+	If irefRemoteWindow
+		Do irefRemoteWindow.$highlightDataDiff(lrData) Returns lrDataOtherDB
+	Else If irefCallingWindow
+		Do irefCallingWindow.$highlightDataDiff(lrData) Returns lrDataOtherDB
+	End If
+	
+On evDrop
+	Calculate lcNotationString as pDragField.$fullname()
+	Calculate lcNotationString as mid(lcNotationString,1,pos('$objs',lcNotationString)-2)     ;; determine window instance reference
+	Set reference $cinst.irOtherWin to [lcNotationString]
+	
+	If pos($cclass().$name,lcNotationString)
+		;  good - it has come from an instance of this window class
+		If $cinst.irOtherWin<>$cinst.$ref     ;; it must come from different window
+			;  and it must be a DIFFERENT instance to this one
+			
+			Calculate $cinst.inDeletes as 0
+			Calculate inInserts as 0
+			Calculate $cinst.inNoChanges as 0
+			Calculate inUpdates as 0
+			Calculate inInsertsFailed as 0
+			Calculate inUpdatesFailed as 0
+			
+			Calculate ilOriginal as ilData
+			
+			Calculate llDataOtherDB as pDragValue
+			Do llDataOtherDB.$remove(kListKeepSelected)
+			Calculate llDataOtherDB.$line as 0
+			While $Loop(llDataOtherDB)
+				Calculate lrDataOtherDB as llDataOtherDB
+				
+				Do ilData.$search($ref.RFG_CLASS=llDataOtherDB.RFG_CLASS&$ref.RFG_VALUE=llDataOtherDB.RFG_VALUE,1,0,0,0) Returns lnFound
+				If lnFound
+					Do ilOriginal.$search($ref.RFG_SEQ=ilData.RFG_SEQ,1,0,0,0)
+					Do ilData.$assignrow(lrDataOtherDB,kTrue)
+					;  set RFG_SEQ back to original
+					Calculate ilData.RFG_SEQ as ilOriginal.RFG_SEQ
+					Calculate ilData.RFG_CWHEN as ilOriginal.RFG_CWHEN
+					Calculate ilData.RFG_MWHEN as ilOriginal.RFG_MWHEN
+				Else
+					Do ilData.$add(lrDataOtherDB)
+					Calculate ilData.$line as ilData.$linecount
+					Do ilData.$assignrow(lrDataOtherDB)
+					Calculate ilData.[ilData.$linecount].RFG_SEQ as #NULL
+				End If
+			End While
+			;  possible results:  pbYes, pbCancel, pbAllAutomatic, pbAllWithPrompt
+			;  Open window instance wTransferBatchInstructions_e/CEN (con('Copy only ',llDataOtherDB.1.RFG_CLASS,' ?'),lcPromptResult,'YES',$cinst)
+			;  calls back to $TransferInstructions
+			Do $cinst.$Save()
+			OK message FYI (Sound bell) {inserts: [inInserts]//failed inserts: [inInsertsFailed]//updates: [inUpdates]//failed updates: [inUpdatesFailed]}
+			
+			If ibRefetchAfterDrop
+				If irefCallingWindow
+					Do irefCallingWindow.$fetchDiffs()
+				Else
+					Do $cinst.$fetchDiffs()
+				End If
+			Else
+				Do $cinst.$objs.ilData.$redraw(1,1)
+			End If
+		End If
+	End If

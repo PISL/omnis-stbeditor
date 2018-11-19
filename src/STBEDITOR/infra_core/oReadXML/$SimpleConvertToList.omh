@@ -1,0 +1,12 @@
+Calculate pListXML.$line as 0
+While pListXML.$search($ref.path=pRowDesignator,0,0,0,0)
+	Do pReturnList.$add()
+	Calculate pReturnList.$line as pReturnList.$linecount
+	
+	Calculate pReturnList.C1 as pListXML.[pListXML.$line+1].value
+	Calculate pReturnList.C2 as pListXML.[pListXML.$line+2].value
+	Calculate pReturnList.C3 as pListXML.[pListXML.$line+3].value
+	Calculate pReturnList.C4 as pListXML.[pListXML.$line+4].value
+	Calculate pReturnList.C5 as pListXML.[pListXML.$line+5].value
+	Calculate pReturnList.C6 as pListXML.[pListXML.$line+6].value
+End While

@@ -1,0 +1,33 @@
+;  set $serverport according to the Omnis version (sys(1)) and app name (sys(216))
+;  unless the number is set specifically in the libini db, usually only for published Web Services
+;  pServerPort is used only to pass chosen port number to calling method
+Do $cinst.$GetPref('ServerPort') Returns lnPortNo     ;; in Startup_Task
+If lnPortNo>0
+	Calculate pServerPort as lnPortNo
+Else
+	Calculate lcAppID as mid(sys(216),len(sys(216))-5,2)
+	Calculate lcVersion as replaceall(sys(1),'.','')     ;; get the Omnis version number minus the "."s
+	Calculate lcVersion as left(con(lcVersion,left('000',3-len(lcVersion))),3)     ;; pad it out to 3 digit,s e.g 6.1 becomes 610, and then take the first 3 digits, e.g. 6.1.2.1 becomes 612
+	
+	If left(lcAppID,1)='_'     ;; check that the app has been renamed  XXXX_x
+		If isnumber(right(lcAppID,1))     ;; just to be certain
+			;  2016-04-20 GRS Studio 8 opens two consecutive ports (oBrowser uses the second one)
+			;  so multiply the app ID by 2
+			;  ¡ ¡ ¡  this means we have to be careful running consecutive minor releases on the same machine  ! ! !
+			;  eg. version 8.0.0 with App ID of 9 will use ports 58018/58019 and will clash with version 8.0.1 App ID 4
+			Calculate pServerPort as (lcVersion*10)+(right(lcAppID,1)*2)+50000     ;; 2015-01-22 GRS added the 50000 to put the port into the private range to avoid any possible conflict
+		Else
+			Calculate pServerPort as (lcVersion*10)+50000     ;; default to 0 if the app name hasn't been appended with the underscore+digit
+		End If
+	Else
+		Calculate pServerPort as (lcVersion*10)+50000     ;; default to 0 if the app name hasn't been appended with the underscore+digit
+	End If
+End If
+
+Calculate $prefs.$serverport as pServerPort
+;  check the port is available
+If sys(198)>0     ;; >0 = socket layer error code, bind failed
+	Quit method kFalse
+Else
+	Quit method kTrue
+End If

@@ -1,0 +1,6 @@
+If not(iMessage.[pProperty].$assign(pValue))
+	;  OK message  {Error [iMessage.$errorcode] assigning [pProperty]:[iMessage.$errortext]}
+	Calculate icErrorMessage as con('Error ',iMessage.$errorcode,' assigning ',pProperty,':',iMessage.$errortext)
+	Quit method 1     ;; return an error count
+End If
+Quit method 0

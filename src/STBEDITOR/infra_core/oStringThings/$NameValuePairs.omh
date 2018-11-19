@@ -1,0 +1,30 @@
+If pReturnAsList
+	Do llValues.$cols.$add('name',kCharacter,kSimplechar,100)
+	Do llValues.$cols.$add('value',kCharacter,kSimplechar,255)
+End If
+
+Calculate lcTemp as pSourceString
+While lcTemp<>''
+	If pos(pRowDelimiter,lcTemp)>0
+		Calculate lcLine as mid(lcTemp,1,pos(pRowDelimiter,lcTemp)-1)
+		Calculate lcTemp as mid(lcTemp,len(lcLine)+len(pRowDelimiter)+1,999)
+	Else     ;; last name/value pair
+		Calculate lcLine as lcTemp
+		Calculate lcTemp as ''
+	End If
+	
+	Calculate lcName as mid(lcLine,1,pos(pValueDelimiter,lcLine)-1)
+	Calculate lcValue as mid(lcLine,pos(pValueDelimiter,lcLine)+len(pValueDelimiter),999)
+	If pReturnAsList
+		Do llValues.$add(lcName,lcValue)
+	Else
+		Do lrValues.$cols.$add(lcName,kCharacter,kSimplechar,255)
+		Calculate lrValues.[lcName] as lcValue
+	End If
+End While
+
+If pReturnAsList
+	Quit method llValues     ;; list
+Else
+	Quit method lrValues     ;; row
+End If

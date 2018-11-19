@@ -1,0 +1,43 @@
+Calculate inCountDelete as 0
+
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Do method $WhereNamesDeconstructed (kTrue) Returns lcWhereClause
+	Calculate ldtStart as #D
+	Do ioWeb.$callDelete($cinst,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,lcWhereClause,#NULL)) Returns lnRecordsAffected     ;; 4 columns required
+	Calculate inServiceMS as ddiff(kCentiSecond,ldtStart,#D)*10
+	Calculate inRESTserverMS as ioWeb.inServerTime
+	If isclear(lnRecordsAffected)     ;; could be NULL if call fails to reach the server method
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		Else
+			Quit method kTrue     ;; sql statement was legal but no row was deleted - we will treat this as valid
+		End If
+	End If
+	Quit method kTrue
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Calculate icStatementType as 'DELETE'
+
+Begin statement
+Sta: {delete from [$cinst.$servertablenames()]}
+Sta: {[$cinst.$wherenames()]}
+End statement
+Do $cinst.$executesql() Returns lbOK
+
+If $cinst.$statementobject.$rowsaffected>0
+	Calculate inCountDelete as inCountDelete+$cinst.$statementobject.$rowsaffected
+End If
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lbOK

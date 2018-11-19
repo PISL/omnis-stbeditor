@@ -1,0 +1,58 @@
+Do irErrorSQL.$clear()
+Calculate lList as ilBaseUser
+
+If $ctask.tlDatabases.DAM='WebService'
+	;  utilise a cache of reference values
+	;  Have we searched on this class already?
+	;  Because of $initInherited method there will many instances of records being fetched from Org, Local and Global
+	;  and there being records only in one of those tables.  This check prevents repeated fetched for nothing.
+	If pcREF_VALUE<>''
+		If pos(con(',',pcREF_CLASS,'/',pcREF_VALUE,','),ccClassesU)
+			Calculate lbAlreadyFetched as kTrue
+		End If
+	Else If pos(con(',',pcREF_CLASS,','),ccClassesU)
+		Calculate lbAlreadyFetched as kTrue
+	End If
+	
+	If pcREF_VALUE<>''
+		Do clUser.$search($ref.RFU_CLASS=pcREF_CLASS&$ref.RFU_VALUE=pcREF_VALUE,1,0,1,0) Returns lbFound
+	Else
+		Do clUser.$search($ref.RFU_CLASS=pcREF_CLASS,1,0,1,0) Returns lbFound
+		;  Build up a cache of requested CLASSES to repeated calls to a class that fetches nothing is not repeated.
+		Calculate ccClassesU as con(ccClassesU,pcREF_CLASS,',')
+	End If
+	If totc(clUser,#LSEL)>0
+		Do lList.$merge(clUser,kFalse,kTrue)
+		Do clUser.$search(0) Returns lbFound     ;; clear any selected lines
+		Calculate lbFoundInCache as kTrue
+	End If
+End If
+
+If lList.$linecount=0&not(lbAlreadyFetched)
+	;  only fetch from db if there is nothing in local list
+	Do lList.$FetchClass(pcREF_CLASS,pcREF_VALUE,pbIncludeNonActive,kTrue)     ;; class, value, incl.non.active, append, go_seq
+	If lList.irErrorSQL.NativeErrorText<>''
+		Calculate irErrorSQL as lList.irErrorSQL
+		Quit method
+	End If
+End If
+
+Do lList.$sort($ref.RFU_ORDER,0,$ref.RFU_VALUE,0)
+
+If $ctask.tlDatabases.DAM='WebService'
+	If not(lbFoundInCache)
+		;  build up a cache of reference values
+		Do clUser.$merge(lList)
+		
+		If not(lbAlreadyFetched)
+			;  Build up a cache of requested CLASSES so repeated calls to a class that fetches nothing is not repeated.
+			If pcREF_VALUE<>''
+				Calculate ccClassesU as con(ccClassesU,pcREF_CLASS,'/',pcREF_VALUE,',')
+			Else
+				Calculate ccClassesU as con(ccClassesU,pcREF_CLASS,',')
+			End If
+		End If
+	End If
+End If
+
+Quit method lList

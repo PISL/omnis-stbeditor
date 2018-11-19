@@ -1,0 +1,6 @@
+If pShift>0
+	Calculate lcNewString as con(mid(pStringIn,1+pShift,255),mid(pStringIn,1,pShift))
+Else If pShift<0
+	Calculate lcNewString as con(mid(pStringIn,len(pStringIn)-abs(pShift)+1,abs(pShift)),mid(pStringIn,1,len(pStringIn)-abs(pShift)))
+End If
+Quit method lcNewString

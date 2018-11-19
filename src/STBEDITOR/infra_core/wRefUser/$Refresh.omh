@@ -1,0 +1,46 @@
+Do method $Save
+Calculate irCurrentOption as ilPreferences
+
+;  when a line from ilPreferences is selected the REF_CHAR column contains pseudo xml to determine behaviour
+;  <winmethod>$WindowClasses</winmethod><DisplayList>ilDisplay</DisplayList><response>single_line</response>
+;  Breakpoint
+Do toStrings.$TagContent(ilPreferences.RFO_CHAR,'winmethod') Returns lcWinMethod
+Do toStrings.$TagContent(ilPreferences.RFO_CHAR,'DisplayList') Returns lcDisplayListName
+Do toStrings.$TagContent(ilPreferences.RFO_CHAR,'response') Returns lcResponseInstruction
+Do toStrings.$TagContent(ilPreferences.RFO_CHAR,'sound_file') Returns lcSoundFile
+
+If lcWinMethod<>''
+	Do method [lcWinMethod]     ;; ilDisplay
+End If
+;  If lcDisplayListName<>''
+;  Calculate $cinst.$objs.[lcDisplayListName].$visible as kTrue
+;  End If
+Calculate $cinst.$objs.ilDisplay_single.$visible as kFalse
+Calculate $cinst.$objs.ilDisplay_multi.$visible as kFalse
+If lcResponseInstruction<>''
+	If lcResponseInstruction='single_line'
+		Calculate $cinst.$objs.ilDisplay_single.$visible as kTrue
+	Else If lcResponseInstruction='multi_line'
+		Calculate $cinst.$objs.ilDisplay_multi.$visible as kTrue
+	End If
+End If
+
+;  present existing settings to user
+Do ilData.$clear()
+Do ilData.$FetchClass(ilPreferences.RFO_VALUE,,kTrue)
+If ilData.$linecount>0&lcResponseInstruction<>''
+	While $Loop(ilData)
+		Do ilDisplay.$search($ref.code=ilData.RFU_VALUE,1,0,1,0)
+	End While
+End If
+Calculate ilData.$smartlist as kTrue
+Calculate ilData.$line as 0
+
+;  fetch standard settings for validation
+;  Do ilREFERENCE.$clear()
+;  If toStrings.$TagContent(ilPreferences.RFO_CHAR,'type')='list'
+;  Do ilREFERENCE.$FetchClass(ilPreferences.REF_VALUE)
+;  End If
+
+Do $cinst.$behaviour()
+Do $cinst.$redraw()

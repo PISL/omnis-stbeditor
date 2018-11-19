@@ -1,0 +1,22 @@
+Do prData.$cols.$findname('emailCC') Returns liColRef
+If liColRef
+	Calculate llValue as prData.emailCC
+Else
+	Do prData.$cols.$findname('CC') Returns liColRef
+	If liColRef
+		Calculate llValue as prData.CC
+	Else
+		Do prData.$cols.$findname('cc') Returns liColRef
+		If liColRef
+			Calculate llValue as prData.cc
+		Else
+			Quit method pcDefault
+		End If
+	End If
+End If
+
+If pbReturnList
+	Quit method llValue
+Else
+	Quit method $cinst.$ListToString(llValue,'C1')
+End If

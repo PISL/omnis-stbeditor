@@ -1,0 +1,18 @@
+;  Do $cinst.$sessionobject.$assign(pSession) Returns lbOK
+;  Do $cinst.$statementobject.$assign(pStatement) Returns lbOK
+
+If pbKillSession
+	Do $cinst.$sessionobject.$assign(#NULL) Returns lbOK
+	Do $cinst.$statementobject.$assign(#NULL) Returns lbOK
+Else If pSession.$state=kSessionStateLoggedOn
+	Do $cinst.$sessionobject.$assign(pSession) Returns lbOK
+	Do $cinst.$statementobject.$assign(pStatement) Returns lbOK
+Else If $ctask.tSession.$state=kSessionStateLoggedOn
+	Do $cinst.$sessionobject.$assign($ctask.tSession) Returns lbOK
+	Do $cinst.$statementobject.$assign($ctask.tStatement) Returns lbOK
+Else If $ctask.tFormSession.$state=kSessionStateLoggedOn
+	Do $cinst.$sessionobject.$assign($ctask.tFormSession) Returns lbOK
+	Do $cinst.$statementobject.$assign($ctask.tFormStatement) Returns lbOK
+Else
+	Breakpoint {!}
+End If

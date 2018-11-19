@@ -1,0 +1,7 @@
+Do ioEmail2.$getRowServer() Returns lrServer
+Do ioEmail2.$getRowMessage() Returns lrMessage
+Do ioEmail2.$getRowAttributes() Returns lrAttributes
+
+Calculate pretAttributes as lrAttributes
+Calculate pretMessage as lrMessage
+Calculate pretServer as lrServer

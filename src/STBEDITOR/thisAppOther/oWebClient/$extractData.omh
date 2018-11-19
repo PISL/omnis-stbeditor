@@ -1,0 +1,10 @@
+
+
+Calculate lbinResponse as pbinData
+If ibEncryptInternally
+	Do oUnfoldParams.$decrypt(lbinResponse) Returns lbinResponse
+	Do oUnfoldParams.$decrypt(lbinResponse) Returns lbinResponse
+End If
+Calculate lReturn as lbinResponse
+
+Quit method lReturn

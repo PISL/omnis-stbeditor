@@ -1,0 +1,31 @@
+;  Begin reversible block
+;  Set current list P_LIST
+;  End reversible block
+Do llResult.$cols.$add('LINE',kCharacter,kSimplechar,100000)
+Calculate lvDelimiter as P_DELIM
+
+;  delimiter is chr(13)
+If right(P_SOURCE,len(lvDelimiter))=lvDelimiter
+	Calculate lbLastFieldEmpty as kTrue
+End If
+While P_SOURCE<>''
+	Calculate lvDelimPos as pick(pos(lvDelimiter,P_SOURCE)>0,len(P_SOURCE)+1,pos(lvDelimiter,P_SOURCE))
+	Calculate lvcString as mid(P_SOURCE,1,lvDelimPos-1)
+	Calculate P_SOURCE as mid(P_SOURCE,lvDelimPos+len(P_DELIM),99999)     ;; eliminate TOKEN - we can do this because parameters are passed by value
+	If P_OMIT_MULTIPLE_DELIMITERS
+		While mid(P_SOURCE,1,len(P_DELIM))=P_DELIM
+			Calculate P_SOURCE as mid(P_SOURCE,1+len(P_DELIM),99999)     ;; eliminate superfluous delimiters if they exist
+		End While
+	End If
+	Do llResult.$add(lvcString)
+	;  Add line to list {(lvcString)}
+End While
+
+If lbLastFieldEmpty
+	Calculate lvcString as ''
+	Do llResult.$add(lvcString)
+End If
+;  If nam(P_LIST)<>'P_LIST'
+;  Do P_LIST.$merge(llResult)
+;  End If
+Quit method llResult

@@ -1,0 +1,31 @@
+;  Breakpoint
+;  parse the xml contents to extract the data
+Calculate lXML.$parservalidates as kFalse
+Calculate lRawXML as chartoutf8(pVersionFileContents)
+Do lXML.$loadbinary(lRawXML,lErrorText) Returns lOK
+;  Do lXML.$savelist(llContents,lErrorText,kTrue)
+Do lXML.$savetree(llContents,lErrorText,kTrue,kTrue,kTrue)
+
+Do llContents.$search(rpos('/',$ref.path)>1,1,0,1,1)
+Do llContents.$remove(kListKeepSelected)
+
+;  Do llContents.$sendall($ref.path.$assign(mid($sendallref.path,2,len($sendallref.path))))
+Do llContents.$sendall($ref.path.$assign(replaceall($sendallref.path,'/','')))
+
+
+Calculate llContents.$line as 0
+While $Loop(llContents)
+	If llContents.value<>''
+		Do lrConfigFile.$cols.$add(llContents.path,kCharacter,kSimplechar,50)
+		Calculate lrConfigFile.[llContents.path] as llContents.value
+		
+	End If
+End While
+
+Quit method lrConfigFile
+
+
+
+Do lrConfigFile.$cols.$add('ServerPort',kInteger,k32bitint)
+Do llContents.$search($ref.path='/serverport',1,0,0,0) Returns lbFound
+Calculate lrConfigFile.ServerPort as llContents.value

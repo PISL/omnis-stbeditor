@@ -1,0 +1,138 @@
+Do lrResult.$cols.$add('countInsertTotal',kInteger,k32bitint)
+Do lrResult.$cols.$add('countUpdateTotal',kInteger,k32bitint)
+Calculate lnCountDays as ddiff(kDay,pFrom,pTo)
+For lnCountCols from 1 to lnCountDays+1 step 1
+	Do lrResult.$cols.$add(con('countInsert',lnCountCols),kInteger,k32bitint)
+	Do lrResult.$cols.$add(con('countUpdate',lnCountCols),kInteger,k32bitint)
+End For
+
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Calculate ldtStart as #D
+	Do ioWeb.$callFetch(lrResult,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pFrom,pTo,pcExtraString,pcJoinTable),lrResult.$type,0,ilRESTextensions))
+	Calculate inServiceMS as ddiff(kCentiSecond,ldtStart,#D)*10
+	Calculate inRESTserverMS as ioWeb.inServerTime
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method kTrue
+	Else
+		Quit method kFalse
+	End If
+End If
+
+Do $cinst.$cols.$findname(con(icPrefix,'MWHEN')) Returns liColRefMwhen
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Calculate ldEndOfDate as pTo+1
+Calculate pcExtraString as trim(pcExtraString)
+
+Calculate icStatementType as 'SELECT'
+
+;  count inserts
+Calculate lnCountInsert as 0
+Begin statement
+Sta: {select count(*) from [$cinst.$servertablenames()]}
+If pcJoinTable<>''
+	Do lrJoinTable.$definefromsqlclass(pcJoinTable)
+	Calculate lcPrimary as lrJoinTable.icPrimaryKey
+	Calculate lcForeign as lrJoinTable.icForeignKey
+	Sta: {join [lrJoinTable.$servertablenames] on [$cinst.icForeignKey] = [lcPrimary]}
+End If
+;  If liColRefMwhen
+;  Sta: where [icPrefix]MWHEN between @[pFrom] and @[ldEndOfDate]
+;  Sta: and    [icPrefix]MWHEN = [icPrefix]CWHEN
+;  Else
+Sta: {where [icPrefix]CWHEN between @[pFrom] and @[ldEndOfDate]}
+;  End If
+If pcExtraString<>''
+	If left(upp(pcExtraString),4)<>'AND '
+		Calculate pcExtraString as con(' and ',pcExtraString)
+	End If
+	Sta: {[pcExtraString]}
+End If
+End statement
+Do method $executesqlandfetchinto (lnCountInsert)
+Calculate lrResult.countInsertTotal as lnCountInsert
+
+If liColRefMwhen
+	;  count updates
+	Calculate lnCountUpdate as 0
+	
+	Calculate icStatementType as 'SELECT'     ;; reset here as $recordStats clears it
+	
+	Begin statement
+	Sta: {select count(*) from [$cinst.$servertablenames()]}
+	If pcJoinTable<>''
+		Sta: {join [lrJoinTable.$servertablenames] on [$cinst.icForeignKey] = [lcPrimary]}
+	End If
+	Sta: {where [icPrefix]MWHEN between @[pFrom] and @[ldEndOfDate]}
+	Sta: {and    [icPrefix]MWHEN <> [icPrefix]CWHEN}
+	If pcExtraString<>''
+		Sta: {[pcExtraString]}
+	End If
+	End statement
+	Do method $executesqlandfetchinto (lnCountUpdate)     ;; irErrorSQL
+	Calculate lrResult.countUpdateTotal as lnCountUpdate
+End If
+
+For lnCountCols from 1 to lnCountDays+1 step 1
+	Calculate ldDate as dadd(kDay,lnCountCols-1,pFrom)
+	Calculate ldEndOfDate as ldDate+1
+	
+	Calculate lnCountInsert as 0
+	Calculate lnCountUpdate as 0
+	
+	Calculate icStatementType as 'SELECT'     ;; reset here as $recordStats clears it
+	
+	Begin statement
+	Sta: {select count(*) from [$cinst.$servertablenames()]}
+	If pcJoinTable<>''
+		Sta: {join [lrJoinTable.$servertablenames] on [$cinst.icForeignKey] = [lcPrimary]}
+	End If
+	;  If liColRefMwhen
+	;  Sta: where [icPrefix]MWHEN between @[ldDate] and @[ldEndOfDate]
+	;  Sta: and    [icPrefix]MWHEN = [icPrefix]CWHEN
+	;  Else
+	Sta: {where [icPrefix]CWHEN between @[ldDate] and @[ldEndOfDate]}
+	;  End If
+	If pcExtraString<>''
+		Sta: {[pcExtraString]}
+	End If
+	End statement
+	Do method $executesqlandfetchinto (lnCountInsert)
+	Calculate lrResult.countInsert[lnCountCols] as lnCountInsert
+	
+	If liColRefMwhen
+		Calculate icStatementType as 'SELECT'     ;; reset here as $recordStats clears it
+		
+		Begin statement
+		Sta: {select count(*) from [$cinst.$servertablenames()]}
+		If pcJoinTable<>''
+			Sta: {join [lrJoinTable.$servertablenames] on [$cinst.icForeignKey] = [lcPrimary]}
+		End If
+		Sta: {where [icPrefix]MWHEN between @[ldDate] and @[ldEndOfDate]}
+		Sta: {and    [icPrefix]MWHEN <> [icPrefix]CWHEN}
+		If pcExtraString<>''
+			Sta: {[pcExtraString]}
+		End If
+		End statement
+		Do method $executesqlandfetchinto (lnCountUpdate)
+		Calculate lrResult.countUpdate[lnCountCols] as lnCountUpdate
+	End If
+End For
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lrResult

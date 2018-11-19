@@ -1,0 +1,45 @@
+;  does the tag have attributes?
+Calculate lnTagStart as pos(con('<',pTag,'>'),pString)
+If lnTagStart=0
+	;  then it probably does have attributes
+	Calculate lnTagStart as pos(con('<',pTag,' '),pString)
+	If lnTagStart=0
+		Quit method ''
+	End If
+	Calculate lnTagWithAttributesEnd as pos('>',mid(pString,lnTagStart,kFetchAll))
+End If
+Calculate lnTagEnd as pos(con('</',pTag,'>'),pString)
+If lnTagEnd=0&lnTagWithAttributesEnd>0
+	;  tag does not have content     ;; the "content" is within the attributes
+	;  and the tag is terminated with a  />
+	Calculate lnTagEnd as pos(con('/>'),mid(pString,lnTagStart,kFetchAll))
+	Calculate lnTagWithAttributesEnd as lnTagEnd+lnTagStart-1
+End If
+
+Do llAttributes.$cols.$add('Name',kCharacter,kSimplechar,255)
+Do llAttributes.$cols.$add('Value',kCharacter,kSimplechar,10000000)
+
+Calculate lcTemp as mid(pString,lnTagStart,lnTagWithAttributesEnd-lnTagStart)
+If pos(con('<',pTag,' '),lcTemp)=1
+	Calculate lcTemp as mid(lcTemp,len(con('<',pTag,' ')),kFetchAll)
+End If
+Calculate lcTemp as trim(lcTemp)     ;; trailing spaces
+While lcTemp<>''
+	Calculate lcName as strtok(nam(lcTemp),'=')
+	If mid(lcTemp,1,1)='"'     ;; double quote
+		Calculate lcValue as strtok(nam(lcTemp),'"')     ;; step required to eliminate first "
+		Calculate lcValue as strtok(nam(lcTemp),'"')
+		Calculate lcTemp as trim(lcTemp)     ;; trailing spaces
+		
+	Else If mid(lcTemp,1,1)="'"     ;; single quote
+		Calculate lcValue as strtok(nam(lcTemp),"'")     ;; step required to eliminate first "
+		Calculate lcValue as strtok(nam(lcTemp),"'")
+		Calculate lcTemp as trim(lcTemp)     ;; trailing spaces
+		
+	Else
+		Calculate lcValue as strtok(nam(lcTemp),' ')
+	End If
+	Do llAttributes.$add(lcName,lcValue)
+End While
+
+Quit method llAttributes

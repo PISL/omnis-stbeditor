@@ -1,0 +1,115 @@
+Do llContent.$cols.$add('address',kCharacter,kSimplechar,255)
+Do llContent.$cols.$add('preAt',kCharacter,kSimplechar,100)
+Do llContent.$cols.$add('postAt',kCharacter,kSimplechar,100)
+Do llContent.$cols.$add('firstName',kCharacter,kSimplechar,100)
+Do llContent.$cols.$add('lastName',kCharacter,kSimplechar,100)
+
+If pcString<>''
+	Calculate #S1 as pcString
+Else
+	Paste from clipboard #S1
+End If
+
+;  what format is the string in?     ;; semi colon separated with address in single quotes?
+;  or comma separated with address surrounded by < and > ?
+
+;  reduce multi char delimiters to a single char
+If pos(con(kCr,kLf),#S1)
+	Calculate #S1 as replaceall(#S1,con(kCr,kLf),kCr)
+Else If pos(con(kLf,kCr),#S1)
+	Calculate #S1 as replaceall(#S1,con(kLf,kCr),kCr)
+End If
+
+;  try to identify surround character(s)     ;; this character surrounds each email address
+If pos(kSq,#S1)
+	Calculate lcLine as mid(#S1,pos(kSq,#S1)+1,999)
+	Calculate lcLine as mid(lcLine,1,pos(kSq,lcLine)-1)
+	If pos('@',lcLine)
+		Calculate lcSurround as kSq
+	End If
+End If
+If pos(kDq,#S1)
+	Calculate lcLine as mid(#S1,pos(kDq,#S1)+1,999)
+	Calculate lcLine as mid(lcLine,1,pos(kDq,lcLine)-1)
+	If pos('@',lcLine)
+		Calculate lcSurround as kDq
+	End If
+End If
+If pos('<',#S1)
+	Calculate lcLine as mid(#S1,pos('<',#S1)+1,999)
+	Calculate lcLine as mid(lcLine,1,pos('>',lcLine)-1)
+	If pos('@',lcLine)
+		Calculate lcSurround as '<>'
+	End If
+End If
+
+;  try and find a delimiter
+If lcDelimiter=''
+	If pos(';',#S1)
+		Calculate lcDelimiter as ";"
+	Else If pos(',',#S1)
+		Calculate lcDelimiter as ','
+	Else If pos(kCr,#S1)
+		Calculate lcDelimiter as kCr
+	Else If pos(kLf,#S1)
+		Calculate lcDelimiter as kLf
+	Else
+		;  this is probably a single entry string
+		;  strtok() needs something to act as delimiter for it to work
+		Calculate lcDelimiter as ','
+	End If
+End If
+
+If lcDelimiter<>''&lcSurround<>''
+	;  proceed
+Else
+	;  although this method is designed to handle a string of multiple addresses...
+	;  it may be that the string has a single email address
+	;  in which case a missing delimiter is valid
+	;  Breakpoint
+	;  Similarly for a missing surround.     ;; If a string of robertmostyn@mac.com is provided, the method should return a list of 1 line
+End If
+
+While #S1<>''
+	Calculate lcLine as strtok(nam(#S1),lcDelimiter)
+	Calculate lcLine as replaceall(lcLine,kCr,'')
+	Calculate lcLine as replaceall(lcLine,kLf,'')
+	Calculate lcLine as trim(lcLine)
+	
+	;  is there an email address only?  Or a name along with the email address?     ;; e.g. Harding Craig <craig@harding.myzen.co.uk>
+	Calculate lcName as mid(lcLine,1,pos(left(lcSurround,1),lcLine)-1)
+	Calculate lcName as trim(lcName)
+	;  lcName may be surrounded by quotes
+	Calculate lcName as replaceall(lcName,kDq,'')     ;; exterminate
+	Calculate lcName as replaceall(lcName,kSq,'')     ;; exterminate
+	;  lcName will either have something in it, or not
+	
+	;  each email address is (may be) surrounded by '  [lcSurround]
+	If lcSurround='<>'     ;; multi character surround    < and >
+		If pos('<',lcLine)
+			Calculate lcLine as mid(lcLine,pos('<',lcLine)+1,999)
+		End If
+		If pos('>',lcLine)
+			Calculate lcLine as mid(lcLine,1,pos('>',lcLine)-1)
+		End If
+	Else     ;; single character surround such as       "
+		If pos(lcSurround,lcLine)
+			Calculate lcLine as mid(lcLine,pos(lcSurround,lcLine)+1,999)
+		End If
+		If pos(lcSurround,lcLine)
+			Calculate lcLine as mid(lcLine,1,pos(lcSurround,lcLine)-1)
+		End If
+	End If
+	
+	If pos('@',lcLine)
+		Do llContent.$add(lcLine,mid(lcLine,1,pos('@',lcLine)-1),mid(lcLine,pos('@',lcLine)+1,999),mid(lcName,1,pos(' ',lcName)-1),mid(lcName,pos(' ',lcName)+1,99))
+		If len(lcLine)>lnMaxLength
+			Calculate lnMaxLength as len(lcLine)
+		End If
+	End If
+End While
+
+Do llContent.$sort($ref.postAt,0)
+;  Breakpoint     ;; llContent  lnMaxLength
+
+Quit method llContent

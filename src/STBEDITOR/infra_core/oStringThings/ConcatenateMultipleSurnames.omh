@@ -1,0 +1,11 @@
+;  Begin reversible block
+;  Calculate #S5 as con(#S5,pick(#S5<>'','',chr(13)),evalf(tStackCalc))
+;  End reversible block
+
+Calculate lvcString as ''
+Calculate lvcString as con(P_NAME4,pick(lvcString<>'','',pick(pos('&',lvcString)>0,' & ',', ')),lvcString)
+Calculate lvcString as con(P_NAME3,pick(lvcString<>'','',pick(pos('&',lvcString)>0,' & ',', ')),lvcString)
+Calculate lvcString as con(P_NAME2,pick(lvcString<>'','',pick(pos('&',lvcString)>0,' & ',', ')),lvcString)
+Calculate lvcString as con(P_NAME1,pick(lvcString<>'','',pick(pos('&',lvcString)>0,' & ',', ')),lvcString)
+
+Calculate P_RESULT as lvcString

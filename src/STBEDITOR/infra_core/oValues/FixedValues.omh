@@ -1,0 +1,56 @@
+;  REF_CLASS, REF_VALUE, REF_DESC, REF_ORDER, REF_ACTIVE, REF_CHAR, REF_INT, REF_DATE
+;  Do pList.$add('','ref_value','ref_desc',0,1,'ref_char',0,#NULL)
+
+If pcREF_CLASS='RTR_ADV_TODAY'     ;; mdm_office
+	Do pList.$add(,pcREF_CLASS,'COMP_DATE','Completion date',0,2)
+	Do pList.$add(,pcREF_CLASS,'TARGET_DATE','Target date',0,2)
+	Do pList.$add(,pcREF_CLASS,'DUE_DATE','Due date',0,2)
+	
+Else If pcREF_CLASS='DWELLING_TYPE'
+	Do pList.$add(,pcREF_CLASS,'APARTMENT_G','Flat with exclusive garden',20,2)
+	Do pList.$add(,pcREF_CLASS,'APARTMENT_NG','Flat without exclusive garden',10,2)
+	Do pList.$add(,pcREF_CLASS,'HOUSE_SEMI','House, semi detached',50,2)
+	Do pList.$add(,pcREF_CLASS,'HOUSE_DET','House, detached',60,2)
+	Do pList.$add(,pcREF_CLASS,'HOUSE_TRCM','Terrace house (mid terrace)',40,2)
+	Do pList.$add(,pcREF_CLASS,'HOUSE_TRCE','Terrace house (end terrace)',30,2)
+	;  Do tk.$cols.$add('tlTypeOfDwelling',kList)
+	;  Calculate tk.tlTypeOfDwelling as pList
+	
+Else If pcREF_CLASS='MET_PURPOSE'     ;; ResMon
+	Do pList.$add(,pcREF_CLASS,'OPERATIONS','Operational',1,2)
+	Do pList.$add(,pcREF_CLASS,'DWELLING','Dwelling',2,2)
+	
+Else If pcREF_CLASS='SF_TYPE'
+	Do pList.$add(,pcREF_CLASS,'COMMENT','General comment',0,2)     ;; SEQ, CLASS, VALUE, ORDER, ACTIVE
+	Do pList.$add(,pcREF_CLASS,'BUG','Software bug',1,2)     ;; SEQ, CLASS, VALUE, ORDER, ACTIVE
+	Do pList.$add(,pcREF_CLASS,'ENHANCEMENT','Enhancement request',2,2)
+	Do pList.$add(,pcREF_CLASS,'BEHAVIOUR','Form behaviour query',3,2)
+	
+Else If pcREF_CLASS='SF_RESP_TYPE'
+	Do pList.$add(,pcREF_CLASS,'PHONE','Please call me',0,2)     ;; SEQ, CLASS, VALUE, ORDER, ACTIVE
+	Do pList.$add(,pcREF_CLASS,'EMAIL','Email',1,2)
+	
+Else If pcREF_CLASS='DG_OCCUPANCY'     ;; Conference
+	Do pList.$add(,pcREF_CLASS,'I','Single',1,2)
+	Do pList.$add(,pcREF_CLASS,'H','Shared',2,2)
+	Do pList.$add(,pcREF_CLASS,'P','Speaker',3,2)
+	Do pList.$add(,pcREF_CLASS,'F','Family',4,2)
+	Do pList.$add(,pcREF_CLASS,'U','Spouse',5,2)
+	Do pList.$add(,pcREF_CLASS,'N','No accommodation',6,2)
+	Do pList.$add(,pcREF_CLASS,'D','24hr rate',7,2)
+	
+Else If pcREF_CLASS='DG_STATUS'     ;; Conference
+	Do pList.$add(,pcREF_CLASS,'ENQUIRY','Enquiry',1,2)
+	Do pList.$add(,pcREF_CLASS,'REG_UNPAID','Registered, unpaid',2,2)
+	Do pList.$add(,pcREF_CLASS,'REG_PARTPAID','Registered, part paid',3,2)
+	Do pList.$add(,pcREF_CLASS,'PAID','Paid in full',4,2)
+	Do pList.$add(,pcREF_CLASS,'DISPUTE','Disputed',5,2)
+	Do pList.$add(,pcREF_CLASS,'SPEAKER','Speaker',6,2)
+	
+Else If pcREF_CLASS='PHOTOID_TYPE'
+	Do pList.$add(,pcREF_CLASS,'PASSPORT','Passport',0,2)     ;; SEQ, CLASS, VALUE, DESC, ORDER, ACTIVE
+	Do pList.$add(,pcREF_CLASS,'NINO','National insurance no.',0,2)
+	Do pList.$add(,pcREF_CLASS,'DL','Drivers licence',0,2)
+	Do pList.$add(,pcREF_CLASS,'IDCARD','ID card',0,2)
+	
+End If

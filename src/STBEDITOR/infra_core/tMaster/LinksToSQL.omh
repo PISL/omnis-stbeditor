@@ -1,0 +1,43 @@
+
+;  Generates the sql text necessary to link to a foreign column
+Calculate llLinks as toStrings.$StringToList(pcLinks,',')
+
+
+While $Loop(llLinks)
+	If pos(' and ',llLinks.LINE)
+		;  this is to handle multiple key connection to foreign table
+		Calculate llExtras as toStrings.$StringToList(llLinks.LINE,' and ')
+		While $Loop(llExtras)
+			If llExtras.$line=1
+				Calculate llLinks.LINE as llExtras.LINE
+			Else
+				Do method addTableNames (llExtras,lcForeignTable,pcTableAlias)
+			End If
+		End While
+		Do llExtras.$remove(1)
+	End If
+	
+	Do method addTableNames (llLinks,lcForeignTable,pcTableAlias)
+	
+	Do ilLinkTables.$search($ref.TABLE=lcForeignTable,1,0,0,0) Returns lnLine
+	If lnLine
+		If pbOuterJoin&ilLinkTables.OUTER=kFalse
+			Calculate ilLinkTables.OUTER as pbOuterJoin
+		End If
+		If ilLinkTables.JOIN<>llLinks.LINE
+			Calculate ilLinkTables.EXTRAQUERYTEXT as llLinks.LINE
+		End If
+	Else
+		Do ilLinkTables.$add(lcForeignTable,llLinks.LINE,pbOuterJoin)
+		Calculate ilLinkTables.$line as ilLinkTables.$linecount
+	End If
+	If llExtras.$linecount
+		Calculate llExtras.$line as 0
+		While $Loop(llExtras)
+			Calculate ilLinkTables.EXTRAQUERYTEXT as con(ilLinkTables.EXTRAQUERYTEXT,pick(len(ilLinkTables.EXTRAQUERYTEXT)>0,'',' and '),llExtras.LINE)
+		End While
+	End If
+	
+End While
+
+Quit method

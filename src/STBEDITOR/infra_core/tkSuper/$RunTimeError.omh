@@ -1,0 +1,39 @@
+Calculate lnErrorCode as #ERRCODE
+Calculate lcErrText as #ERRTEXT
+;  An error handler loaded within an error handler is always reversed at end of the method
+Load error handler $DummyErrorHandler     ;; prevent errors that arise in this method to trigger itself again
+If lnErrorCode=25207
+	;  e.g.  If irPage.OrganiserID>0   when no OrganiserID column exists     ;; do not report
+Else If lnErrorCode=835     ;; 4:13:Unrecognized variable name, item name or attribute
+	;  e.g. Test for valid calculation {eval(irRepository.PC_USEIF)}  when contents includes vars out of scope     ;; from oDynamicHTML
+Else If lnErrorCode=25224     ;; Unrecognized task variable
+	;  e.g. Do llData.$SetSession($ctask.tFormSession,$ctask.tStatement)     ;; from oDynamicHTML
+Else If lnErrorCode=25216     ;; Attempt to use an instance or task variable when no instance exists
+	;  e.g. Calculate clRepository as ilPageContent  when clearing cache via Do code method     ;; from oDynamicHTML
+	;  Do code method oDynamicHTML/ClearClassVars     ;; from wPageContent
+Else If lnErrorCode=1298     ;; Not avaiilable in Unicode version
+	;  e.g. Calculate #S1 as sys(134)     ;; from oDynamicHTML
+	;  Do code method oDynamicHTML/ClearClassVars     ;; from wPageContent
+Else If lnErrorCode=8855
+	;  Failed to create session pool
+Else If lnErrorCode=25215
+	;  Unable to set up a table or object from disk𯿿The class name is updater_server.tVersion
+	;  this error is occurring in updater_client when doing a "Calculate lrow as row_returned_by_updater_server" but execution continues
+Else If lnErrorCode>1     ;; >100000 are fatal errors that stop execution;  error 1 is "no error ocurred"
+	Calculate lcError as con('runtime error no: ',lnErrorCode,kCr,lcErrText)
+	Breakpoint {[lcError]}
+	;  If 1=0
+	If trCurrUser.$colcount>0
+		Calculate lcUserName as con(' - ',trCurrUser.USR_NAME)
+	Else
+		Calculate lcUserName as con(' - console')
+	End If
+	Do method $ProcedureStack Returns lcDiagnosticInfo
+	Send to trace log {[$cmethod().$name]:  [lcError]   [lcDiagnosticInfo]}
+	If sys(2)=17     ;; pos('002W',sys(5))>0
+		;  dont emaiil from developer version
+	Else
+		Do $SendEmail(tConstants.EmailAddressWebmaster,con($clib().$name,' Web App ( runtime) Error',lcUserName),con(lcError,kCr,kCr,lcDiagnosticInfo),#NULL,#NULL,#NULL,#NULL,#NULL)
+	End If
+	;  End If
+End If

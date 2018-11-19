@@ -1,0 +1,23 @@
+Calculate icValidationMessage as ''
+Do ilValidation.$clear()
+
+If $cinst.OMS_OMG_REF<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'OMS_OMG_REF missing')
+	Do ilValidation.$add('OMS_OMG_REF_LBL','VAL_MISSING','OMS_OMG_REF missing',0)
+End If
+
+If $cinst.STRINGID<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'STRINGID missing')
+	Do ilValidation.$add('STRINGID_LBL','VAL_MISSING','STRINGID missing',0)
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

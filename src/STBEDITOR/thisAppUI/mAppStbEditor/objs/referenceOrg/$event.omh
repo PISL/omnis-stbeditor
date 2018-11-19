@@ -1,0 +1,10 @@
+If #SHIFT
+	Open window instance wRefOrg/*/CEN
+Else
+	Test for window open {wRefOrg}
+	If flag true
+		Bring window instance to front wRefOrg
+	Else
+		Open window instance wRefOrg/CEN
+	End If
+End If

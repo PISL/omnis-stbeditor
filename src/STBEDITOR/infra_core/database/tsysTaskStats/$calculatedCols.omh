@@ -1,0 +1,8 @@
+Calculate $cinst.durationTask as ddiff(kSecond,$cinst.STS_START,$cinst.STS_END)
+Do toStrings.$TimeLapse(kSecond,$cinst.durationTask) Returns $cinst.elapsedTask
+
+Calculate $cinst.durationUser as ddiff(kSecond,$cinst.STS_START,$cinst.STS_LAST_RESPONSE)
+Do toStrings.$TimeLapse(kSecond,$cinst.durationUser) Returns $cinst.elapsedUser
+
+Calculate $cinst.unused as ddiff(kSecond,$cinst.STS_LAST_RESPONSE,$cinst.STS_END)
+Do toStrings.$TimeLapse(kSecond,$cinst.unused) Returns $cinst.elapsedUnused

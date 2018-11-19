@@ -1,0 +1,61 @@
+Calculate $cinst.$line as 0
+
+;  always do deletes first
+;  Calculate $cinst.$history.$line as 0
+;  For lnLine from 1 to $cinst.$history.$linecount step 1
+;  If $cinst.$history.[$cinst.$history.$line].$status=kRowDeleted
+;  Calculate lRow as $cinst
+;  Do lRow.$delete() Returns lbOK
+;  If lRow.inCountDelete>0
+;  Calculate lnCountDeletes as lnCountDeletes+lRow.inCountDelete
+;  Else If lRow.irErrorSQL.NativeErrorText<>''
+;  Calculate irErrorSQL as lRow.irErrorSQL
+;  Calculate lnCountErrors as lnCountErrors+1
+;  End If
+;  End If
+;  End For
+Do $cinst.$dodeletes()
+
+;  then do inserts and updates
+While $Loop($cinst)
+	;  OK message  {$cinst.$history.$status = [$cinst.$history.$status]}
+	;  Breakpoint
+	If $cinst.$status=kRowInserted
+		Calculate lRow as $cinst
+		Do lRow.$insert() Returns lbOK
+		If lRow.inCountInsert>0
+			Calculate lnCountInserts as lnCountInserts+lRow.inCountInsert
+			Do $cinst.[$cinst.$line].$assignrow(lRow)
+		Else If lRow.irErrorSQL.NativeErrorText<>''
+			Calculate irErrorSQL as lRow.irErrorSQL
+			Calculate lnCountErrors as lnCountErrors+1
+		End If
+	Else If $cinst.$status=kRowUpdated
+		Calculate lRow as $cinst
+		Do lRow.$update() Returns lbOK
+		If lRow.inCountUpdate>0
+			Calculate lnCountUpdates as lnCountUpdates+lRow.inCountUpdate
+			Do $cinst.[$cinst.$line].$assignrow(lRow)
+		Else If lRow.irErrorSQL.NativeErrorText<>''
+			Calculate irErrorSQL as lRow.irErrorSQL
+			Calculate lnCountErrors as lnCountErrors+1
+		End If
+	End If
+	
+End While
+
+;  put totals into the instance vars
+Calculate inCountDelete as lnCountDeletes
+Calculate inCountInsert as lnCountInserts
+Calculate inCountUpdate as lnCountUpdates
+
+If pbReturnCount
+	Quit method lnCountInserts+lnCountUpdates+lnCountDeletes
+Else
+	If lnCountErrors=0&lnCountInserts=0&lnCountUpdates=0&lnCountDeletes=0
+		;  Then no attempt has been made at updating the database.     ;; Signal everything is ok.
+		Quit method kTrue
+	Else
+		Quit method lbOK
+	End If
+End If

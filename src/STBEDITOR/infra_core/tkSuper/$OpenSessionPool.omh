@@ -1,0 +1,61 @@
+
+If pPoolName<>''
+	;  good
+Else
+	Calculate lcTemp as con(lcTemp,pick(lcTemp<>'','',', '),'Pool name missing')
+End If
+If pHostName<>''
+	;  good
+Else
+	Calculate lcTemp as con(lcTemp,pick(lcTemp<>'','',', '),'Host name missing')
+End If
+If pDAM<>''
+	;  good
+Else
+	Calculate lcTemp as con(lcTemp,pick(lcTemp<>'','',', '),'DAM missing')
+End If
+If lcTemp<>''
+	Breakpoint
+	If irefMessageWinExists
+		Open window instance wMessage_e/* (con('Missing parameters from ',$cmethod().$name,': ',lcTemp))
+	End If
+	Quit method
+End If
+If pnPoolSize=0
+	Calculate pnPoolSize as 5
+End If
+
+Calculate inMaxConnections as pnPoolSize
+
+Do $sessionpools.$findname(pPoolName) Returns lrefPool
+If lrefPool     ;; $sessionpools.[pPoolName].$ref
+	;  established
+Else
+	;  Working message  {opening sessionpool [pPoolName]}
+	If upp(pDAM)='OMNIS'|upp(pDAM)='OMSQLDAM'
+		Do $extobjects.OMSQLDAM.$objects.OMSQLSESS.$makepool(pPoolName,pnPoolSize,pHostName,pID,pPassword) Returns lrefPool
+	Else If upp(pDAM)='POSTGRES'|upp(pDAM)='PGSQLDAM'
+		Do $extobjects.PGSQLDAM.$objects.PGSQLSESS.$makepool(pPoolName,pnPoolSize,pHostName,pID,pPassword,'tkSuper.SetDB') Returns lrefPool
+		If lrefPool
+			;  If flag true
+			Do method $DynamicSession (loSession,loStatement)
+			Do method checkDBversion (loSession.$version)
+		Else
+			If irefProgressLog
+				Do irefProgressLog.$AddEntry(con('failed to establish session pool'))
+			End If
+			;  Breakpoint
+			Quit method kFalse
+		End If
+		Calculate loSession as ''
+		Calculate loStatement as ''
+	End If
+	If lrefPool
+		;  established
+	Else
+		Do $AppError(con('EMERGENCY ! !     failed to open database ',pHostName),pPoolName)
+		Quit method kFalse
+	End If
+End If
+;  Close working message
+Quit method kTrue

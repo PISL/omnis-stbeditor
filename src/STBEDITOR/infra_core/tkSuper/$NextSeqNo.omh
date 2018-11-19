@@ -1,0 +1,48 @@
+;  Quit method
+;  to grab a batch of sequence numbers
+;  if a method knows it is going to assign a number of new records, say 27 of them
+;  then calling this procedure with 27 in P_MULTIPLE will increment it by that number
+;  Breakpoint     ;; does this really work, or not?
+
+Calculate lvnCounter as 0
+If trSequence.$colcount>0
+	;  initialised
+Else
+	Do trSequence.$definefromsqlclass('tsysSequences')
+End If
+Repeat
+	Do trSequence.$clear()     ;; irAppSequence   tSequence
+	Do trSequence.$fetch_pk(P_TABLE)
+	;  Do trSequence.$fetch(con("where SEQ_CLASS = '",P_TABLE,"'"))
+	Calculate lrOrig as trSequence
+	
+	Calculate lvnLastSequence as trSequence.SEQ_NUMBER
+	Calculate trSequence.SEQ_NUMBER as trSequence.SEQ_NUMBER+pick(P_MULTIPLE>1,1,P_MULTIPLE)
+	
+	If trSequence.SEQ_CLASS<>''
+		Do trSequence.$update(lvnLastSequence) Returns lbOK
+	Else
+		;  record for this table did not exist so must create it
+		
+		Calculate trSequence.SEQ_CLASS as P_TABLE
+		Calculate trSequence.SEQ_NUMBER as 1
+		Do trSequence.$insert() Returns lbOK
+	End If
+	Calculate lvnCounter as lvnCounter+1
+	
+Until (lbOK)|(lvnCounter>10)
+
+If lvnCounter>10&not(lbOK)
+	;  OK message  {An error occurred while attempting to increment a record counter for code "[P_TABLE]".}
+	If irefMessageWinExists
+		Open window instance wMessage_e/* (con('An error occurred while attempting to increment a record counter for code ',P_TABLE,))
+	End If
+	Calculate #F as 0
+	Quit method #NULL
+End If
+
+;  Set current cursor {[f_StdVars._SessionName]}
+If P_COMMIT
+	Commit current session OBSOLETE COMMAND
+End If
+Quit method trSequence.SEQ_NUMBER

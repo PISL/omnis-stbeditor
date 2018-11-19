@@ -1,0 +1,23 @@
+Calculate icValidationMessage as ''
+Do ilValidation.$clear()
+
+;  If $cinst.GO_NAME_FULL<>''
+;  good
+;  Else
+;  Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_NAME_FULL missing')
+;  Do ilValidation.$add('GO_NAME_FULL_LBL','VAL_MISSING','GO_NAME_FULL missing',0)
+;  End If
+;
+If $cinst.GO_NAME_SHORT<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'GO_NAME_SHORT missing')
+	Do ilValidation.$add('GO_NAME_SHORT_LBL','VAL_MISSING','GO_NAME_SHORT missing',0)
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

@@ -1,0 +1,3 @@
+Calculate icPrefix as 'RFG_'
+Calculate icPrimarykey as 'RFG_SEQ'
+Do inherited

@@ -1,0 +1,17 @@
+On evBefore
+	Do $cinst.$behaviour()
+	
+On evAfter
+	If len(ilData.RFO_JSON)
+		Calculate lrJSON as OJSON.$jsontolistorrow(ilData.RFO_JSON,lcMessage)
+		If isclear(lcMessage)
+			;  ok
+		Else
+			Calculate lrJSON as OJSON.$jsontolistorrow(ilData.RFO_JSON,lcMessage,kTrue)     ;; bAllowArraysOfRows
+			If isclear(lcMessage)
+				;  ok
+			Else
+				OK message Validation Failed {[lcMessage]}
+			End If
+		End If
+	End If

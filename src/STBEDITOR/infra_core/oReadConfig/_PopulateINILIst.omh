@@ -1,0 +1,20 @@
+;
+For ilIniTextLinesList.$line from 1 to ilIniTextLinesList.$linecount step 1
+	Calculate lcIniLine as trim(ilIniTextLinesList.c1)
+	Switch left(lcIniLine,1)
+		Case ';','#'     ;; a comment line starts with ; or #
+			;  do nothing
+		Case "["     ;; a section starts with [
+			Calculate icSectionName as mid(lcIniLine,2,len(lcIniLine)-2)
+		Default     ;; all other entries are key value pairs if equal sign is present
+			If pos('=',lcIniLine)
+				Calculate KEY as trim(strtok('lcIniLine','='),1,1,' ')
+				Calculate VALUE as trim(lcIniLine,1,1,' ')
+				Do ilIniList.$add(icSectionName,KEY,VALUE)
+			End If
+	End Switch
+End For
+
+;  Breakpoint
+
+Quit method kTrue

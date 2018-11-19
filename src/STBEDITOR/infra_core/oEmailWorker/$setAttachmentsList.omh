@@ -1,0 +1,58 @@
+Calculate icErrorMessage as ''
+Do ilAttachments.$clear()
+Do ilAttachments.$merge(plAttachments)
+
+Calculate ilAttachments.$line as 0
+While $Loop(ilAttachments)
+	Do method $createattachment (ilAttachments)
+End While
+
+If isnull(pcMPAlternative)
+	Calculate pcMPAlternative as ''
+End If
+If pcMPAlternative=''|upp(pcMPAlternative)='NO'|pcMPAlternative='0'     ;; not(pcMPAlternative)
+	;  Just add a text body part followed by the attachments we have built, as multi-part type for attachments
+	Do iMessage.$createbodypartfromparts(pcMultiPartType,ilAttachments) Returns lBodyPartId
+	If lBodyPartId=0
+		;  OK message {Error [iMessage.$errorcode] creating multipart body (1)
+		Calculate icErrorMessage as con('Error ',iMessage.$errorcode,' creating multipart body (1)')
+		Quit method kFalse
+	End If
+Else
+	If ilAttachments.$linecount
+		;  Build a multipart body part (mixed) comprising multipart alternatives of plain and text, and multipart (pcMultiPartType) of the attachments
+		Do iMessage.$createbodypartfromparts("alternative",inPlainTextBodyPartId,inHTMLBodyPartId) Returns lBodyPartId1
+		If lBodyPartId1=0
+			;  OK message {Error [iMessage.$errorcode] creating multipart body (2)
+			Calculate icErrorMessage as con('Error ',iMessage.$errorcode,' creating multipart body (2)')
+			Quit method kFalse
+		End If
+		Do iMessage.$createbodypartfromparts(pcMultiPartType,ilAttachments) Returns lBodyPartId2
+		If lBodyPartId2=0
+			;  OK message {Error [iMessage.$errorcode] creating multipart body (3)
+			Calculate icErrorMessage as con('Error ',iMessage.$errorcode,' creating multipart body (3)')
+			Quit method kFalse
+		End If
+		Do iMessage.$createbodypartfromparts(pcMultiPartType,lBodyPartId1,lBodyPartId2) Returns lBodyPartId
+		If lBodyPartId=0
+			;  OK message {Error [iMessage.$errorcode] creating multipart body (4)
+			Calculate icErrorMessage as con('Error ',iMessage.$errorcode,' creating multipart body (4)')
+			Quit method kFalse
+		End If
+	Else
+		;  Multi-part of plain and HTML only
+		Do iMessage.$createbodypartfromparts(pcMultiPartType,inPlainTextBodyPartId,inHTMLBodyPartId) Returns lBodyPartId
+		If lBodyPartId=0
+			;  OK message {Error [iMessage.$errorcode] creating multipart body (5)
+			Calculate icErrorMessage as con('Error ',iMessage.$errorcode,' creating multipart body (5)')
+			Quit method kFalse
+		End If
+	End If
+End If
+If not(iMessage.$contentid.$assign(lBodyPartId))
+	;  OK message  {Error [iMessage.$errorcode] assigning $contentid:[iMessage.$errortext]}
+	Calculate icErrorMessage as con('Error ',iMessage.$errorcode,' assigning $contentid:',iMessage.$errortext)
+	Quit method kFalse
+End If
+
+Quit method kTrue

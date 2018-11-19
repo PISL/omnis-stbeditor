@@ -1,0 +1,71 @@
+;  Breakpoint
+;  Add columns from a linked table to create a simulated view
+;  pColstring is a comma-delimited string of columns in the form vColumn[(vPath) ["vAlias"]]
+If tlDatabases.DAM='WebService'
+	Do ilRESTextensions.$add('alc',pcColString,pbOuterJoin,pcTableAlias)
+	;  Quit method kTrue
+End If
+
+
+Calculate pcColString as replaceall(pcColString,' ','')     ;; remove spaces
+Do toStrings.$StringToList(pcColString,",") Returns llColList
+Do llColList.$cols.$add('TABLE',kCharacter,kSimplechar,100)
+While $Loop(llColList)
+	
+	Calculate lcColumn as llColList.C1     ;; The Column Name
+	If pos('(',lcColumn)
+		Calculate lcColPath as toStrings.$SubString(lcColumn,'(',')')     ;; A column that [vColumn] has to link through.
+		Calculate lcColumn as replace(lcColumn,con('(',lcColPath,')'),'')
+	End If
+	If pos('"',lcColumn)
+		Calculate lcColAlias as toStrings.$SubString(lcColumn,'"','"')     ;; The name of the column to be added to the List/Row Table Instance
+		Calculate lcColumn as replace(lcColumn,con('"',lcColAlias,'"'),'')
+	End If
+	
+	Do irefCORETASK.$FindTable(lcColumn) Returns lcForeignTable
+	
+	If lcColPath<>''     ;; Use a table alias
+		If pcTableAlias<>''     ;; rsm 27 APR 2005 - support for multiple joins to same table in single query
+			Calculate lcForeignTableAlias as pcTableAlias     ;; required for multiple columns being sought from table
+		Else If lcColAlias<>''     ;; rsm 27 APR 2005 - support for multiple joins to same table in single query
+			Calculate lcForeignTableAlias as con(replaceall(lcForeignTable,'.','_'),'_',lcColAlias)     ;; if only one column required from table this is fine     NB. replacing '.' with '_' to avoid postgres schema error on alias name
+		Else
+			Calculate lcForeignTableAlias as con(replaceall(lcForeignTable,'.','_'),'_',lcColPath)
+		End If
+	End If
+	
+	If pbOuterJoin
+		;  see if we have the table as an outer join
+		;  Do ilLinkTables.$search($ref.TABLE=pick(lcForeignTableAlias<>'',con(pick(pos('.',lcForeignTable)=0,'',icPGschema),lcForeignTable),lcForeignTableAlias)&$ref.OUTER=kTrue,1,0,0,0) Returns lnLine
+		Do ilLinkTables.$search($ref.TABLE=pick(lcForeignTableAlias<>'',lcForeignTable,lcForeignTableAlias)&$ref.OUTER=kTrue,1,0,0,0) Returns lnLine
+	Else
+		;  see if we have the table at all
+		;  Do ilLinkTables.$search($ref.TABLE=pick(lcForeignTableAlias<>'',con(pick(pos('.',lcForeignTable)=0,'',icPGschema),lcForeignTable),lcForeignTableAlias),1,0,0,0) Returns lnLine
+		Do ilLinkTables.$search($ref.TABLE=pick(lcForeignTableAlias<>'',lcForeignTable,lcForeignTableAlias),1,0,0,0) Returns lnLine
+	End If
+	
+	If lnLine=0     ;; we haven't got a link to this table yet (outer joined, if necessary)
+		;  Get the link chain
+		Do irefCORETASK.$FindLink($classes.[$cinst.$sqlclassname].$servertablename,lcForeignTable,lcColPath) Returns lcLinkString
+		If lcLinkString=''
+			Breakpoint
+			Calculate icErrorMessage as con('The column ',llColList.C1,' can not be linked to table ',$cinst.$servertablenames())
+			Quit method kFalse
+		End If
+		
+		;  Generate the linked sql text
+		Do method LinkstoSQL (lcLinkString,pbOuterJoin,lcForeignTableAlias)
+	End If
+	
+	;  Add column to current table
+	Set reference liColRef to $clib.$schemas.[irefCORETASK.$FindSchema(lcColumn)].$objs.[lcColumn]
+	Do $cinst.$cols.$add(pick(lcColAlias<>'',liColRef.$name,lcColAlias),liColRef.$coltype,liColRef.$colsubtype,liColRef.$colsublen)
+	Calculate icForeignCols as con(icForeignCols,',',chr(13),pick(lcForeignTableAlias<>'',con(lcForeignTable,'.',lcColumn),con(lcForeignTableAlias,'.',lcColumn)))
+	
+	Calculate lcColumn as ''
+	Calculate lcColPath as ''
+	Calculate lcColAlias as ''
+	Calculate lcForeignTableAlias as ''
+End While
+
+Quit method kTrue

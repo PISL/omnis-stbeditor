@@ -1,0 +1,10 @@
+;  leave first 3 chars as is, then swap digit pairs
+Calculate lcOrig as pPhone
+Calculate lcBegin as mid(lcOrig,1,3)
+Calculate lcTheRest as mid(lcOrig,4,99)
+
+Do method $CharShift (lcTheRest,2) Returns lcShift
+Do method $CharCycle (lcShift,2,kTrue) Returns lcCycled
+Calculate lcMashed as con(lcBegin,lcCycled)
+
+Quit method lcMashed

@@ -1,0 +1,13 @@
+Do irDefDir.$setSession(ioSessionIni,ioStatementIni)
+
+Do irDefDir.$fetch_pk(pMethod) Returns lbOK
+If len(irDefDir.DD_METHOD)>0
+	Calculate irDefDir.DD_PATH as pDirectory
+	Do irDefDir.$update() Returns lbOK
+Else
+	Calculate irDefDir.DD_METHOD as pMethod
+	Calculate irDefDir.DD_PATH as pDirectory
+	Do irDefDir.$insert() Returns lbOK
+End If
+
+Quit method lbOK

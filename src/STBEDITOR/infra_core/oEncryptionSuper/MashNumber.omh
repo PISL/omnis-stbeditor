@@ -1,0 +1,21 @@
+Calculate lcSource as jst(pInteger,'-12P0')
+Repeat
+	Calculate lnFold as mod(#CT,10)
+Until lnFold<>0
+Calculate lcPositions as ilFolds1.[lnFold].Positions
+
+Calculate #F as setseed(mod(#CT,10000))
+Repeat
+	Calculate lnRandom as rand()*100000000
+	Calculate lcFoundation as con(lcFoundation,lnRandom)
+Until len(lcFoundation)>=lnWidth
+Calculate lcFoundation as mid(lcFoundation,1,lnWidth)
+
+While lcPositions<>''
+	Calculate lnPos as strtok(nam(lcPositions),',')
+	Calculate lnTracking as lnTracking+1
+	Calculate lcFoundation as con(mid(lcFoundation,1,lnPos-1),mid(lcSource,lnTracking,1),mid(lcFoundation,lnPos+1,99))
+End While
+Calculate lcFoundation as con(mid(lcFoundation,1,21),lnFold,mid(lcFoundation,22,99))
+
+Quit method lcFoundation

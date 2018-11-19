@@ -1,0 +1,11 @@
+On evClose
+	If $cinst.$objs.ilData.$enterable=kTrue
+		Do method $Save
+	End If
+	Quit event handler (Pass to next handler)
+	
+On evCancel
+	Close window instance $cinst
+	
+On evOK
+	Do method $Save

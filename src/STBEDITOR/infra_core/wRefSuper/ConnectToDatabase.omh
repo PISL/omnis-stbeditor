@@ -1,0 +1,41 @@
+Do ilData.$WhichDatabase() Returns lcDatabase
+If pos(ilDatabases.Host,lcDatabase)
+	;  already connected
+Else
+	If ilDatabases.UserName<>''
+		;  connected already
+		;  be careful!     ;; Another window has logged on using these credentials.
+		;  Which means the name of the connection, ilDatabases.Name, has already been used.
+		;  Omnis requires unique names for each connection.
+		;  The problem is... we don't know how many of these connection names are currently running.
+		Repeat
+			Calculate lnAttempts as lnAttempts+1
+			Calculate lcConnectionName as con(ilDatabases.Name,lnAttempts)
+			Do $ConnectToDb(ilDatabases.Host,ilDatabases.UserName,ilDatabases.password,lcConnectionName,ilDatabases.DAM,ilDatabases.DB,ilDatabases.port,ioOtherSession,ioOtherStatement,0) Returns lbConnected
+			If not(lbConnected)
+				Calculate ilDatabases.$line as inGoodConnection
+			End If
+		Until lbConnected|lnAttempts>10
+	Else
+		;  first time connect
+		Prompt for input Login ID Returns lcLoginID
+		Prompt for input password Returns lcLoginPW (Password entry)
+		Do $ConnectToDb(ilDatabases.Host,lcLoginID,lcLoginPW,ilDatabases.Name,ilDatabases.DAM,ilDatabases.DB,ilDatabases.port,ioOtherSession,ioOtherStatement,0) Returns lbConnected
+		If lbConnected
+			Calculate ilDatabases.UserName as lcLoginID
+			Calculate ilDatabases.password as lcLoginPW
+			Calculate inGoodConnection as ilDatabases.$line
+			
+			Do ilData.$SetSession(ioOtherSession,ioOtherStatement)
+			
+			Do ilData.$ClassList() Returns ilClasses
+			Do ilClasses.$sort($ref.[icColPrefix]CLASS,0)
+			Do ilData.$WhichDatabase() Returns lcDatabase
+			
+			Calculate $cinst.$title as con('library ',$clib().$name,' table=',ilData.$servertablenames,' connected to ',lcDatabase)
+		Else
+			OK message  {connection failed}
+			Calculate ilDatabases.$line as inGoodConnection
+		End If
+	End If
+End If

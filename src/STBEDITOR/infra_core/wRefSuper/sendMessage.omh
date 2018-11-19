@@ -1,0 +1,14 @@
+Calculate plWindows.$line as 0
+While $Loop(plWindows)
+	If pcMessage='$SyncRefresh'
+		If ibStickyUpdates
+			If icColPrefix='RFO_'
+				Do plWindows.ref.$SyncRefresh(ilClasses.RFO_CLASS,ilOrganisations.GO_SEQ)
+			Else
+				Do plWindows.ref.$SyncRefresh(ilClasses.[icColPrefix]CLASS)
+			End If
+		End If
+	Else
+		Do plWindows.ref.[pcMessage]()
+	End If
+End While

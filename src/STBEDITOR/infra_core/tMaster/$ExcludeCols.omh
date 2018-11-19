@@ -1,0 +1,19 @@
+
+Repeat
+	Calculate lcCol as strtok(nam(pcColumns),',')
+	If len(lcCol)=0
+		Break to end of loop
+	End If
+	For nI from 1 to len(pcAction) step 1
+		Switch upp(mid(pcAction,nI,1))
+			Case 'I'
+				Calculate lcAction as 'insert'
+			Case 'W'
+				Calculate lcAction as 'where'
+			Default     ;; Updates
+				Calculate lcAction as 'update'
+		End Switch
+		
+		Calculate $cinst.$cols.[lcCol].$excludefrom[lcAction] as pbExclude
+	End For
+Until break

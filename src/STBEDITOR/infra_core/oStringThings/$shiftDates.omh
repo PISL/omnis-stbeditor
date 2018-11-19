@@ -1,0 +1,96 @@
+;  pnDirection is +1 for Next period or -1 for Previous period.
+;  pnDirection of 0 will return the lcInterval  A=Annual, Q=Quarter, M=Monthly, W=Weekly, D=Daily
+Calculate lnDeltaDays as ddiff(kDay,pdFrom,pdTo)+1     ;; today - today = 0, when in fact its one day
+
+Calculate lbFirstOfYear as pdFrom=fday(kYear,pdFrom)
+Calculate lbLastOfYear as pdTo=lday(kYear,pdFrom)
+
+Calculate lbFirstOfQuarter as pdFrom=fday(kQuarter,pdFrom)
+Calculate lbLastOfQuarter as pdTo=lday(kQuarter,pdFrom)
+
+Calculate lbFirstOfMonth as pdFrom=fday(kMonth,pdFrom)
+Calculate lbLastOfSameMonth as pdTo=lday(kMonth,pdFrom)
+If not(lbLastOfSameMonth)
+	Calculate lbLastOfOtherMonth as pdTo=lday(kMonth,pdTo)
+End If
+
+If lnDeltaDays=7     ;; this is a week
+	Calculate lcInterval as 'W'
+	
+	If pnDirection<0
+		Calculate pdFrom as pdFrom-7
+		Calculate pdTo as pdTo-7
+	Else If pnDirection>0
+		Calculate pdFrom as pdFrom+7
+		Calculate pdTo as pdTo+7
+	End If
+	
+Else If lbFirstOfYear&lbLastOfYear
+	Calculate lcInterval as 'A'
+	
+	If pnDirection<0
+		Calculate pdFrom as dim(pdFrom,-12)
+	Else If pnDirection>0
+		Calculate pdFrom as dim(pdFrom,12)
+	End If
+	If pnDirection<>0
+		Calculate pdTo as lday(kYear,pdFrom)
+	End If
+	
+Else If lbFirstOfQuarter&lbLastOfQuarter
+	Calculate lcInterval as 'Q'
+	
+	If pnDirection<0
+		Calculate pdFrom as dim(pdFrom,-3)
+	Else If pnDirection>0
+		Calculate pdFrom as dim(pdFrom,3)
+	End If
+	If pnDirection<>0
+		Calculate pdTo as lday(kQuarter,pdFrom)
+	End If
+	
+Else If lbFirstOfMonth&lbLastOfSameMonth
+	Calculate lcInterval as 'M'
+	
+	If pnDirection<0
+		Calculate pdFrom as dim(pdFrom,-1)
+	Else If pnDirection>0
+		Calculate pdFrom as dim(pdFrom,1)
+	End If
+	If pnDirection<>0
+		Calculate pdTo as lday(kMonth,pdFrom)
+	End If
+	
+Else If lbFirstOfMonth&lbLastOfOtherMonth
+	;  lday(M2)-fday(M1) = 1 even though there are two months between; one more day would have registered 2
+	Calculate lnDeltaMonths as ddiff(kMonth,pdFrom,pdTo)+1
+	Calculate lcInterval as con('M',lnDeltaMonths)
+	
+	If pnDirection<0
+		Calculate pdFrom as dim(pdFrom,-lnDeltaMonths)
+	Else If pnDirection>0
+		Calculate pdFrom as dim(pdFrom,lnDeltaMonths)
+	End If
+	If pnDirection<>0
+		;  pdFrom is 1st of month; dim(n) will increment to 1st of month n months later; lday() shifts to last of that month
+		;  hence subtract 1 from lnDeltaMonths; lday() takes care of the rest
+		Calculate pdTo as lday(kMonth,dim(pdFrom,lnDeltaMonths-1))
+	End If
+	
+Else
+	Calculate lnDeltaDays as lnDeltaDays
+	If lnDeltaDays=1
+		Calculate lcInterval as 'D'
+	Else
+		Calculate lcInterval as lnDeltaDays
+	End If
+	If pnDirection<0
+		Calculate pdFrom as pdFrom-lnDeltaDays
+		Calculate pdTo as pdTo-lnDeltaDays
+	Else If pnDirection>0
+		Calculate pdFrom as pdFrom+lnDeltaDays
+		Calculate pdTo as pdTo+lnDeltaDays
+	End If
+End If
+
+Calculate pcInterval as lcInterval

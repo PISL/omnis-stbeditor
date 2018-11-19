@@ -1,0 +1,30 @@
+{
+	"ident": 1011,
+	"order": 16390,
+	"objtype": "kText",
+	"properties": {
+		"align": "kLeftJst",
+		"backcolor": "RGB(238,238,238)",
+		"backpattern": 1,
+		"designactive": true,
+		"edgefloat": "kEFnone",
+		"fieldstyle": "wpText",
+		"font": 6,
+		"fontsize": 11,
+		"fontstyle": "kBold",
+		"forecolor": "RGB(192,192,192)",
+		"height": 17,
+		"left": 16,
+		"objlink": 8,
+		"text": {
+			"type": 14,
+			"calc": "Password:"
+		},
+		"textcolor": "RGB(0,0,128)",
+		"top": 48,
+		"userinfo": "",
+		"vertcentertext": false,
+		"visible": true,
+		"width": 64
+	}
+}

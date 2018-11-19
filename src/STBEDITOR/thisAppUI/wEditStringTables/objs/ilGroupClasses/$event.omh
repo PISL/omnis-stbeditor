@@ -1,0 +1,19 @@
+On evClick     ;; Event Parameters - pRow ( Itemreference )
+	Calculate icStringSearch as ''
+	;  reset selected groups count in case we have come from a full text search
+	Calculate inSelectedGroups as ilGroups.$totc(ilGroups.$line>0,kTrue)
+	Calculate lnCountSelected as ilGroupClasses.$totc(ilGroupClasses.$line>0,kTrue)
+	;  filter ilGroups
+	If lnCountSelected<>inSelectedClasses
+		Calculate inSelectedClasses as lnCountSelected
+		
+		Do ilGroups.$unfilter(0)
+		;  Do ilGroups.$search(0)
+		Do toStrings.$ListToString(ilGroupClasses,'OMG_CLASS',',','"',kTrue) Returns lcSelectedClasses
+		Do ilGroups.$filter(pos($ref.OMG_CLASS,lcSelectedClasses))
+		Calculate inSelectedGroups as ilGroups.$totc(ilGroups.$line>0,kTrue)
+		
+		Do method fetchStrings
+		
+	End If
+	Do $cinst.$behaviour()

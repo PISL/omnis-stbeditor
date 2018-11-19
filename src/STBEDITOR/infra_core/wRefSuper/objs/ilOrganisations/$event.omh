@@ -1,0 +1,12 @@
+On evClick     ;; Event Parameters - pRow ( Itemreference )
+	Do $cinst.$Refresh()
+	
+	Do ilData.$clear()
+	Do ilData.$ClassList(ilOrganisations.GO_SEQ) Returns ilClasses
+	Do ilClasses.$sort($ref.RFO_CLASS,0)
+	
+	Do method otherWindows Returns llWindows
+	Do method sendMessage (llWindows,'$SyncRefresh')
+	
+	Do $cinst.$behaviour()
+	Do $cinst.$redraw()

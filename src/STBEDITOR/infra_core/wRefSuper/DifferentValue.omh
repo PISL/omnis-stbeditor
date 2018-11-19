@@ -1,0 +1,23 @@
+If isnull(pVal1)
+	Calculate lbVal1IsNull as kTrue
+End If
+If isnull(pVal2)
+	Calculate lbVal2IsNull as kTrue
+End If
+
+If lbVal1IsNull&not(lbVal2IsNull)
+	Calculate lbValuesAreDifferent as kTrue
+Else If not(lbVal1IsNull)&lbVal2IsNull
+	Calculate lbValuesAreDifferent as kTrue
+Else If lbVal1IsNull&lbVal2IsNull
+	Calculate lbValuesAreDifferent as kFalse
+Else If pVal1<>pVal2
+	Calculate lbValuesAreDifferent as kTrue
+End If
+
+If pAssignVal2ToVal1
+	If lbValuesAreDifferent
+		Calculate pVal1 as pVal2
+	End If
+End If
+Quit method lbValuesAreDifferent

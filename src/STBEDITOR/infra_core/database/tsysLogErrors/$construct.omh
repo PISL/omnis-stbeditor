@@ -1,0 +1,4 @@
+Calculate icPrefix as 'SLE_'
+Calculate icPrimarykey as ''
+Do inherited      ;; 2015-08-07 GRS moved here because inherited sets ibHasSequence to kTrue
+Calculate ibHasSequence as kFalse

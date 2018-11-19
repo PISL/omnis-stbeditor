@@ -1,0 +1,23 @@
+;  Breakpoint
+;  Defines a row from each table object and executes $Links to get the links (called by Startup_Task.Startup2)
+If ilTables.$linecount=0
+	Do method BuildTables
+End If
+
+Calculate ilLinks as #NULL
+Do ilLinks.$cols.$add('TABLE',kCharacter,kSimplechar,100)
+Do ilLinks.$cols.$add('FTABLE',kCharacter,kSimplechar,100)
+Do ilLinks.$cols.$add('CHAIN',kCharacter,kSimplechar,1000)
+Do ilLinks.$cols.$add('LINKS',kInteger,kShortint)
+Do ilLinks.$cols.$add('DEFAULT',kInteger,kShortint)
+Do ilLinks.$cols.$add('TALIAS',kCharacter,kSimplechar,100)
+
+Calculate ilTables.$line as 0
+While $Loop(ilTables)
+	If isnull($clib.$tables.t[ilTables.TABLE].$methods.//$Links//)=0
+		Do $DefineList(lrTable,con('t',ilTables.TABLE))
+		Do ilLinks.$merge(lrTable.$Links)
+	End If
+End While
+
+Quit method ilLinks

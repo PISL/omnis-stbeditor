@@ -1,0 +1,102 @@
+If pcStringIn<>''
+	Calculate lnInteger as pcStringIn
+	Calculate lcStringOut as lnInteger
+	If lcStringOut=pcStringIn
+		;  OK message  {[pcStringIn]  is integer}
+		Calculate lcResult as 'I'
+	Else
+		;  do we detect a currency symbol?
+		Calculate lcCurrencies as '£$€¥؋฿₡Ð₫ƒ₲₴₭₦₱₹₪৳'
+		Calculate lcSubstring1 as strpbrk(pcStringIn,lcCurrencies)
+		If lcSubstring1<>''
+			If lcSubstring1=pcStringIn
+				;  there is a currency symbol at the beginning
+				Calculate lcResult as 'M'
+				Calculate lcSymbol as mid(pcStringIn,1,1)
+				Calculate lcAmount as mid(pcStringIn,2,99)
+				
+			Else If pos(lcSubstring1,lcCurrencies)
+				;  there is a currency symbol at the end
+				Calculate lcResult as 'M'
+				Calculate lcSymbol as mid(pcStringIn,len(pcStringIn),1)
+				Calculate lcAmount as mid(pcStringIn,1,len(pcStringIn)-1)
+				
+			End If
+			If lcResult='M'
+				Calculate pcSymbol as lcSymbol
+				Calculate pnAmount as lcAmount
+			End If
+		End If
+		
+		If lcResult=''
+			Calculate lnReal1 as pcStringIn
+			If lnReal1='0'&pcStringIn<>'0'
+				;  it is not Real, probably not even a number     ;; but we must test for date etc
+				;  that testing is done below
+			Else
+				;  test for Real
+				Calculate lcStringOut as lnReal1
+				;  entering 6.9e-9 equates to 0.000000069
+				;  but as strings these do not match
+				;  real numbers must always be compared to real numbers     ;; 'cos Omnis tries to be clever with presentation
+				Calculate lnReal2 as lcStringOut
+				;  test for a space in lcStringin.  Omnis would convert "3 12" to 312 with     ;; Calculate lnReal1 as lcStringIn
+				If lnReal1=lnReal2&pos(' ',pcStringIn)=0     ;; 4.3e-5 is valid... 4.3 e-5 will not be
+					;  If isnumber(lcStringIn)
+					;  OK message  {[pcStringIn]  is real}
+					Calculate lcResult as 'R'
+				End If
+			End If
+			
+			If lcResult=''
+				;  is the string a date?
+				;  Omnis is so forgiving we have to apply a bit more rigour.  At least 2 numbers have to be entered to classify as a date.
+				Calculate lcChar as pcStringIn
+				If pos(' ',pcStringIn)
+					Calculate lcSubstring1 as strtok(nam(lcChar),' ')
+					Calculate lcSubstring2 as strtok(nam(lcChar),' ')
+					If isnumber(lcSubstring1)&isnumber(lcSubstring2)
+						Calculate lbTestForDate as kTrue
+					End If
+				Else If pos('/',pcStringIn)
+					Calculate lcSubstring1 as strtok(nam(lcChar),'/')
+					Calculate lcSubstring2 as strtok(nam(lcChar),'/')
+					If isnumber(lcSubstring1)&isnumber(lcSubstring2)
+						Calculate lbTestForDate as kTrue
+					End If
+				Else If pos('-',pcStringIn)
+					Calculate lcSubstring1 as strtok(nam(lcChar),'-')
+					Calculate lcSubstring2 as strtok(nam(lcChar),'-')
+					If isnumber(lcSubstring1)&isnumber(lcSubstring2)
+						Calculate lbTestForDate as kTrue
+					End If
+				Else
+					;  nothing else to test
+					Calculate lbTestForDate as kFalse
+				End If
+				If lbTestForDate
+					;  4 15 will equate to a valid date
+					;  however 15 4 will not
+					;  this is fine for Britain and similar countries but for US
+					;  but the #FD will determine this so this code should work on a US machine if configured for US dates
+					Calculate ldDate as pcStringIn
+					If ldDate<>''
+						;  OK message  {[pcStringIn]  is date:  [kCr]year [jst(ldDate,'D:CY')], [kCr]month  [jst(ldDate,'D:M')], [kCr]day [jst(ldDate,'D:D')]}
+						Calculate lcResult as 'D'
+					Else
+						;  OK message  {[pcStringIn]  is character}
+						Calculate lcResult as 'C'
+					End If
+				Else
+					;  OK message  {[pcStringIn]  is character}
+					Calculate lcResult as 'C'
+				End If     ;; lbTestForDate
+			End If     ;; lcResult=''
+		End If     ;; lcResult=''
+	End If     ;; lcStringOut=lcStringIn for Integer test  with Else
+Else
+	;  OK message  {is empty}
+	Calculate lcResult as 'E'
+End If
+
+Quit method lcResult     ;; I  R  D  C  M  E

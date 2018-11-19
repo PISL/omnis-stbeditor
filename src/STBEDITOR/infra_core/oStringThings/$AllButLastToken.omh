@@ -1,0 +1,10 @@
+If pLastName<>''
+	Calculate lcLastName as pLastName
+Else
+	Do method $LastToken (pSource,pDelimiter) Returns lcLastName
+End If
+Calculate %len1 as len(lcLastName)
+Calculate %len2 as len(pSource)-(%len1+1)
+Calculate lcResult as mid(pSource,1,%len2)
+
+Quit method lcResult

@@ -1,0 +1,10 @@
+;
+Do lrRow.$define()
+Do method $getSectionList (pcSection) Returns llSectionList
+For llSectionList.$line from 1 to llSectionList.$linecount step 1
+	Calculate lcKey as llSectionList.KEY
+	Calculate lcValue as llSectionList.VALUE
+	Do lrRow.$cols.$add(lcKey,kCharacter,kSimplechar,8000)
+	Calculate lrRow.[lcKey] as lcValue
+End For
+Quit method lrRow

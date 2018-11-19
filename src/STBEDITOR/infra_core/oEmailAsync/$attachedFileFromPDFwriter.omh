@@ -1,0 +1,3 @@
+If not(isnull(pbSetState))
+	Calculate ibAttachedFileJustWrittenWithPDFwriter as pbSetState
+End If

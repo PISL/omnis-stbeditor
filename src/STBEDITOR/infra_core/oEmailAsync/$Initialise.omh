@@ -1,0 +1,99 @@
+;  Breakpoint
+If pcCode=''
+	Calculate pcCode as 'EMAIL'
+End If
+If pcCode=ccLastInitialisation
+	;  no need to initialise again
+	Quit method
+End If
+
+If 1=0
+	Do method SetServerFromAttributes (pcCode)
+Else
+	Calculate ibInitialised as kFalse
+	;  sending email values
+	Do toValues.$initInherited(pcCode,'EMAIL_FROM') Returns lrLookup
+	If lrLookup.RFO_SEQ>0
+		;  proceed
+	Else     ;; use old code to determine from address, for compatability
+		Do toValues.$initInherited(pcCode,'SMTP_ADDR') Returns lrLookup
+	End If
+	If lrLookup.RFO_SEQ>0
+		Calculate ccOutFrom as lrLookup.RFO_CHAR
+		
+		Do toValues.$initInherited(pcCode,'EMAIL_FROM_NAME') Returns lrLookup
+		If lrLookup.RFO_SEQ>0
+			;  proceed
+		Else
+			Do toValues.$initInherited(pcCode,'SMTP_NAME') Returns lrLookup
+		End If
+		Calculate ccOutFromName as con(lrLookup.RFO_CHAR,' ',tConstants.ServerRole)
+		
+		Do toValues.$initInherited(pcCode,'HOST') Returns lrLookup
+		If lrLookup.RFO_SEQ>0
+			;  proceed
+		Else
+			Do toValues.$initInherited(pcCode,'SMTP_SRVR') Returns lrLookup
+		End If
+		Calculate ccOutServer as lrLookup.RFO_CHAR
+		If ccOutServer<>''
+			;  good
+		Else
+			Breakpoint
+		End If
+		
+		;  smtp requiring identification
+		;  Do lrLookup.$FetchClass('EMAIL','SMTP_AUTHE')
+		Do toValues.$initInherited(pcCode,'AUTH_TYPE') Returns lrLookup     ;; very limited for SMTP commands.  Extended for the SMTP workers.
+		If lrLookup.RFO_SEQ>0
+			;  proceed
+		Else
+			Do toValues.$initInherited(pcCode,'SMTP_AUTHE') Returns lrLookup
+		End If
+		Calculate ccSMTP_AuthenticationMethod as upp(lrLookup.RFO_CHAR)
+		
+		Do toValues.$initInherited(pcCode,'USER_ID') Returns lrLookup
+		If lrLookup.RFO_SEQ>0
+			;  proceed
+		Else
+			Do toValues.$initInherited(pcCode,'SMTP_ID') Returns lrLookup
+		End If
+		Calculate ccSMTP_ID as lrLookup.RFO_CHAR
+		
+		Do toValues.$initInherited(pcCode,'USER_PW') Returns lrLookup
+		If lrLookup.RFO_SEQ>0
+			;  proceed
+		Else
+			Do toValues.$initInherited(pcCode,'SMTP_PSSWD') Returns lrLookup
+		End If
+		Calculate ccSMTP_PASSWORD as lrLookup.RFO_CHAR
+		
+		;  receiving email values
+		Do toValues.$initInherited(pcCode,'POP3_ID') Returns lrLookup
+		Calculate ccInUsername as lrLookup.RFO_CHAR
+		
+		Do toValues.$initInherited(pcCode,'POP3_PSSWD') Returns lrLookup
+		Calculate ccInPassword as lrLookup.RFO_CHAR
+		
+		Do toValues.$initInherited(pcCode,'POP3_SRVR') Returns lrLookup
+		Calculate ccInServer as lrLookup.RFO_CHAR
+		
+		Do toValues.$initInherited(pcCode,'POP3_LOGIN') Returns lrLookup
+		Calculate ccPop3LoginName as lrLookup.RFO_CHAR
+		
+		Calculate cnSecure as kFalse
+		Do toValues.$initInherited(pcCode,'SECURE') Returns lrLookup
+		If lrLookup.RFO_SEQ>0
+			Calculate cnSecure as kTrue
+		End If
+		
+		;  internal structures
+		Do clOutBuffer.$define(iOutToAddressList,iOutSubject,iOutBody,iOutCCAddressList,iOutBCCAddressList,iOutStatusCall,iOutPriority,iOutEnclosureList)
+		Do cInBuffer.$define(iInReturnPath,iInDate,iInPriority,iInFrom,iInSubject,iInBody,iInEnclosureList)
+		
+		Do $ReleaseSession(loSession,loStatement)
+		Calculate ibInitialised as kTrue
+		
+		Calculate ccLastInitialisation as pcCode
+	End If
+End If

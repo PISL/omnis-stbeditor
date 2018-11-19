@@ -1,0 +1,81 @@
+If upp(pFormat)='MULTILINE'|upp(pFormat)='1LINE'
+	If upp(pFormat)='MULTILINE'&pDelimiter=","
+		Calculate pDelimiter as kCr
+	End If
+	
+	If pBuilding<>''
+		Calculate lcString as con(lcString,pick(lcString<>'','',pDelimiter),pBuilding)
+	End If
+	If pStreet<>''
+		Calculate lcString as con(lcString,pick(lcString<>'','',pDelimiter),pStreet)
+	End If
+	If pLocality<>''
+		Calculate lcString as con(lcString,pick(lcString<>'','',pDelimiter),pLocality)
+	End If
+	If pTown<>''
+		Calculate lcString as con(lcString,pick(lcString<>'','',pDelimiter),pTown)
+	End If
+	If pState<>''
+		Calculate lcString as con(lcString,pick(lcString<>'','',pDelimiter),pState)
+	End If
+	If pPostcode<>''
+		Calculate lcString as con(lcString,pick(lcString<>'','',pDelimiter),pPostcode)
+	End If
+	If pCountry<>''
+		Calculate lcString as con(lcString,pick(lcString<>'','',pDelimiter),pCountry)
+	End If
+	
+	
+Else If upp(pFormat)='2LINES'
+	Calculate lnTotalLength as len(pBuilding)+len(pStreet)+len(pLocality)+len(pTown)+len(pState)+len(pPostcode)+len(pCountry)
+	Calculate lcString as nam(lcLine1)
+	If pBuilding<>''
+		Calculate [lcString] as con([lcString],pick([lcString]<>'','',pDelimiter),pBuilding)
+	End If
+	If len(lcLine1)>(lnTotalLength/2)
+		Calculate lcString as nam(lcLine2)
+	End If
+	
+	If pStreet<>''
+		Calculate [lcString] as con([lcString],pick([lcString]<>'','',pDelimiter),pStreet)
+	End If
+	If len(lcLine1)>(lnTotalLength/2)
+		Calculate lcString as nam(lcLine2)
+	End If
+	
+	If pLocality<>''
+		Calculate [lcString] as con([lcString],pick([lcString]<>'','',pDelimiter),pLocality)
+	End If
+	If len(lcLine1)>(lnTotalLength/2)
+		Calculate lcString as nam(lcLine2)
+	End If
+	
+	If pTown<>''
+		Calculate [lcString] as con([lcString],pick([lcString]<>'','',pDelimiter),pTown)
+	End If
+	If len(lcLine1)>(lnTotalLength/2)
+		Calculate lcString as nam(lcLine2)
+	End If
+	
+	If pState<>''
+		Calculate [lcString] as con([lcString],pick([lcString]<>'','',pDelimiter),pState)
+	End If
+	If len(lcLine1)>(lnTotalLength/2)
+		Calculate lcString as nam(lcLine2)
+	End If
+	
+	If pPostcode<>''
+		Calculate [lcString] as con([lcString],pick([lcString]<>'','',pDelimiter),pPostcode)
+	End If
+	If len(lcLine1)>(lnTotalLength/2)
+		Calculate lcString as nam(lcLine2)
+	End If
+	
+	If pCountry<>''
+		Calculate [lcString] as con([lcString],pick([lcString]<>'','',pDelimiter),pCountry)
+	End If
+	
+	Calculate lcString as con(lcLine1,kCr,lcLine2)
+End If
+
+Quit method lcString

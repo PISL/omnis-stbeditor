@@ -1,0 +1,87 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	Calculate $clib.$ignoreexternal as kTrue
+	Prompt for input Enter the name of an open library and the schema class name separated by a colon (:) :/Library:Schema to import Returns lcLibrary (Cancel button)
+	If flag false
+		Quit method kFalse
+	End If
+	
+	If not(pos(':',lcLibrary))
+		OK message  {Please enter in the form   "library/schema"}
+		Quit method
+	End If
+	
+	Calculate lcSchema as mid(lcLibrary,pos(':',lcLibrary)+1)
+	Calculate lcLibrary as left(lcLibrary,pos(':',lcLibrary)-1)
+	
+	Do $libs.$findname(lcLibrary) Returns lrefLibrary
+	If isnull(lrefLibrary)
+		OK message  {Library: [lcLibrary] is not open!}
+		Quit method
+	End If
+	
+	Do lrefLibrary.$schemas.$findname(lcSchema) Returns lrefSchema
+	If isnull(lrefSchema)
+		OK message  {Library: [lcLibrary] does not contain the schema: [lcSchema]!}
+		Quit method
+	End If
+	
+	Do lrefSchema.$objs.$makelist($ref.$name,$ref.$desc) Returns llSchemaCols
+	Do llSchemaCols.$cols.1.$name.$assign('name')
+	Do llSchemaCols.$cols.2.$name.$assign('desc')
+	
+	Calculate llGroups as ilGroups
+	Do llGroups.$unfilter(0)
+	Do llGroups.$search($ref.OMG_CLASS='schemas'&$ref.OMG_FUNCTION=upp(lcLibrary),1,0,0,0) Returns lnLine
+	If lnLine
+		Calculate lrGroup as llGroups
+	Else
+		Do lrGroup.$copydefinition(llGroups)
+		Calculate lrGroup.OMG_CLASS as 'schemas'
+		Calculate lrGroup.OMG_FUNCTION as upp(lcLibrary)
+		Do lrGroup.$insert() Returns lbOK
+	End If
+	
+	If lrGroup.OMG_SEQ>0
+		;  we can continue
+		While $Loop(llSchemaCols)
+			;  Create label entry
+			Do irCurrentRecord.$clear()
+			Calculate irCurrentRecord.OMS_OMG_REF as lrGroup.OMG_SEQ
+			Calculate irCurrentRecord.STRINGID as con(llSchemaCols.name,'_LBL')
+			Calculate irCurrentRecord.en as llSchemaCols.desc
+			Do irCurrentRecord.$insert(,'23505') Returns lbOK     ;; ignore duplicate key violation, the column name may already be there especially if this is an IO only schema class
+			If lbOK
+				Calculate lnRecordCount as lnRecordCount+1
+			Else
+				Calculate lcFailed as con(lcFailed,irCurrentRecord.STRINGID,kCr)
+			End If
+			;  Create tooltip entry
+			Do irCurrentRecord.$clear()
+			Calculate irCurrentRecord.OMS_OMG_REF as lrGroup.OMG_SEQ
+			Calculate irCurrentRecord.STRINGID as con(llSchemaCols.name,'_TT')
+			Calculate irCurrentRecord.en as llSchemaCols.desc
+			Do irCurrentRecord.$insert(,'23505') Returns lbOK     ;; ignore duplicate key violation, the column name may already be there especially if this is an IO only schema class
+			If lbOK
+				Calculate lnRecordCount as lnRecordCount+1
+			Else
+				Calculate lcFailed as con(lcFailed,irCurrentRecord.STRINGID,kCr)
+			End If
+		End While
+		
+		If len(lcFailed)>0
+			OK message Failed {Records inserted: [lnRecordCount][kCr]with the following not created:[kCr][lcFailed]}
+		Else
+			OK message Success {Records inserted: [lnRecordCount]}
+		End If
+		If lnRecordCount>0
+			Do ilGroupClasses.$search($ref.OMG_CLASS='schemas',1,0,1,1)
+			Calculate inSelectedClasses as ilGroupClasses.$totc(ilGroupClasses.$line>0,kTrue)
+			Do ilGroups.$unfilter(0)
+			Do ilGroups.$search($ref.OMG_SEQ=lrGroup.OMG_SEQ,1,0,1,1)
+			Calculate inSelectedGroups as ilGroups.$totc(ilGroups.$line>0,kTrue)
+			Do method fetchStrings
+		End If
+	Else
+		OK message Failed {Could not find or create the Group: "schemas".[upp(lcLibrary)]}
+		Quit method
+	End If

@@ -1,0 +1,22 @@
+Switch sys(6)
+	Case Windows95
+		Calculate lvcDllPath as "C:\WINDOWS\SYSTEM\Advapi32.dll"
+		;
+	Case WindowsNT
+		Calculate lvcDllPath as "Advapi32.dll"     ;; path seems to confuse matters with XP
+		;
+	Default
+		;  Quit procedure     ;; Any Other Platforms will need setting up manually
+End Switch
+
+Register DLL (lvcDllPath,"GetUserNameA","NCN") Returns lvnResult
+If lvnResult
+	;  DLL not registered
+Else
+	Do lvnNameLength.$assign(198)
+	;  Do lvcUserName.$assign(jst('',con('199P',chr(0))))     ;; waht is this for ? T.C
+	Call DLL (lvcDllPath,"GetUserNameA",lvcUserName,lvnNameLength) Returns lvnResult
+	;  Do ivcUserName.$assign(lvcUserName)
+	Calculate icUSERNAME as upp(con(mid(lvcUserName,2,),mid(lvcUserName,1,1)))     ;; as network login and beaps usually use opposites, its easy to guess
+	
+End If

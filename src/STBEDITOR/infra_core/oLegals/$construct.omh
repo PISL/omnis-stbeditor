@@ -1,0 +1,12 @@
+;  As of Studio 5.2 sys(115) refers to a new "editable" area in the file system for applications on OS X.
+;  refer to document     ;; http://www.tigerlogic.com/tigerlogic/omnis/technotes/tnmc0004.jsp
+
+;  Open the Contents/Resources/English.lproj folder. Contained within this is the Localizable.strings file. Open this file in a text editor
+;  and locate the entry "CORE_RES_25600". The value of this determines the name used for your editable directory, which will be created
+;  in a user's Application Support section. You should change the value of this from "firstruninstalldest" to a name more meaningful for your application.
+Calculate icOmnisFolder as sys(115)
+Calculate icSoftwarePublisher as 'applications_pis'
+Calculate icUpdaterResourcesFolder as mid(sys(10),1,rpos(sys(9),sys(10)))
+
+Calculate icPathLicensee as con(icOmnisFolder,icSoftwarePublisher,sys(9),'licensee.xml')
+Calculate icPathLicensor as con(icOmnisFolder,icSoftwarePublisher,sys(9),'licensor.xml')

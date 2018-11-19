@@ -1,0 +1,18 @@
+;  2015-09-16 GRS created this to refresh the class list after $Save
+;  (needed when a new RFx_CLASS value has been inserted)
+
+If ilClasses.$line>0
+	Calculate lcCLASS as ilClasses.[icColPrefix]CLASS
+End If
+
+If icColPrefix='RFO_'
+	Do ilData.$ClassList(ilOrganisations.GO_SEQ) Returns ilClasses
+Else
+	Do ilData.$ClassList() Returns ilClasses
+End If
+Do ilClasses.$sort($ref.[icColPrefix]CLASS,0)
+
+If len(lcCLASS)>0
+	Do ilClasses.$search($ref.[icColPrefix]CLASS=lcCLASS,1,0,0,0)
+	Do method $Refresh
+End If

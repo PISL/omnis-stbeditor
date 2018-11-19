@@ -1,0 +1,17 @@
+;  GRS 26/2/2014 created
+;  Builds a list of first-level child links for pcTable
+If ilForeignKeys.$linecount=0
+	Do method BuildForeignKeys
+End If
+
+Do llChains.$cols.$add('TABLE',kCharacter,kSimplechar,100)
+Do llChains.$cols.$add('CTABLE',kCharacter,kSimplechar,100)
+Do llChains.$cols.$add('CCOLUMN',kCharacter,kSimplechar,100)
+Do llChains.$cols.$add('CHAIN',kCharacter,kSimplechar,1000)
+
+Do ilForeignKeys.$search($ref.FTABLE=pcTable)
+While $Loop(ilForeignKeys,1)
+	Do llChains.$add(pcTable,ilForeignKeys.TABLE,ilForeignKeys.COLUMN,con(ilForeignKeys.COLUMN,'=',ilForeignKeys.FCOLUMN))
+End While
+
+Quit method llChains

@@ -1,0 +1,10 @@
+Calculate lnLength as len(pString)
+Calculate lnPos as 1
+While lnPos<=lnLength
+	If unicode(pString,lnPos)>1     ;; omits null (0) and SOH (1)
+		Calculate lcString as con(lcString,mid(pString,lnPos,1))
+	End If
+	Calculate lnPos as lnPos+1
+End While
+
+Quit method lcString

@@ -1,0 +1,9 @@
+Calculate icPrefix as 'GO_'
+Calculate icPrimarykey as 'GO_SEQ'
+
+Do inherited
+
+Do $itasks.[$clib().$name].$GetVar('tlLinks') Returns llLinks
+If llLinks.$linecount>0     ;; we have already been through startup and this has not been instantiated by $BuildLinks
+	Do $cinst.$AddLinkedCols('GON_NAME_FULL')
+End If

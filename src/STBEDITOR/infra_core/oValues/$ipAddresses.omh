@@ -1,0 +1,4 @@
+Do ilIPs.$clear()
+Do ilIPs.$fetchClass(pcClassName,pbConvertInet)
+
+Quit method ilIPs

@@ -1,0 +1,6 @@
+Do pListOrRow.$cols.$findname(pcName) Returns lrefCol
+If lrefCol
+	;  column exists
+Else
+	Do pListOrRow.$cols.$add(pcName,pnType,pnSubType,pnLength)
+End If

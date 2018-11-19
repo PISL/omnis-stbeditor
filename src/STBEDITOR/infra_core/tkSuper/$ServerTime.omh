@@ -1,0 +1,11 @@
+If pbFetchFromDB
+	If trCurrUser.$colcount>0
+		Do trCurrUser.$ServerTime() Returns ldtNow
+	Else
+		;  programmer is trying to get database time before logging in     ;; not possible!
+		Calculate ldtNow as #D
+	End If
+Else
+	Calculate ldtNow as #D
+End If
+Quit method ldtNow

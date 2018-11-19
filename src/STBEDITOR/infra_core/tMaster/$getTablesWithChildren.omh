@@ -1,0 +1,6 @@
+;  GRS 2014-05-14 added this method to return the tables which have records referencing the current record
+If pbReturnString
+	Quit method toStrings.$ListToString(ilTablesWithChildren,'CTABLE',', ')
+Else
+	Quit method ilTablesWithChildren
+End If

@@ -1,0 +1,46 @@
+Calculate icMessage as pMessage
+
+;  count the buttons
+Calculate lcTemp as pResponseOptions
+While lcTemp<>''
+	Calculate lcButtonText as strtok(nam(lcTemp),',')
+	Calculate inObjectCount as inObjectCount+1
+End While
+Calculate lnWidth as ($cinst.$width-((inObjectCount-1)*lnSpaceBetweenButtons)-(lnSpaceBetweenButtons/2))/inObjectCount
+If inObjectCount=1
+	Calculate lnWidth as lnWidth/2
+End If
+Calculate lnLeft as lnSpaceBetweenButtons/2
+If inObjectCount=1
+	Calculate lnLeft as lnLeft+lnWidth
+End If
+Calculate lnTop as $cinst.$objs.icMessage.$top+$cinst.$objs.icMessage.$height+4
+Calculate lnHeight as 23
+
+;  create the buttons
+Calculate lcTemp as pResponseOptions
+While lcTemp<>''
+	Calculate lnObjectNo as lnObjectNo+1
+	If lnObjectNo>1
+		Calculate lnLeft as lnLeft+lnWidth+lnSpaceBetweenButtons
+	End If
+	
+	Calculate lcButtonText as strtok(nam(lcTemp),',')
+	Do $cinst.$objs.$add(kPushbutton,lnTop,lnLeft,lnHeight,lnWidth) Returns liRef
+	Calculate liRef.$text as lcButtonText
+	Calculate liRef.$edgefloat as kEFtopBottom
+	Calculate liRef.$methods as ''     ;; no On evBefore or evAfter
+	If lnObjectNo=inObjectCount
+		Calculate liRef.$buttonmode as kBMok     ;; right most button is always Enter/Ok
+	Else If lnObjectNo=1
+		Calculate liRef.$buttonmode as kBMcancel     ;; left most button is always escape
+	End If
+End While
+
+Calculate $cinst.$title as jst(#D,'D:V d m CY @ H:N:S')
+
+If inObjectCount>1
+	Enter data
+	Calculate pTheResponse as icTheResponse
+	Close window instance $cinst
+End If

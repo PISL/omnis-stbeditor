@@ -1,0 +1,13 @@
+;  Enter your termination code here
+;  Breakpoint
+;  check for changes
+Do method checkForModifications Returns lbModified
+
+If lbModified
+	Yes/No message  {You have made changes.  Do you wish to save them?}
+	If flag true
+		Do $cinst.$Save()
+	End If
+End If
+
+Do $cinst.$close()

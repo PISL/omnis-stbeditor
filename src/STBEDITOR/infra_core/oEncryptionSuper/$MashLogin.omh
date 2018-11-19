@@ -1,0 +1,2 @@
+Calculate lcRealPassword as con(right(pMergeString,1),mid(pStringIn,5,2),mid(pStringIn,1,2),'t',mid(pStringIn,3,2),left(pMergeString,1),mid(pStringIn,7,2),'+',mid(pStringIn,9,2),'3',mid(pStringIn,11,2),'r',mid(pStringIn,13,99))
+Quit method lcRealPassword

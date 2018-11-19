@@ -1,0 +1,61 @@
+If irGroupReverse.OMG_SEQ>0
+	;  When tabbing from column to column the irGroupReverse does not need to change.
+	If ilStrings.[pnRowNo].OMS_OMG_REF=irGroupReverse.OMG_SEQ
+		;  do not disturb selection of rows in ilGroups or ilGroupClasses
+		Quit method
+	End If
+End If
+
+;  If the list is extendable and we are creating a new line, we don;t want to clear the current selections.
+;  So that a new row inserted adopts the OMS_OMG_REF on display.
+If pnRowNo>0
+	If isclear(ilStrings.[pnRowNo].OMS_OMG_REF)
+		Quit method
+	End If
+Else If pVertCell>0
+	If isclear(ilStrings.[pVertCell].OMS_OMG_REF)
+		Quit method
+	End If
+Else
+	If isclear(ilStrings.OMS_OMG_REF)
+		Quit method
+	End If
+End If
+
+;  if we are still executing then there is a fresh irGroupReverse to fetch and resolve.
+Do irGroupReverse.$clear()
+Do ilGroupLinksReverse.$clear()
+Do ilLibrariesReverse.$clear()
+
+;  Breakpoint
+If pnRowNo>0
+	Do irGroupReverse.$fetch_pk(ilStrings.[pnRowNo].OMS_OMG_REF)
+Else If pVertCell>0
+	Do irGroupReverse.$fetch_pk(ilStrings.[pVertCell].OMS_OMG_REF)
+Else
+	Do irGroupReverse.$fetch_pk(ilStrings.OMS_OMG_REF)
+End If
+
+Do ilGroupClasses.$search(0)
+Do ilGroups.$search(0)
+
+If irGroupReverse.OMG_SEQ>0
+	Do ilGroupLinksReverse.$fetch_fk(irGroupReverse.OMG_SEQ,'OLG_OMG_REF')
+	
+	Do ilGroupClasses.$search($ref.OMG_CLASS=irGroupReverse.OMG_CLASS,1,0,1,0)
+	Do ilGroupClasses.$first(kTrue)     ;; so checklist in window displays first selected line
+	
+	Do ilGroups.$unfilter()
+	Do toStrings.$ListToString(ilGroupClasses,'OMG_CLASS',',','"',kTrue) Returns lcSelectedClasses
+	Do ilGroups.$filter(pos($ref.OMG_CLASS,lcSelectedClasses))
+	
+	Do ilGroups.$search($ref.OMG_SEQ=irGroupReverse.OMG_SEQ,1,0,1,0)
+	Do ilGroups.$first(kTrue)     ;; so checklist in window displays first selected line
+	
+	Calculate ilGroupLinksReverse.$line as 0
+	While $Loop(ilGroupLinksReverse)
+		Do ilLibraries.$search($ref.OML_SEQ=ilGroupLinksReverse.OLG_OML_REF,1,0,1,0)
+	End While
+	Do ilLibraries.$sort($ref.$selected,1,$ref.OML_NAME,0)
+	Do ilLibraries.$first(kTrue)
+End If

@@ -1,0 +1,29 @@
+;  $SetSession has to have been called to assign the SQLite INI session
+Do $cinst.$cols.$makelist($ref.$name,$ref.$coltype,$ref.$colsubtype,$ref.$colsublen) Returns llCols
+
+Begin statement (Carriage return)
+Sta: {create table [$cinst.$servertablenames] (}
+While $Loop(llCols)
+	Switch llCols.C2
+		Case kInteger,kSequence,kBoolean
+			Calculate lcColType as 'integer'
+		Case kCharacter
+			Calculate lcColType as 'text'
+		Case kNumber
+			Calculate lcColType as 'real'
+		Case kDate
+			Calculate lcColType as 'date'
+		Case kBinary,kList,kPicture,kRow
+			Calculate lcColType as 'blob'
+		Default
+			Calculate lcColType as 'blob'
+	End Switch
+	
+	Sta: {[con(llCols.C1,' ',lcColType,pick(llCols.C1=icPrimarykey,'',' primary key not null'),pick(llCols.$line=llCols.$linecount,',',''))]}
+End While
+Sta: {)}
+End statement
+Get statement lcSQL
+
+Do $cinst.$executesql() Returns lbOK
+Quit method lbOK

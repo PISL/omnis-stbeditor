@@ -1,0 +1,71 @@
+If pcFormat<>''
+	;  insert space or dash every nth character
+	Calculate lnEveryNchars as mid(pcFormat,1,1)
+	Calculate lcSymbol as mid(pcFormat,2,1)
+End If
+
+If pos('A',pcDrawFrom)
+	Calculate lcCharacters as con(lcCharacters,lcAlphaUpper)
+	If pcOmitBadChars
+		Calculate lcCharacters as replace(lcCharacters,'B','')     ;; Bravo (not 8)
+		Calculate lcCharacters as replace(lcCharacters,'I','')     ;; India
+		Calculate lcCharacters as replace(lcCharacters,'O','')     ;; Oscar
+	End If
+End If
+If pos('a',pcDrawFrom)
+	Calculate lcCharacters as con(lcCharacters,lcAlphaLower)
+	If pcOmitBadChars
+		Calculate lcCharacters as replace(lcCharacters,'l','')     ;; lower case L
+	End If
+End If
+If pos('0',pcDrawFrom)     ;; zero
+	Calculate lcCharacters as con(lcCharacters,lcNumeric)
+	If pcOmitBadChars
+		Calculate lcCharacters as replace(lcCharacters,'0','')     ;; zero
+		Calculate lcCharacters as replace(lcCharacters,'1','')     ;; one
+		Calculate lcCharacters as replace(lcCharacters,'8','')     ;; eight
+	End If
+End If
+If pos('*',pcDrawFrom)
+	Calculate lcCharacters as con(lcCharacters,lcSymbols)
+	If pcOmitBadChars
+		Calculate lcCharacters as replace(lcCharacters,kSq,'')     ;; '
+		Calculate lcCharacters as replace(lcCharacters,kDq,'')     ;; "
+		Calculate lcCharacters as replace(lcCharacters,lcSymbol,'')
+	End If
+End If
+
+;  year plus total seconds this year as random seed
+Calculate ldDate as lday(kYear,#D)
+Calculate lnSeed as (dpart(kYear,ldDate)*100000000)+ddiff(kSecond,fday(kYear,ldDate),ldDate)
+Do setseed(lnSeed)
+
+Calculate lcReturn as ''
+Repeat
+	Calculate lcThisChar as mid(lcCharacters,rand()*len(lcCharacters),1)
+	If lcThisChar<>''     ;; rand() could return zero
+		Calculate lcReturn as con(lcReturn,lcThisChar)
+		If pcFirstChar<>''&len(lcReturn)=1
+			If pos('A',pcFirstChar)&pos(lcReturn,lcAlphaUpper)=0
+				Calculate lcReturn as ''     ;; repeat loop until satisfied
+			Else If pos('a',pcFirstChar)&pos(lcReturn,lcAlphaLower)=0
+				Calculate lcReturn as ''     ;; repeat loop until satisfied
+			Else If pos('0',pcFirstChar)&pos(lcReturn,lcNumeric)=0
+				Calculate lcReturn as ''     ;; repeat loop until satisfied
+			Else If pos('*',pcFirstChar)&pos(lcReturn,lcSymbols)=0
+				Calculate lcReturn as ''     ;; repeat loop until satisfied
+			End If
+		End If
+		
+		If pcFormat<>''
+			If len(lcReturn)>0&mod(len(lcReturn)-lnCountInserted,lnEveryNchars)=0
+				If len(lcReturn)<pnLength+lnCountInserted     ;; we don't want trailing symbols
+					Calculate lcReturn as con(lcReturn,lcSymbol)
+					Calculate lnCountInserted as lnCountInserted+1
+				End If
+			End If
+		End If
+	End If
+Until len(lcReturn)>=pnLength+lnCountInserted
+
+Quit method lcReturn

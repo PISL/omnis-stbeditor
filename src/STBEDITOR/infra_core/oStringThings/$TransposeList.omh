@@ -1,0 +1,149 @@
+Calculate lcTemp as pBreakCols
+Calculate lcBreak1 as strtok(nam(lcTemp),',')
+Calculate lcBreak2 as strtok(nam(lcTemp),',')
+Calculate lcBreak3 as strtok(nam(lcTemp),',')
+Calculate lcBreak4 as strtok(nam(lcTemp),',')
+Calculate lcBreak5 as strtok(nam(lcTemp),',')
+
+If lcBreak5<>''
+	Do pList.$sort($ref.[lcBreak1],0,$ref.[lcBreak2],0,$ref.[lcBreak3],0,$ref.[lcBreak4],0,$ref.[lcBreak5],0,$ref.[pTransposeCol],0)
+Else If lcBreak4<>''
+	Do pList.$sort($ref.[lcBreak1],0,$ref.[lcBreak2],0,$ref.[lcBreak3],0,$ref.[lcBreak4],0,$ref.[pTransposeCol],0)
+Else If lcBreak3<>''
+	Do pList.$sort($ref.[lcBreak1],0,$ref.[lcBreak2],0,$ref.[lcBreak3],0,$ref.[pTransposeCol],0)
+Else If lcBreak2<>''
+	Do pList.$sort($ref.[lcBreak1],0,$ref.[lcBreak2],0,$ref.[pTransposeCol],0)
+Else If lcBreak1<>''
+	Do pList.$sort($ref.[lcBreak1],0,$ref.[pTransposeCol],0)
+Else
+	Quit method
+End If
+
+Calculate llTransposeValues as pList
+Do llTransposeValues.$cols.[pTransposeCol].$removeduplicates(kTrue)     ;; unique values in a list for next stage
+
+Do method SetupColumns (pBreakCols,pTransposeValCols,pWithPercentCols,llTransposeValues,pTransposeCol) Returns lNewList
+
+;  setup the transpose columns
+Calculate lcTemp as pTransposeValCols
+Calculate lcTransposeCol1 as strtok(nam(lcTemp),',')
+Calculate lcTransposeCol2 as strtok(nam(lcTemp),',')
+Calculate lcTransposeCol3 as strtok(nam(lcTemp),',')
+Calculate lcTransposeCol4 as strtok(nam(lcTemp),',')
+Calculate lcTransposeCol5 as strtok(nam(lcTemp),',')
+
+
+Calculate lcPrevValue1 as ''
+Calculate lcPrevValue2 as ''
+Calculate lcPrevValue3 as ''
+Calculate lcPrevValue4 as ''
+Calculate lcPrevValue5 as ''
+
+Calculate pList.$line as 0
+While $Loop(pList)
+	Calculate lcValue1 as $NullToEmpty(pList.[lcBreak1])
+	Calculate lcValue2 as $NullToEmpty(pList.[lcBreak2])
+	Calculate lcValue3 as $NullToEmpty(pList.[lcBreak3])
+	Calculate lcValue4 as $NullToEmpty(pList.[lcBreak4])
+	Calculate lcValue5 as $NullToEmpty(pList.[lcBreak5])
+	
+	If pList.$line=1
+		;  Do lNewList.$add()
+		;  Calculate lNewList.$line as lNewList.$linecount
+	End If
+	
+	If lcPrevValue1<>lcValue1     ;; lNewList
+		Do method TotalLine (lNewList,llTransposeValues,pTransposeCol,pTransposeValCols,pWithPercentCols)
+		Do lNewList.$add()
+		Calculate lNewList.$line as lNewList.$linecount
+	Else If lcPrevValue2<>lcValue2
+		Do method TotalLine (lNewList,llTransposeValues,pTransposeCol,pTransposeValCols,pWithPercentCols)
+		Do lNewList.$add()
+		Calculate lNewList.$line as lNewList.$linecount
+	Else If lcPrevValue3<>lcValue3
+		Do method TotalLine (lNewList,llTransposeValues,pTransposeCol,pTransposeValCols,pWithPercentCols)
+		Do lNewList.$add()
+		Calculate lNewList.$line as lNewList.$linecount
+	Else If lcPrevValue4<>lcValue4
+		Do method TotalLine (lNewList,llTransposeValues,pTransposeCol,pTransposeValCols,pWithPercentCols)
+		Do lNewList.$add()
+		Calculate lNewList.$line as lNewList.$linecount
+	Else If lcPrevValue5<>lcValue5
+		Do method TotalLine (lNewList,llTransposeValues,pTransposeCol,pTransposeValCols,pWithPercentCols)
+		Do lNewList.$add()
+		Calculate lNewList.$line as lNewList.$linecount
+	End If
+	
+	Calculate lcTransposeValue as pList.[pTransposeCol]
+	
+	Calculate lNewList.[lcBreak1] as pList.[lcBreak1]
+	If lcBreak2<>''
+		Calculate lNewList.[lcBreak2] as pList.[lcBreak2]
+	End If
+	If lcBreak3<>''
+		Calculate lNewList.[lcBreak3] as pList.[lcBreak3]
+	End If
+	If lcBreak4<>''
+		Calculate lNewList.[lcBreak4] as pList.[lcBreak4]
+	End If
+	If lcBreak5<>''
+		Calculate lNewList.[lcBreak5] as pList.[lcBreak5]
+	End If
+	
+	Calculate lcColName as con(lcTransposeCol1,lcTransposeValue)
+	Calculate lNewList.[lcColName] as pList.[lcTransposeCol1]     ;; lNewList
+	If lcTransposeCol2<>''
+		Calculate lcColName as con(lcTransposeCol2,lcTransposeValue)
+		Calculate lNewList.[lcColName] as pList.[lcTransposeCol2]
+	End If
+	If lcTransposeCol3<>''
+		Calculate lcColName as con(lcTransposeCol3,lcTransposeValue)
+		Calculate lNewList.[lcColName] as pList.[lcTransposeCol3]
+	End If
+	If lcTransposeCol4<>''
+		Calculate lcColName as con(lcTransposeCol4,lcTransposeValue)
+		Calculate lNewList.[lcColName] as pList.[lcTransposeCol4]
+	End If
+	If lcTransposeCol5<>''
+		Calculate lcColName as con(lcTransposeCol5,lcTransposeValue)
+		Calculate lNewList.[lcColName] as pList.[lcTransposeCol5]
+	End If
+	
+	Calculate lcPrevValue1 as lcValue1
+	Calculate lcPrevValue2 as lcValue2
+	Calculate lcPrevValue3 as lcValue3
+	Calculate lcPrevValue4 as lcValue4
+	Calculate lcPrevValue5 as lcValue5
+End While
+
+Do method TotalLine (lNewList,llTransposeValues,pTransposeCol,pTransposeValCols,pWithPercentCols)
+
+If pWithGrandTotal
+	;  now provide a totals line
+	Calculate llTemp as lNewList
+	Do lNewList.$add()
+	Calculate lNewList.$line as lNewList.$linecount
+	
+	Calculate lcTemp as pTransposeValCols
+	While lcTemp<>''
+		Calculate lcToken as con('TOTAL_',strtok(nam(lcTemp),','))
+		Calculate lNewList.[lcToken] as llTemp.$cols.[lcToken].$total()
+	End While
+	
+	Calculate llTransposeValues.$line as 0
+	While $Loop(llTransposeValues)
+		Calculate lcTemp as pTransposeValCols
+		While lcTemp<>''
+			;  Calculate lcToken as
+			Calculate lcToken as strtok(nam(lcTemp),',')
+			Calculate lcColName as con(lcToken,llTransposeValues.[pTransposeCol])
+			
+			Calculate lNewList.[lcColName] as llTemp.$cols.[lcColName].$total()
+			If pWithPercentCols
+				Calculate lNewList.[lcColName]_PERCENT as lNewList.[lcColName]/lNewList.TOTAL_[lcToken]*100
+			End If
+		End While
+	End While
+End If
+
+Quit method lNewList

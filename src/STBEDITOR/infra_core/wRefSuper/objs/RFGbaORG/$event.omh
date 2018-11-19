@@ -1,0 +1,9 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	;  Calculate lnPosTop as $cinst.$top+20
+	;  Calculate lnPosLeft as $cinst.$left+20
+	;  Open window instance wRefOrg/*[lnPosLeft]/[lnPosTop]
+	;  Open window instance wRefOrg/* STK (ilClasses.RFG_CLASS)
+	;  Do $imenus.mApp[cap($clib().$name)].$objs.ReferenceOrg.$event(ilClasses.[icColPrefix]CLASS,ilDatabases)
+	
+	;  2015-07-30 GRS replacing above because parameters in the menu instance $event are getting set when manually opening from the menu
+	Do $windows.wRefOrg.$open('*',kWindowStack,ilClasses.[icColPrefix]CLASS,ilDatabases)

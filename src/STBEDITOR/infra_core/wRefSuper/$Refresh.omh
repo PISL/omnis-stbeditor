@@ -1,0 +1,47 @@
+Do method $Save
+
+Do ilData.$clear()
+If icColPrefix='RFO_'
+	Do ilData.$FetchClass(ilClasses.RFO_CLASS,,kTrue,,ilOrganisations.GO_SEQ)
+Else
+	Do ilData.$FetchClass(ilClasses.[icColPrefix]CLASS,,kTrue)
+End If
+
+Do ilData.$sort($ref.[icColPrefix]ORDER,0,$ref.[icColPrefix]VALUE,0)
+Calculate ilData.$smartlist as kTrue
+
+Calculate ilOriginal as ilData
+
+;  lets see if entries of the same CLASS exist in other REFERENCE tables
+Set reference lrefPane to $cinst.$objs.TabPaneHeader.$objs.PagedPane
+If icColPrefix='RFG_'
+	Do toValues.$initLocal(ilClasses.RFG_CLASS,#NULL,kFalse,kTrue) Returns llLocal     ;; exclude fixed
+	Do toValues.$initOrg(ilClasses.RFG_CLASS,#NULL,kFalse,kTrue) Returns llOrg     ;; exclude fixed
+	
+	Calculate lrefPane.$objs.RFGbaLOCAL.$enabled as (llLocal.$linecount>0)
+	Calculate lrefPane.$bobjs.1089.$visible as (llLocal.$linecount>0)
+	Calculate lrefPane.$objs.RFGbaORG.$enabled as (llOrg.$linecount>0)
+	Calculate lrefPane.$bobjs.1090.$visible as (llOrg.$linecount>0)
+	
+Else If icColPrefix='RFL_'
+	Do toValues.$initGlobal(ilClasses.RFL_CLASS,#NULL,kTrue,kTrue) Returns llGlobal     ;; include non-active, exclude fixed
+	Do toValues.$initOrg(ilClasses.RFL_CLASS,#NULL,kTrue,kTrue) Returns llOrg     ;; include non-active, exclude fixed
+	
+	Calculate lrefPane.$objs.RFLbaGLOBAL.$enabled as (llGlobal.$linecount>0)
+	Calculate lrefPane.$bobjs.1094.$visible as (llGlobal.$linecount>0)
+	Calculate lrefPane.$objs.RFLbaORG.$enabled as (llOrg.$linecount>0)
+	Calculate lrefPane.$bobjs.1095.$visible as (llOrg.$linecount>0)
+	
+Else     ;; RFO_
+	Do toValues.$initLocal(ilClasses.RFO_CLASS,#NULL,kFalse,kTrue) Returns llLocal     ;; exclude fixed
+	Do toValues.$initGlobal(ilClasses.RFO_CLASS,#NULL,kFalse,kTrue) Returns llGlobal     ;; exclude fixed
+	
+	Calculate lrefPane.$objs.RFObaLOCAL.$enabled as (llLocal.$linecount>0)
+	Calculate lrefPane.$bobjs.1099.$visible as (llLocal.$linecount>0)
+	Calculate lrefPane.$objs.RFObaGLOBAL.$enabled as (llGlobal.$linecount>0)
+	Calculate lrefPane.$bobjs.1100.$visible as (llGlobal.$linecount>0)
+	
+End If
+
+Do $cinst.$behaviour()
+Do $cinst.$redraw()

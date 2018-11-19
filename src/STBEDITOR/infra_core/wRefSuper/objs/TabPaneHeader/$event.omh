@@ -1,0 +1,15 @@
+On evTabSelected     ;; Event Parameters - pTabNumber ( integer )
+	Do $cinst.$Save()
+	Do ilData.$clear()
+	If pTabNumber=1
+		Calculate $cinst.$objs.ilData.$enterable as kTrue
+		Calculate $cinst.$objs.ilData.$dragmode as kNoDragging
+		Do $cinst.$Refresh()
+		If irefRemoteWindow
+			Do irefRemoteWindow.$close()
+		End If
+	Else
+		Calculate $cinst.$objs.ilData.$enterable as kFalse
+		Calculate $cinst.$objs.ilData.$dragmode as kDragData
+		Do $cinst.$redraw(1,1)
+	End If

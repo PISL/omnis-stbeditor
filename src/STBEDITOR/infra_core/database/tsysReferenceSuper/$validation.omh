@@ -1,0 +1,57 @@
+Calculate icValidationMessage as ''
+Do ilValidation.$clear()
+
+If $cinst.[icPrefix]CLASS<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),icPrefix,'CLASS missing')
+	Do ilValidation.$add(con(icPrefix,'CLASS_LBL'),'VAL_MISSING',con(icPrefix,'CLASS missing'),0)
+End If
+
+If $cinst.[icPrefix]VALUE<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),icPrefix,'VALUE missing')
+	Do ilValidation.$add(con(icPrefix,'VALUE_LBL'),'VAL_MISSING',con(icPrefix,'VALUE missing'),0)
+End If
+
+If $cinst.[icPrefix]DESC<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),icPrefix,'DESC missing')
+	Do ilValidation.$add(con(icPrefix,'DESC_LBL'),'VAL_MISSING',con(icPrefix,'DESC missing'),0)
+End If
+
+If $cinst.[icPrefix]DATE<>''
+	If $cinst.[icPrefix]DATE<idTestDate
+		Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),icPrefix,'DATE must be >= ',idTestDate)
+		Do ilValidation.$add(con(icPrefix,'DATE_LBL'),'VAL_ERR',con(icPrefix,'DATE must be >= ',idTestDate),0)
+	Else
+		;  date is valid
+	End If
+End If
+
+If $cinst.[icPrefix]EFFECTIVE<>''
+	If $cinst.[icPrefix]EFFECTIVE<idTestDate
+		Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),icPrefix,'EFFECTIVE must be >= ',idTestDate)
+		Do ilValidation.$add(con(icPrefix,'EFFECTIVE_LBL'),'VAL_ERR',con(icPrefix,'EFFECTIVE must be >= ',idTestDate),0)
+	Else
+		;  date is valid
+	End If
+End If
+
+If $cinst.[icPrefix]EXPIRES<>''
+	If $cinst.[icPrefix]EXPIRES<idTestDate
+		Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),icPrefix,'EXPIRES must be >= ',idTestDate)
+		Do ilValidation.$add(con(icPrefix,'EXPIRES_LBL'),'VAL_ERR',con(icPrefix,'EXPIRES must be >= ',idTestDate),0)
+	Else
+		;  date is valid
+	End If
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

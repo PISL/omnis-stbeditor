@@ -1,0 +1,28 @@
+If irCurrentOption.RFO_VALUE='ICAL_WHICH_CAL'
+	;  tell application "iCal"𯿿   set theCalendarNames to title of every calendar𯿿end tell
+	Begin text block
+	Text: {tell application "iCal"𯿿} (Platform newline)
+	Text: {set theCalendarNames to title of every calendar𯿿} (Platform newline)
+	Text: {end tell} (Platform newline)
+	End text block
+	Get text block lcAppleScript
+	Do $root.$runapplescript(lcAppleScript,lcApplescriptResult,lcApplescriptError)
+	If lcApplescriptResult<>''
+		;  e.g. lcAppleScriptResult = {"Birthdays", "Robert MM", "Robert work", "Robert home", "events, hols etc", "grace periods", "UK Holidays", "FP7 colleagues"}
+		Calculate lcTemp as lcApplescriptResult
+		Calculate lcTemp as mid(lcTemp,2,999)     ;; remove first {
+		Calculate lcTemp as mid(lcTemp,1,len(lcTemp)-1)     ;; remove last }
+		
+		Do ilDisplay.$clear()
+		
+		While lcTemp<>''
+			Calculate lcToken as strtok(nam(lcTemp),',')
+			Calculate lcToken as trim(lcToken)     ;; spaces
+			Calculate lcToken as trim(lcToken,kTrue,kTrue,'"')     ;; "
+			
+			Do ilDisplay.$add(lcToken,upp(replaceall(lcToken,' ','_')))     ;; desc and code columns are same
+		End While
+	Else
+		OK message  {Could obtain list of calendars with error[kCr][lcApplescriptError]}
+	End If
+End If

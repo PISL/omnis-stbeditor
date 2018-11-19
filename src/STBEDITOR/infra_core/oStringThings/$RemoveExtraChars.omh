@@ -1,0 +1,25 @@
+Calculate lcResult as P_SOURCE
+;  remove trailing instances first
+For %POS from len(lcResult) to 1 step -1
+	If mid(lcResult,%POS,1)<>P_CHAR
+		Break to end of loop
+	End If
+End For
+Calculate lcResult as mid(lcResult,1,%POS)
+
+;  remove initial instances next
+For %POS from 1 to len(lcResult) step 1
+	If mid(lcResult,%POS,1)<>P_CHAR
+		Break to end of loop
+	End If
+End For
+Calculate lcResult as mid(lcResult,%POS,len(lcResult))
+
+;  finally convert duplicate instances to single instance
+Calculate %POS as pos(con(P_CHAR,P_CHAR),lcResult)
+While %POS>0
+	Calculate lcResult as replaceall(lcResult,con(P_CHAR,P_CHAR),P_CHAR)
+	Calculate %POS as pos(con(P_CHAR,P_CHAR),lcResult)
+End While
+
+Quit method lcResult

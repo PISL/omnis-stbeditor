@@ -1,0 +1,10 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	If len(ilData.[icColPrefix]JSON)
+		Calculate lcJSON as OJSON.$formatjson(ilData.[icColPrefix]JSON)
+		If pos('(right here) ------^',lcJSON)>0
+			OK message Invalid JSON {[lcJSON]}
+		Else
+			Calculate ilData.[icColPrefix]JSON as lcJSON
+			Do $cinst.$objs._JSON.$redraw()
+		End If
+	End If

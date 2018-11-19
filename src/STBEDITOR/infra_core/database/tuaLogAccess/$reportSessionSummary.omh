@@ -1,0 +1,57 @@
+Do llData.$cols.$add('floor_time',kDate,kDatetime)
+Do llData.$cols.$add('date',kDate,kDate2000)
+Do llData.$cols.$add('hour',kInteger,kShortint)
+Do llData.$cols.$add('requests',kInteger,k32bitint)
+Do llData.$cols.$add('count',kInteger,k32bitint)
+
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Do ioWeb.$callFetch(llData,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(CF_SEQ,CF_FROM,CF_TO,pnMinsInterval,pnCountGreaterThan),llData.$type,0,ilRESTextensions))
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method kTrue
+	Else
+		Quit method kFalse
+	End If
+End If
+
+Calculate lnMinutesInterval as 5
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Begin statement
+Sta: {select floor_time(ula_login,[pnMinsInterval])}
+Sta: {, date (ula_login)}
+Sta: {, extract (hour from ula_login)}
+Sta: {, sum(ula_requests)}     ;; no. of requests for server activity while connected
+Sta: {, count(*)𯿿}
+Sta: {from [$cinst.$servertablenames]}
+If CF_SEQ>0
+	Sta: {join [lrDelegate.$servertablenames()] on ULA_DG_REF = DG_SEQ}
+	Sta: {where DG_CF_REF =@[CF_SEQ]}
+Else
+	Sta: {where ula_login between @[CF_FROM] and @[CF_TO]}
+End If
+Sta: {group by floor_time(ula_login,[pnMinsInterval])}
+Sta: {, date (ula_login)}
+Sta: {, extract (hour from ula_login)}
+If pnCountGreaterThan>0
+	Sta: {having count(*) > [pnCountGreaterThan]}
+End If
+End statement
+
+Do $cinst.$executesqlandfetch(llData) Returns lbOK
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method llData

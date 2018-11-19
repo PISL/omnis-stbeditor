@@ -1,0 +1,29 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Calculate ldtStart as #D
+	Do ioWeb.$callInsert(lnSEQ,$cinst.irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pDoNotReportTheseErrors),lnSEQ.$type,$cinst.ilRESTextensions))
+	Calculate $cinst.inServiceMS as ddiff(kCentiSecond,ldtStart,#D)*10
+	Calculate $cinst.inRESTserverMS as ioWeb.inServerTime
+	Quit method irErrorSQL.ErrorText='No error has been reported'
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not($cinst.ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Calculate icStatementType as 'SELECT'
+
+Begin statement
+Sta: {select nextval('[con($cinst.$servertablenames(),'_seq')]')}
+End statement
+Do $cinst.$executesqlandfetchinto(lnSEQ,pDoNotReportTheseErrors) Returns lbOK
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Calculate $cinst.[icPrimarykey] as lnSEQ
+Quit method lnSEQ

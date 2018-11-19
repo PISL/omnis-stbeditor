@@ -1,0 +1,6 @@
+;  Enter your initialization code here
+
+
+
+;  prevent accidental deletion of the following:
+Do ilFound.$clear()

@@ -1,0 +1,492 @@
+[
+	{
+		"name": "OMS_SEQ",
+		"ident": 32001,
+		"order": 1,
+		"type": "kInteger",
+		"subtype": "k32bitint",
+		"sublen": 0,
+		"properties": {
+			"desc": "",
+			"nonull": true,
+			"primarykey": true,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "OMS_CWHEN",
+		"ident": 32002,
+		"order": 2,
+		"type": "kDate",
+		"subtype": "kDatetime",
+		"sublen": 0,
+		"properties": {
+			"desc": "",
+			"nonull": true,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "OMS_CBY",
+		"ident": 32003,
+		"order": 3,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 15,
+		"properties": {
+			"desc": "",
+			"nonull": true,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "OMS_MWHEN",
+		"ident": 32004,
+		"order": 4,
+		"type": "kDate",
+		"subtype": "kDatetime",
+		"sublen": 0,
+		"properties": {
+			"desc": "",
+			"nonull": true,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "OMS_MBY",
+		"ident": 32005,
+		"order": 5,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 15,
+		"properties": {
+			"desc": "",
+			"nonull": true,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "OMS_MCOUNT",
+		"ident": 32006,
+		"order": 6,
+		"type": "kInteger",
+		"subtype": "k32bitint",
+		"sublen": 0,
+		"properties": {
+			"desc": "",
+			"nonull": true,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "OMS_OMG_REF",
+		"ident": 32007,
+		"order": 7,
+		"type": "kInteger",
+		"subtype": "k32bitint",
+		"sublen": 0,
+		"properties": {
+			"desc": "",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "OMS_COLS_MODIFIED",
+		"ident": 32036,
+		"order": 8,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 255,
+		"properties": {
+			"desc": "translation columns that have been manually edited",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "STRINGID",
+		"ident": 32008,
+		"order": 9,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 50,
+		"properties": {
+			"desc": "",
+			"nonull": true,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "en",
+		"ident": 32009,
+		"order": 10,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "english",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "de",
+		"ident": 32010,
+		"order": 11,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "german",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "sv",
+		"ident": 32011,
+		"order": 12,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "swedish",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "nl",
+		"ident": 32012,
+		"order": 13,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "dutch",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "zh",
+		"ident": 32013,
+		"order": 14,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "chinese",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "ca",
+		"ident": 32014,
+		"order": 15,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "catalan",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "es",
+		"ident": 32015,
+		"order": 16,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "spanish",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "it",
+		"ident": 32016,
+		"order": 17,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "italian",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "fr",
+		"ident": 32017,
+		"order": 18,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "french",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "no",
+		"ident": 32018,
+		"order": 19,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "norwegian",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "fi",
+		"ident": 32019,
+		"order": 20,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "finnish",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "da",
+		"ident": 32020,
+		"order": 21,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "danish",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "pt",
+		"ident": 32021,
+		"order": 22,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "portuguese",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "cy",
+		"ident": 32022,
+		"order": 23,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "welsh",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "el",
+		"ident": 32023,
+		"order": 24,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "greek",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "pl",
+		"ident": 32024,
+		"order": 25,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "polish",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "hr",
+		"ident": 32025,
+		"order": 26,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "croatian",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "bg",
+		"ident": 32026,
+		"order": 27,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "bulgarian",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "tr",
+		"ident": 32027,
+		"order": 28,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "turkish",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "ro",
+		"ident": 32028,
+		"order": 29,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "romanian",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "cs",
+		"ident": 32029,
+		"order": 30,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "czech",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "hu",
+		"ident": 32030,
+		"order": 31,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "hungarian",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "ru",
+		"ident": 32031,
+		"order": 32,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "russian",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "ja",
+		"ident": 32032,
+		"order": 33,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "japanese",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "ar",
+		"ident": 32033,
+		"order": 34,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "arabic",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	},
+	{
+		"name": "he",
+		"ident": 32034,
+		"order": 35,
+		"type": "kCharacter",
+		"subtype": "kSimplechar",
+		"sublen": 2000,
+		"properties": {
+			"desc": "hebrew",
+			"nonull": false,
+			"primarykey": false,
+			"userinfo": ""
+		}
+	}
+]

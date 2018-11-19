@@ -1,0 +1,4 @@
+Set reference pReturnSession to $cinst.$sessionobject.$ref
+Set reference pReturnStatement to $cinst.$statementobject.$ref
+;  Calculate pReturnSession as $cinst.$sessionobject.$ref
+;  Calculate pReturnStatement as $cinst.$statementobject.$ref

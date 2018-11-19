@@ -1,0 +1,42 @@
+If pnUSR_SEQ>0
+	;  proceed
+Else
+	Quit method kFalse
+End If
+
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Do ioWeb.$callFetch(llGroupOrgs,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pnUSR_SEQ),llGroupOrgs.$type,1,ilRESTextensions))
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method llGroupOrgs
+	Else
+		Quit method kFalse
+	End If
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Begin statement
+Sta: {select [llGroupOrgs.$selectnames()]}
+Sta: {from [$cinst.$servertablenames], [lrLinkToGroupOrg.$servertablenames()], [llGroupOrgs.$servertablenames()]}
+Sta: {where UGO_USR_REF = USR_SEQ}     ;; join user to link table
+Sta: {and     UGO_GO_REF = GO_SEQ}     ;; join link table to GroupOrg
+Sta: {and     UGO_USR_REF = @[pnUSR_SEQ]}
+End statement
+
+Do $cinst.$executesqlandfetch(llGroupOrgs) Returns lbOK
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method llGroupOrgs

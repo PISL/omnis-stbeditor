@@ -1,0 +1,12 @@
+If len(pJSON)     ;; new code converting paramater row to JSON
+	Do $cinst.$formatParams(,pJSON) Returns lbinParams
+	Calculate lrParams.data as bintohex(lbinParams)
+	
+Else     ;; original code passing in the row variable
+	Calculate lbinParams as pParamsRow
+	Do $cinst.$formatParams(lbinParams) Returns lbinParams
+	Calculate lrParams.data as bintohex(lbinParams)
+	
+End If
+
+Quit method lrParams

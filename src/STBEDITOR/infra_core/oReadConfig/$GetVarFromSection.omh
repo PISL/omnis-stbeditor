@@ -1,0 +1,7 @@
+;
+If isclear(pcSectionName)
+	Calculate pcSectionName as $clib().$name
+End If
+
+Do ilIniList.$search($ref.SectionName=pcSectionName&$ref.KEY=pcKey,1,0,0,0) Returns lnLine
+Quit method ilIniList.[lnLine].VALUE

@@ -1,0 +1,25 @@
+On evAfter     ;; Event Parameters - pClickedField, pClickedWindow, pMenuLine, pCommandNumber, pRow
+	Do ilGroupLinksReverse.$clear()
+	If #MODIFIED
+		Do ilStrings.$unfilter()
+		If icStringSearch<>''
+			If totc(ilGroupClasses,#LSEL)>0&totc(ilGroups,#LSEL)>0&ilStrings.$linecount>0
+				Calculate ilStrings.$smartlist as kTrue
+				;  then use string to filter entries in existing ilStrings
+				If totc(ilLangCodes,#LSEL)>0
+					Calculate ilLangCodes.$line as 0
+					While $Loop(ilLangCodes,kTrue)
+						Calculate lcEvalString as con(lcEvalString,pick(lcEvalString<>'','','|'),'pos(upp(icStringSearch),upp(ilStrings.',ilLangCodes.lang,'))')
+					End While
+					Calculate lcEvalString as con('ilStrings.$filter(','pos(upp(icStringSearch),upp(ilStrings.STRINGID))|pos(upp(icStringSearch),upp(ilStrings.en))|',lcEvalString,')')
+					Do [lcEvalString]
+				Else
+					Do ilStrings.$filter(pos(upp(icStringSearch),upp(ilStrings.STRINGID))|pos(upp(icStringSearch),upp(ilStrings.en)))
+				End If
+			Else
+				Do method fetchStrings
+			End If
+		End If
+	End If
+	Do $cinst.$behaviour()
+	Do $cinst.$redraw()

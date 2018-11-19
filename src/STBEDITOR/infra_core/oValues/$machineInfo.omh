@@ -1,0 +1,15 @@
+Calculate lvInput as 'do shell script "system_profiler SPHardwareDataType"'
+Do $runapplescript(lvInput,lvComputerInfo,lvError)
+If lvComputerInfo<>''
+	Calculate lvComputerInfo as mid(lvComputerInfo,pos('Model Name',lvComputerInfo),len(lvComputerInfo)-pos('Model Name',lvComputerInfo)-1)
+	Do lvList.$define(lvItem)
+	Repeat
+		Do lvList.$add(trim(strtok('lvComputerInfo',chr(13))))
+	Until lvComputerInfo=''
+	If not(pList)
+		Quit method mid(lvList.13.C1,15,len(lvList.13.C1))
+	Else
+		Quit method pList.$merge(lvList)
+	End If
+End If
+Quit method kFalse

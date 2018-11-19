@@ -1,0 +1,28 @@
+Begin text block
+Text: {<xml>} (Platform newline)
+
+Text: {<autostart>} (Platform newline)
+Calculate plAutoStart.$line as 0
+While $Loop(plAutoStart,kTrue)
+	Text: {<application>[plAutoStart.name]</application>} (Platform newline)
+End While
+Text: {</autostart>}
+
+Text: {</xml>}
+End text block
+Get text block lcContents
+
+Do FileOps.$doesfileexist(icConfigFile) Returns lbExists
+If not(lbExists)
+	Do loFileOps.$createfile(icConfigFile) Returns lbExists
+End If
+
+If lbExists
+	Do loFileOps.$openfile(icConfigFile) Returns lbFileIsOpen
+	If lbFileIsOpen
+		Do loFileOps.$writecharacter(kUniTypeUTF8,lcContents) Returns lbReadOK
+		Do loFileOps.$closefile() Returns loFileOps.$closefile()     ;; Returnｓ nothing
+	End If
+End If
+
+Quit method (lbFileIsOpen)

@@ -1,0 +1,8 @@
+;  Do ilValues.$cols.$add('Value',kNumber,kLongint)
+;  Do ilValues.$cols.$add('Description',kCharacter,kSimplechar,255)
+Do ilValues.$search($ref.Value=pnErrorCode,1,0,0,0) Returns lbFound
+If lbFound
+	Quit method ilValues.Description
+Else
+	Quit method con(pnErrorCode,': ','unknown error code')
+End If

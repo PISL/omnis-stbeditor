@@ -1,0 +1,38 @@
+On evOK
+	Do $cinst.$validation() Returns lbOK
+	If not(lbOK)
+		Quit event handler (Discard event)
+	End If
+	Do method Login Returns lbOK
+	If not(lbOK)
+		Quit event handler (Discard event)
+	End If
+	
+	Do $DefineList(llUserGroups,'tuaGroupOrgLinks')
+	Do llUserGroups.$AddLinkedCols('GO_SEQ,GO_NAME_FULL,GO_NAME_SHORT,GON_NAME_FULL')
+	Do llUserGroups.$fetchUserGroupOrgs($ctask.trCurrUser.USR_SEQ)
+	Calculate llUserGroups.$line as 1
+	
+	Do $DefineList(trGroupOrg,'tentGroupOrganisations')
+	Do trGroupOrg.$fetch_pk(llUserGroups.GO_SEQ)
+	
+	If ioAltSession.$state=kSessionStateLoggedOn
+		Do irefCallingObj.$ValidUser(ioAltSession,ioAltStatement)
+	Else
+		Do $ValidUser()
+	End If
+	Close window instance $cinst
+	
+On evCancel
+	If sys(2)=1
+		Breakpoint
+	Else
+		Do $libs.$makelist($ref.$name) Returns llLibraries
+		;  this library will be one of them     ;; if its the only open library quit Omnis
+		;  otherwise just close the library
+		If llLibraries.$linecount>1
+			Close library {[$clib().$name]}
+		Else
+			Quit Omnis
+		End If
+	End If

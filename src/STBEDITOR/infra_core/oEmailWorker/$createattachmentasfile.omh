@@ -1,0 +1,26 @@
+;  Depending on the presence of fields, pass only as many parameters as are necessary
+If len(plAttachments.filename)>0
+	;  Do iMessage.$createbodypartfromfile(iPath,iMIMEtypeList.type,iCharsetList.iCharsetId,iEncodingList.iEncoding,iDispositionList.iDisposition,iFilename) Returns pBodyPartID
+	Do iMessage.$createbodypartfromfile(plAttachments.filepath,plAttachments.mimetype,plAttachments.charset,plAttachments.encoding,plAttachments.disposition,plAttachments.filename) Returns plAttachments.inBodyPartId
+Else If plAttachments.disposition<>''
+	;  Do iMessage.$createbodypartfromfile(iPath,iMIMEtypeList.type,iCharsetList.iCharsetId,iEncodingList.iEncoding,iDispositionList.iDisposition) Returns pBodyPartID
+	Do iMessage.$createbodypartfromfile(plAttachments.filepath,plAttachments.mimetype,plAttachments.charset,plAttachments.encoding,plAttachments.disposition) Returns plAttachments.inBodyPartId
+Else If plAttachments.encoding<>''
+	;  Do iMessage.$createbodypartfromfile(iPath,iMIMEtypeList.type,iCharsetList.iCharsetId,iEncodingList.iEncoding) Returns pBodyPartID
+	Do iMessage.$createbodypartfromfile(plAttachments.filepath,plAttachments.mimetype,plAttachments.charset,plAttachments.encoding) Returns plAttachments.inBodyPartId
+Else If plAttachments.charset<>''
+	;  Do iMessage.$createbodypartfromfile(iPath,iMIMEtypeList.type,iCharsetList.iCharsetId) Returns pBodyPartID
+	Do iMessage.$createbodypartfromfile(plAttachments.filepath,plAttachments.mimetype,plAttachments.charset) Returns plAttachments.inBodyPartId
+Else If len(plAttachments.mimetype)>0
+	;  Do iMessage.$createbodypartfromfile(iPath,iMIMEtypeList.type) Returns pBodyPartID
+	Do iMessage.$createbodypartfromfile(plAttachments.filepath,plAttachments.mimetype) Returns plAttachments.inBodyPartId
+Else
+	;  Do iMessage.$createbodypartfromfile(iPath) Returns pBodyPartID
+	Do iMessage.$createbodypartfromfile(plAttachments.filepath) Returns plAttachments.inBodyPartId
+End If
+If plAttachments.inBodyPartId=0
+	;  OK message  {Error [pMessage.$errorcode] creating file body part for path [iPath]}
+	Calculate icErrorMessage as con('Error ',iMessage.$errorcode,' creating file body part for path ',plAttachments.filepath)
+	Quit method kFalse
+End If
+Quit method kTrue

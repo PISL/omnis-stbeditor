@@ -1,0 +1,8 @@
+Do prData.$cols.$findname('server') Returns liColRef
+If liColRef
+	Calculate lcValue as prData.server
+Else
+	Calculate lcValue as pcDefault
+End If
+
+Quit method lcValue

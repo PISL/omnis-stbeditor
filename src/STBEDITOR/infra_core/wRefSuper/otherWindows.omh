@@ -1,0 +1,12 @@
+Do $iwindows.$makelist($ref.$name,$ref) Returns llWindows
+Do llWindows.$redefine(name,ref)
+
+;  discard all windows in list that don't relate to this class
+Do llWindows.$search(pos($cclass().$name,$ref.name),1,0,1,0)
+Do llWindows.$remove(kListKeepSelected)
+Do llWindows.$search(0)
+;  find the reference to this window and remove it from list
+Do llWindows.$search($ref.name=$cinst().$name,1,0,0,0)
+Do llWindows.$remove(llWindows.$line)
+
+Quit method llWindows

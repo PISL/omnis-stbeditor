@@ -1,0 +1,39 @@
+Calculate lcTemp as pStringIn
+Calculate lcInClause as ''
+While lcTemp<>''
+	Calculate lcToken as strtok(nam(lcTemp),',')
+	Calculate lcToken as trim(lcToken)
+	
+	If pCharTokens
+		;  if token does not have apostrophes surrounding it, surround it with apostrophes
+		If mid(lcToken,1,1)<>"'"     ;; start of token
+			Calculate lcToken as con("'",lcToken)
+		End If
+		If mid(lcToken,len(lcToken),1)<>"'"     ;; last char of token
+			Calculate lcToken as con(lcToken,"'")
+		End If
+	Else
+		;  if token has apostrophes surrounding it, remove the apostrophes
+		If mid(lcToken,1,1)="'"     ;; start of token
+			Calculate lcToken as mid(lcToken,2,999)
+		End If
+		If mid(lcToken,len(lcToken),1)="'"     ;; last char of token
+			Calculate lcToken as mid(lcToken,1,len(lcToken)-1)
+		End If
+		
+		;  verify the token is a number     ;; otherwise exclude it
+		If not(isnumber(lcToken))
+			Calculate lcErroneousTokens as con(lcErroneousTokens,pick(lcErroneousTokens<>'','',', '),lcToken)
+			Calculate lcToken as ''
+		End If
+	End If
+	
+	If lcToken<>''
+		Calculate lcInClause as con(lcInClause,pick(lcInClause<>'','',', '),lcToken)
+	End If
+End While
+
+If lcErroneousTokens<>''
+	Calculate pErroneousTokens as lcErroneousTokens
+End If
+Quit method lcInClause

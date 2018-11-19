@@ -1,0 +1,19 @@
+If pcSearchFor<>''
+	Do plSearch.$search(0)
+	Do plSearch.$search(mid(upp($ref.[pcSearchCol]),1,len(pcSearchFor))=upp(pcSearchFor),1,0,1,0)
+	Calculate lnCount as totc(plSearch,#LSEL)
+	If lnCount=1
+		;  found without ambiguity     ;; one line selected
+		Do plSearch.$first(kTrue)     ;; set current line
+	Else If lnCount=0
+		;  nothing found     ;; no lines selected
+	Else If lnCount>1
+		;  found with ambiguity     ;; multiple lines selected, no current line
+	End If
+	
+	If not(pbLeaveSelected)
+		Do plSearch.$search(0)
+	End If
+End If
+
+Quit method lnCount

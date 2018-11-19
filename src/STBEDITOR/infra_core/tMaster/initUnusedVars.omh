@@ -1,0 +1,8 @@
+;  just to make sure a "delete unused instance variables" keeps these vars in.  They are referenced in subclasses.
+
+Calculate icSearchString as ''
+Calculate idFrom as #NULL
+Calculate idTo as #NULL
+Calculate icValidationMessage as ''
+Calculate icForeignTable as ''
+Calculate icLangCode as ''

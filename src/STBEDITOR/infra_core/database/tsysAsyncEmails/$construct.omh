@@ -1,0 +1,6 @@
+Calculate icPrefix as 'AE_'
+Calculate icPrimarykey as 'AE_SEQ'
+;  Calculate icForeignKey as ''
+Calculate icDateColumn as 'AE_CWHEN'
+Calculate ibHasSequence as kTrue
+Do inherited

@@ -1,0 +1,10 @@
+;  Breakpoint {prefList}
+For prefList.$line from 1 to prefList.$linecount step 1
+	Set reference lrefValue to prefList.C1
+	Calculate lcValue as lrefValue
+	If len(lcValue)>0
+		Quit method lcValue
+	End If
+End For
+
+Quit method

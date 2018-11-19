@@ -1,0 +1,7 @@
+Calculate icPrefix as 'UGO_'
+Calculate icPrimarykey as 'UGO_SEQ'
+Calculate ibHasSequence as kTrue
+;  Calculate icForeignKey as 'UGO_USR_REF'
+Calculate icForeignKey as 'UGO_GO_REF'
+
+Do inherited

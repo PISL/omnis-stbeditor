@@ -1,0 +1,17 @@
+Calculate lcDelimiter as ''
+If pos(kSp,pcEmails)
+	Calculate lcDelimiter as kSp
+Else If pos(';',pcEmails)
+	Calculate lcDelimiter as ';'
+Else If pos(',',pcEmails)
+	Calculate lcDelimiter as ','
+End If
+Calculate lcEmails as pcEmails
+
+While lcEmails<>''
+	Calculate lcToken as strtok(nam(lcEmails),lcDelimiter)
+	Calculate lcToken as trim(lcToken)
+	If lcToken<>''
+		Do plEmails.$add(lcToken)
+	End If
+End While

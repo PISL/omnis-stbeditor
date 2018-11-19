@@ -1,0 +1,27 @@
+Calculate ldNow as $AboutNow()
+If icPrefix<>''     ;; ### 2015-03-05 removing invalid items causing debug log entries
+	Do $cinst.$cols.$findname(con(icPrefix,'CWHEN')) Returns lrefCol
+	If lrefCol
+		Calculate $cinst.[icPrefix]CWHEN as ldNow
+	End If
+	
+	Do $cinst.$cols.$findname(con(icPrefix,'CBY')) Returns lrefCol
+	If lrefCol
+		Calculate $cinst.[icPrefix]CBY as trCurrUser.USR_NAME     ;; ccConsoleUser
+	End If
+	
+	Do $cinst.$cols.$findname(con(icPrefix,'MWHEN')) Returns lrefCol
+	If lrefCol
+		Calculate $cinst.[icPrefix]MWHEN as ldNow
+	End If
+	
+	Do $cinst.$cols.$findname(con(icPrefix,'MBY')) Returns lrefCol
+	If lrefCol
+		Calculate $cinst.[icPrefix]MBY as trCurrUser.USR_NAME     ;; ccConsoleUser
+	End If
+	
+	Do $cinst.$cols.$findname(con(icPrefix,'MCOUNT')) Returns lrefCol
+	If lrefCol
+		Calculate $cinst.[icPrefix]MCOUNT as 0
+	End If
+End If

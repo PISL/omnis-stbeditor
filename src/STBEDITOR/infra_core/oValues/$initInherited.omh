@@ -1,0 +1,108 @@
+If pcREF_CLASS='KEYWORDS_3P'
+	;  Breakpoint
+End If
+Do irErrorSQL.$clear()
+
+Calculate llOrg as ilBaseOrg
+Calculate llFixed as ilBaseOrg
+Do method FixedValues (pcREF_CLASS,llFixed)
+
+If tlDatabases.DAM='WebService'
+	;  utilise a cache of reference values
+	
+	;  Have we searched on this class already?
+	;  Because of $initInherited method there will many instances of records being fetched from Org, Local and Global
+	;  and there being records only in one of those tables.  This check prevents repeated fetched for nothing.
+	If pcREF_VALUE<>''
+		If pos(con(',',pcREF_CLASS,'/',pcREF_VALUE,','),ccClassesInherited)
+			Calculate lbAlreadyFetched as kTrue
+		End If
+	Else If pos(con(',',pcREF_CLASS,','),ccClassesInherited)
+		Calculate lbAlreadyFetched as kTrue
+	End If
+	
+	If lbAlreadyFetched
+		If pcREF_VALUE<>''
+			Do clInherited.$search($ref.RFO_CLASS=pcREF_CLASS&$ref.RFO_VALUE=pcREF_VALUE,1,0,1,0) Returns lnFirstSelectedLine
+		Else
+			Do clInherited.$search($ref.RFO_CLASS=pcREF_CLASS,1,0,1,0) Returns lnFirstSelectedLine
+		End If
+		If lnFirstSelectedLine     ;; totc(clOrganisation,#LSEL)>0
+			Do llOrg.$merge(clInherited,kFalse,kTrue)
+			Do clInherited.$search(0) Returns lbFound     ;; clear any selected lines
+			Calculate lbFoundInCache as kTrue
+		End If
+	End If
+End If
+
+If llOrg.$linecount=0&not(lbAlreadyFetched)
+	;  only fetch from db if there is nothing in local list
+	;  In some situations this method is called to return an empty list with a defined structure.
+	If pcREF_CLASS<>''     ;; passing empty CLASS raises an error in $fetchInherited
+		Do llOrg.$fetchInherited(pcREF_CLASS,pcREF_VALUE)
+		If llOrg.irErrorSQL.NativeErrorText<>''
+			Calculate irErrorSQL as llOrg.irErrorSQL
+			Quit method
+		End If
+	End If
+End If
+
+If tlDatabases.DAM='WebService'
+	If not(lbFoundInCache)
+		;  build up a cache of reference values
+		If clInherited.$colcount=0     ;; this test added 14 JUL 17  RSM  tracker_remote not maintaining cache as expected
+			Calculate clInherited as llOrg
+		Else
+			Do clInherited.$merge(llOrg)
+		End If
+		
+		If not(lbAlreadyFetched)
+			;  Build up a cache of requested CLASSES so repeated calls to a class that fetches nothing is not repeated.
+			If pcREF_VALUE<>''
+				Calculate ccClassesInherited as con(ccClassesInherited,pcREF_CLASS,'/',pcREF_VALUE,',')
+			Else
+				Calculate ccClassesInherited as con(ccClassesInherited,pcREF_CLASS,',')
+			End If
+		End If
+	End If
+End If
+
+If llFixed.$linecount>0
+	Calculate llFixed.$line as 0
+	;  While $Loop(llFixed)     ;; Studio 8.0.1 bug - losing scope with task
+	For llFixed.$line from 1 to llFixed.$linecount step 1
+		Do llOrg.$search($ref.RFO_VALUE=llFixed.RFO_VALUE,1,0,0,0) Returns lbFound
+		If lbFound
+			If not(llOrg.RFO_ACTIVE)
+				;  then user has disabled this entry
+				Calculate llOrg.[llOrg.$line].$selected as kTrue
+				Calculate llFixed.[llFixed.$line].$selected as kTrue
+			Else
+				;  don't duplicate rows
+				Calculate llOrg.[llOrg.$line].$selected as kTrue     ;; fixed entry takes precedence
+			End If
+		End If
+		;  End While
+	End For
+	
+	Do llFixed.$remove(kListDeleteSelected)
+	Do llOrg.$remove(kListDeleteSelected)
+	
+	Do llOrg.$merge(llFixed)
+	Do llOrg.$sort($ref.RFO_ORDER,0,$ref.RFO_VALUE,0)
+End If
+
+
+If pcLangCode<>''
+	;  translate the DESC column
+	Do StringTable.$getcolumnname() Returns lcSTBColumn     ;; get the current translation column
+	Do StringTable.$setcolumn(pcLangCode) Returns lnError
+	If lnError=1
+		While $Loop(llOrg)
+			Do StringTable.$gettext(con(llOrg.RFO_CLASS,'_',llOrg.RFO_VALUE)) Returns llOrg.RFO_DESC
+		End While
+	End If
+	Do StringTable.$setcolumn(lcSTBColumn)     ;; reset the original column
+End If
+
+Quit method llOrg

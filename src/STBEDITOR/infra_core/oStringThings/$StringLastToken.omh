@@ -1,0 +1,14 @@
+;  Calculate lcResult as X81382003(P_SOURCE,32767,P_DELIMITER)
+;  If lcResult=''
+Calculate lnLength as len(P_SOURCE)
+For lnCount from lnLength to 1 step -1
+	If mid(P_SOURCE,lnCount,1)=P_DELIMITER
+		Calculate lcResult as mid(P_SOURCE,lnCount+1,99999)
+		Break to end of loop
+	End If
+End For
+If lcResult=''
+	Calculate lcResult as P_SOURCE
+End If
+;  End If
+Quit method lcResult

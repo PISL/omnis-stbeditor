@@ -1,0 +1,53 @@
+;  I presume the session pool will be destroyed by Omnis
+;  if Omnis were quitting, yes.    But if just the library was being closed down?  I don't think so.
+If tSession.$state=kSessionStateLoggedOn
+	Do tSession.$logoff() Returns lbOK
+End If
+
+Do $root.$sessionpools.$findname(tlDatabases.Name) Returns lrefSessionToDestroy
+If lrefSessionToDestroy
+	Do $root.$sessionpools.$remove(lrefSessionToDestroy) Returns lbOK
+End If
+
+If tlDatabases.autoBackupPath<>''
+	Do FileOps.$doesfileexist(tlDatabases.autoBackupPath) Returns lbExists
+	If lbExists
+		;  Calculate lcPathFrom as con(tConstants.HostDirectory,$clib().$name,'.df1')
+		Calculate lcPathFrom as con(tlDatabases.Host)
+		;  Calculate lcPathTo as con(tlDatabases.autoBackupPath,sys(9),$clib().$name,'_',dat(#D,'CYMD'),'.df1')
+		Calculate lcPathTo as con(tlDatabases.autoBackupPath,sys(9),tlDatabases.InternalOmnisDbName,'_',dat(#D,'CYMD'),'.df1')
+		Do FileOps.$doesfileexist(lcPathTo) Returns lbExists
+		If lbExists
+			;  if user has already opened and closed the application today there will alredy be a backup
+			;  delete that backup to make way for this new one
+			Do FileOps.$deletefile(lcPathTo) Returns lnFileStatus
+		End If
+		
+		Do FileOps.$copyfile(lcPathFrom,lcPathTo) Returns lnFileStatus
+		If lnFileStatus=0
+			;  sweet
+			;  now delete very old backups
+			Do FileOps.$filelist(kFileOpsIncludeFiles,tlDatabases.autoBackupPath,kFileOpsInfoName+kFileOpsInfoCreated+kFileOpsInfoModified) Returns llFiles
+			;  Do llFiles.$search(pos($clib().$name,$ref.C1)=1,1,0,1,0)
+			Do llFiles.$search(pos(tlDatabases.InternalOmnisDbName,$ref.C1)=1,1,0,1,0)
+			Do llFiles.$remove(kListKeepSelected)
+			
+			Do llFiles.$sort($ref.C3,1)     ;; most recently made backups at top of list
+			;  maintain no more than 10 backups
+			If llFiles.$linecount>10
+				;  Breakpoint {not been tested}
+				Calculate llFiles.$line as 10
+				While $Loop(llFiles)
+					Do FileOps.$deletefile(con(tlDatabases.autoBackupPath,sys(9),llFiles.C1)) Returns lnFileStatus
+					If lnFileStatus<>0
+						OK message  {failed to delete old backup file [llFiles.C1] in directory [tlDatabases.autoBackupPath] with error code [lnFileStatus]}
+					End If
+				End While
+			End If
+		Else
+			OK message  {copy of backup file to "[lcPathTo]" failed with file error code [lnFileStatus]}
+		End If
+	Else
+		OK message  {auto backup path "[tlDatabases.autoBackupPath]" does ot exist.}
+	End If
+End If

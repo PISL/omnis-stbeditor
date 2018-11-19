@@ -1,0 +1,3 @@
+Do method $CloseSessionPool (pSource) Returns lbFileWasOpenAndIsNowClosed
+Do method $OpenSessionPool (irConfigFile.Name,irConfigFile.Host,irConfigFile.UserName,irConfigFile.password,irConfigFile.DAM,irConfigFile.poolSize) Returns lbOK     ;; irConfigFile
+Quit method lbOK

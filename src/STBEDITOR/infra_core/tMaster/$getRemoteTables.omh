@@ -1,0 +1,46 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Calculate ldtStart as #D
+	Do ioWeb.$callFetch(llRemoteTables,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,#NULL,llRemoteTables.$type,1,ilRESTextensions))
+	Calculate inServiceMS as ddiff(kCentiSecond,ldtStart,#D)*10
+	Calculate inRESTserverMS as ioWeb.inServerTime
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method llRemoteTables
+	Else
+		Quit method kFalse
+	End If
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Do llRemoteTables.$cols.$add('tablename',kCharacter,kSimplechar,255)
+Do llRemoteTables.$cols.$add('servername',kCharacter,kSimplechar,255)
+Do llRemoteTables.$cols.$add('dbname',kCharacter,kSimplechar,255)
+Do llRemoteTables.$cols.$add('remotetablename',kCharacter,kSimplechar,255)
+
+Calculate icStatementType as 'SELECT'
+
+Begin statement
+Sta: {select tablename, servername, dbname, remotetablename}
+Sta: {from remotetables}
+Calculate lnPos as pos('.',$cinst.$servertablenames)
+Calculate lcTableName as mid($cinst.$servertablenames,lnPos+1,255)
+Sta: {where tablename = @[lcTableName]}
+End statement
+Do $cinst.$executesqlandfetch(llRemoteTables,kFalse,'42P01') Returns lbOK     ;; 42P01 is when remote tables are not present
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method llRemoteTables

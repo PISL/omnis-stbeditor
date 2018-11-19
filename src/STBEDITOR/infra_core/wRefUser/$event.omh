@@ -1,0 +1,9 @@
+On evClose
+	Do method $Save
+	
+	
+On evCancel
+	Close window instance $cinst
+	
+On evOK
+	Do method $Save

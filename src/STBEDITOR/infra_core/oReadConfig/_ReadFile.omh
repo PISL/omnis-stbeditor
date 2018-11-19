@@ -1,0 +1,13 @@
+;
+Do loFileOps.$openfile(pcFile,kReadonly) Returns lbFlag
+If not(lbFlag)
+	Calculate icErrorText as con('Error opening file ',pcFile)
+	Quit method kFalse
+End If
+Do loFileOps.$readcharacter(kUniTypeNativeCharacters,icIniText) Returns lbFlag
+If not(lbFlag)
+	Calculate icErrorText as con('Error reading file ',pcFile)
+	Quit method kFalse
+End If
+Do loFileOps.$closefile()
+Quit method lbFlag

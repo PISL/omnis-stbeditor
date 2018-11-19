@@ -1,0 +1,4 @@
+Calculate icPrefix as 'CFG_'
+Calculate icPrimarykey as 'CFG_SEQ'
+Calculate ibHasSequence as kTrue
+Do inherited

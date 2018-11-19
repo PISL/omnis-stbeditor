@@ -1,0 +1,8 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	;  Do method SortList ($cobj().$name)
+	Do $cinst.$SortList(mid($cobj().$name,3,99),nam(ilData)) Returns lcExecute     ;; ilSortColumns has description of sort operation
+	Do [lcExecute]
+	Calculate $cobj.$text as con($cobj.$userinfo,' ',pick(lrData.direction,'^','v'),' ',lrData.position)
+	Do $cinst.$redraw()
+	
+	Do $cinst.$objs.ilData.$objs.$sendall($ref.$updateText())

@@ -1,0 +1,23 @@
+;  copied from oLoanImport
+If len(pPhoneNumber)>1
+	;  mainstay sometimes prefix their numbers with 95
+	If mid(pPhoneNumber,1,3)='95 '
+		Calculate pPhoneNumber as con('0',mid(pPhoneNumber,4,99))
+	End If
+	If mid(pPhoneNumber,1,2)='95'
+		Calculate pPhoneNumber as con('0',mid(pPhoneNumber,3,99))
+	End If
+	
+	Calculate pPhoneNumber as replaceall(pPhoneNumber,' ','')     ;; remove all spaces
+	
+	If mid(pPhoneNumber,1,1)<>'0'
+		Calculate pPhoneNumber as con('0',pPhoneNumber)
+	End If
+	
+	;  insert spaces
+	If mid(pPhoneNumber,1,2)='02'|mid(pPhoneNumber,1,2)='03'     ;; new 8 digit phone number
+		Calculate pPhoneNumber as con(mid(pPhoneNumber,1,3),' ',mid(pPhoneNumber,4,4),' ',mid(pPhoneNumber,8,4))
+	Else
+		Calculate pPhoneNumber as con(mid(pPhoneNumber,1,5),' ',mid(pPhoneNumber,6,3),' ',mid(pPhoneNumber,9,3))
+	End If
+End If

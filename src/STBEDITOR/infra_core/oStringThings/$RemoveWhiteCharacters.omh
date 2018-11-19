@@ -1,0 +1,38 @@
+While pos(kTab,pStringIn)>0
+	Calculate pStringIn as replaceall(pStringIn,kTab,' ')     ;; tabs to single space
+End While
+While pos('&nbsp;',pStringIn)>0
+	Calculate pStringIn as replaceall(pStringIn,'&nbsp;',' ')     ;; &nbsp; to single space
+End While
+While pos('&NBSP;',pStringIn)>0
+	Calculate pStringIn as replaceall(pStringIn,'&NBSP;',' ')     ;; &nbsp; to single space
+End While
+
+While pos('   ',pStringIn)>0
+	Calculate pStringIn as replaceall(pStringIn,'   ',' ')     ;; 3 spaces to 1
+End While
+While pos('  ',pStringIn)>0
+	Calculate pStringIn as replaceall(pStringIn,'  ',' ')     ;; 2 spaces to 1
+End While
+
+While pos(con(kCr,' '),pStringIn)>0
+	Calculate pStringIn as replaceall(pStringIn,con(kCr,' '),kCr)     ;; space after new line  to new line
+End While
+While pos(con(' ',kCr),pStringIn)>0
+	Calculate pStringIn as replaceall(pStringIn,con(' ',kCr),kCr)     ;; space before new line  to new line
+End While
+While pos(con(kLf,' '),pStringIn)>0
+	Calculate pStringIn as replaceall(pStringIn,con(kLf,' '),kLf)     ;; space after line feed  to linefeed
+End While
+
+
+While pos(con(kCr,kCr),pStringIn)>0
+	Calculate pStringIn as replaceall(pStringIn,con(kCr,kCr),kCr)     ;; 2 new lines to single new line
+End While
+While pos(con(chr(11),chr(11)),pStringIn)>0
+	Calculate pStringIn as replaceall(pStringIn,con(chr(11),chr(11)),chr(11))     ;; 2 soft new lines to single soft new line
+End While
+
+;  OK message  {asc(pstringin,2) = [asc(pStringIn,2)], asc(pstringin,4) = [asc(pStringIn,4)], asc(pstringin,5) = [asc(pStringIn,5)]}
+
+Quit method pStringIn

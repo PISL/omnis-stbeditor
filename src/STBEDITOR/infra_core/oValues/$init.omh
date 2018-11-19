@@ -1,0 +1,11 @@
+Do irErrorSQL.$clear()
+Calculate lList as ilBaseLocal
+Do method FixedValues (pcREF_CLASS,lList)
+
+Do lList.$FetchClass(pcREF_CLASS,pcREF_VALUE,kFalse,kTrue)
+Do lList.$sort($ref.RFL_ORDER,0,$ref.RFL_VALUE,0)
+If lList.irErrorSQL.NativeErrorText<>''
+	Calculate irErrorSQL as lList.irErrorSQL
+End If
+
+Quit method lList

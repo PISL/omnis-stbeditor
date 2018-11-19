@@ -1,0 +1,30 @@
+;  fixed columns
+Calculate lcTemp as pBreakCols
+While lcTemp<>''
+	Do lNewList.$cols.$add(strtok(nam(lcTemp),','),kCharacter,kSimplechar,255)
+End While
+
+;  total per row columns
+Calculate lcTemp as pTransposeValCols
+While lcTemp<>''
+	Calculate lcToken as strtok(nam(lcTemp),',')
+	Do plTransposeValues.$cols.$findname(lcToken) Returns liColRef     ;; plTransposeValues.[lcToken]
+	Do lNewList.$cols.$add(liColRef().$name,liColRef().$coltype,liColRef().$colsubtype,liColRef.$colsublen)
+	Calculate lNewList.$cols.[lNewList.$colcount].$name as con('TOTAL_',lcToken)     ;; lNewList
+End While
+
+;  columns for each transpose value (e.g. USTATUS)
+Calculate plTransposeValues.$line as 0
+While $Loop(plTransposeValues)
+	Calculate lcTemp as pTransposeValCols
+	While lcTemp<>''
+		Calculate lcToken as con(strtok(nam(lcTemp),','),plTransposeValues.[pTransposeValCol])
+		
+		Do lNewList.$cols.$add(lcToken,kCharacter,kSimplechar,255)
+		If pWithPercentCols
+			Do lNewList.$cols.$add(con(lcToken,'_PERCENT'),kNumber,k2dp)
+		End If
+	End While
+End While
+
+Quit method lNewList

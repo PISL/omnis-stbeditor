@@ -1,0 +1,30 @@
+If ilServers.$linecount=0|ilDBs.$linecount=0     ;; we cannot continue without a valid remote server and DB
+	OK message  {There is no remote server/DB to fetch from.}
+	Quit method
+End If
+;  Do ilData.$setRemoteDb(ilServers.servername,ilDBs.dbname)
+If icComparisonCols=''
+	;  if user has deselected all columns, assume all columns to be used
+	Calculate icComparisonCols as toStrings.$ListToString(ilComparisonCols,'colName',',',#NULL,kFalse)
+End If
+Do ilData.$setDiffCols(icKeyCols,icComparisonCols)
+Do ilData.$fetchDifferences(pick(inDiffType,'NEW','DIFF-NEW','DIFF+NEW')) Returns llDataRemote
+Do ilData.$sort($ref.[icColPrefix]CLASS,0,$ref.[icColPrefix]VALUE,0)
+Do llDataRemote.$sort($ref.[icColPrefix]CLASS,0,$ref.[icColPrefix]VALUE,0)
+
+;  Breakpoint {lldataremote}
+
+Do $cinst.$redraw()
+
+If isclear(irefRemoteWindow)&(ilData.$linecount|llDataRemote.$linecount)
+	Do $clib.$windows.[$cinst().$class().$name].$open('*',kWindowStack,#NULL,$cinst) Returns irefRemoteWindow
+End If
+
+If ilData.$linecount=0&llDataRemote.$linecount=0
+	OK message  {No differences found.}
+End If
+
+If irefRemoteWindow
+	Do irefRemoteWindow.$prepareDiffs(ilDBs)
+	Do irefRemoteWindow.$displayDiffs(llDataRemote)
+End If

@@ -1,0 +1,89 @@
+If pList.code='TODAY'
+	Calculate ldFrom as #D
+	Calculate ldTo as #D
+	
+Else If pList.code='YESTERDAY'
+	Calculate ldFrom as dadd(kDay,-1,#D)
+	Calculate ldTo as dadd(kDay,-1,#D)
+	
+Else If pList.code='THIS_WEEK'
+	Calculate ldFrom as fday(kWeek,#D)
+	Calculate ldTo as lday(kWeek,#D)     ;; could have been #d but this mucks up opening windows sense of time periods when clicking next/previous
+	
+Else If pList.code='LAST_WEEK'
+	Calculate ldFrom as dadd(kWeek,-1,fday(kWeek,#D))
+	Calculate ldTo as dadd(kDay,6,ldFrom)
+	
+Else If pList.code='PRV_LAST_WEEK'
+	Calculate ldFrom as dadd(kWeek,-2,fday(kWeek,#D))
+	Calculate ldTo as dadd(kDay,6,ldFrom)
+	
+Else If pList.code='THIS_FNIGHT'
+	Calculate ldFrom as dadd(kWeek,-2,fday(kWeek,#D))
+	Calculate ldTo as lday(kWeek,#D)     ;; could have been #d but this mucks up opening windows sense of time periods when clicking next/previous
+	
+Else If pList.code='LAST_FNIGHT'
+	Calculate ldFrom as dadd(kWeek,-4,fday(kWeek,#D))
+	Calculate ldTo as dadd(kDay,13,ldFrom)
+	
+Else If pList.code='PRV_LAST_FNIGHT'
+	Calculate ldFrom as dadd(kWeek,-6,fday(kWeek,#D))
+	Calculate ldTo as dadd(kDay,13,ldFrom)
+	
+Else If pList.code='THIS_MONTH'
+	Calculate ldFrom as fday(kMonth,#D)
+	Calculate ldTo as lday(kMonth,#D)     ;; could have been #d but this mucks up opening windows sense of time periods when clicking next/previous
+	
+Else If pList.code='LAST_MONTH'
+	Calculate ldFrom as dadd(kMonth,-1,fday(kMonth,#D))
+	Calculate ldTo as dadd(kDay,-1,fday(kMonth,#D))
+	
+Else If pList.code='PRV_LAST_MONTH'
+	Calculate ldFrom as dadd(kMonth,-2,fday(kMonth,#D))
+	Calculate ldTo as dadd(kDay,-1,dadd(kMonth,1,ldFrom))
+	
+Else If pList.code='THIS_QTR'
+	Calculate ldFrom as fday(kQuarter,#D)
+	Calculate ldTo as lday(kQuarter,#D)     ;; could have been #d but this mucks up opening windows sense of time periods when clicking next/previous
+	
+Else If pList.code='LAST_QTR'
+	Calculate ldFrom as dadd(kQuarter,-1,fday(kQuarter,#D))
+	Calculate ldTo as dadd(kDay,-1,fday(kQuarter,#D))
+	
+Else If pList.code='PRV_LAST_QTR'
+	Calculate ldFrom as dadd(kQuarter,-2,fday(kQuarter,#D))
+	Calculate ldTo as dadd(kDay,-1,dadd(kMonth,3,ldFrom))
+	
+Else If pList.code='THIS_YEAR'
+	Calculate ldFrom as fday(kYear,#D)
+	Calculate ldTo as lday(kYear,#D)     ;; could have been #d but this mucks up opening windows sense of time periods when clicking next/previous
+	
+Else If pList.code='LAST_YEAR'
+	Calculate ldFrom as dadd(kYear,-1,fday(kYear,#D))
+	Calculate ldTo as lday(kYear,ldFrom)
+	
+Else If pList.code='PREV_YEAR'
+	Calculate ldFrom as dadd(kYear,-2,fday(kYear,#D))
+	Calculate ldTo as lday(kYear,ldFrom)
+	
+Else If pList.code='PROJ_TO_DATE'
+	Calculate ldFrom as dat('15 OCT 2012')
+	Calculate ldTo as #D
+	
+Else If pList.code='OTHER'
+	;  leave untouched - they should be same as what has been passed in
+	If pReturnFrom>dat('1/1/2010')
+		Calculate ldFrom as pReturnFrom
+	End If
+	If pReturnTo>dat('1/1/2010')
+		Calculate ldTo as pReturnTo
+	End If
+Else     ;; ALL, empty, null
+	Calculate ldFrom as #NULL
+	Calculate ldTo as #NULL
+End If
+
+Calculate pReturnFrom as ldFrom
+Calculate pReturnTo as ldTo
+
+Quit method

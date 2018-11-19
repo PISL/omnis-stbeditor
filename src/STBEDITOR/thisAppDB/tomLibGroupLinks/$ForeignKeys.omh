@@ -1,0 +1,11 @@
+;  Builds a list of foreign keys for the table
+Calculate llForeignKeyList as
+Do llForeignKeyList.$cols.$add('TABLE',kCharacter,kSimplechar,100)
+Do llForeignKeyList.$cols.$add('COLUMN',kCharacter,kSimplechar,100)
+Do llForeignKeyList.$cols.$add('FTABLE',kCharacter,kSimplechar,100)
+Do llForeignKeyList.$cols.$add('FCOLUMN',kCharacter,kSimplechar,100)
+
+Do llForeignKeyList.$add($cinst.$servertablenames,'olg_oml_ref',lromLibrary.$servertablenames,'oml_seq')
+Do llForeignKeyList.$add($cinst.$servertablenames,'olg_omg_ref',lromGroup.$servertablenames,'omg_seq')
+
+Quit method llForeignKeyList

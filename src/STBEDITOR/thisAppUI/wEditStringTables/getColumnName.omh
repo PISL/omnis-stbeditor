@@ -1,0 +1,4 @@
+For lnCount from 1 to pnColNo step 1
+	Calculate lcColName as strtok('pcColumns',',')
+End For
+Quit method lcColName

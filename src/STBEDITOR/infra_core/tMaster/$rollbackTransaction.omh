@@ -1,0 +1,10 @@
+Do $cinst.$executesqldirect(con('rollback',pick(pcName<>'','',' '),pcName)) Returns lbOK
+
+If lbOK
+	Do $cinst.$sessionobject.$transactionmode.$assign(kSessionTranAutomatic) Returns lbOK
+	
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+	
+End If
+
+Quit method lbOK

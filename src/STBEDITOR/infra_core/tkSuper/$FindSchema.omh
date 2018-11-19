@@ -1,0 +1,11 @@
+
+;  Finds the schema class that contains pColumn
+If ilColumns.$linecount=0
+	Do method BuildColumns
+End If
+Do ilColumns.$search($ref.COLUMN=pcColumn,1,0,0,0) Returns lbFound
+If not(lbFound)
+	Breakpoint
+End If
+
+Quit method ilColumns.SCHEMA

@@ -1,0 +1,54 @@
+;  Do method InitDebugVars
+
+;  2015-06-01 GRS changed this from a check on tConstants for WebSiteName
+If low(right(tlDatabases.Name,5))='_live'|low(right(tlDatabases.Name,5))='_prod'
+	Calculate ibThisIsProductionServer as kTrue
+Else
+	Calculate ibThisIsProductionServer as kFalse
+End If
+
+;  set framework task references
+;  Set reference irefCORETASK to $itasks.COREC
+Set reference irefCORETASK to $itasks.[$clib().$name]
+;  Set reference irefSTARTTASK to $itasks.START
+
+;  GRS 28/10/14 added irefCurrentInstance after EurOmnis 2014
+Set reference irefCurrentInstance to $cinst.$ref
+Do irErrorSQL.$cols.$add('ErrorCode',kInteger,k32bitint)
+Do irErrorSQL.$cols.$add('ErrorText',kCharacter,kSimplechar,255)
+;  Do irErrorSQL.$cols.$add('NativeErrorCode',kInteger,k32bitint)
+Do irErrorSQL.$cols.$add('NativeErrorCode',kCharacter,kSimplechar,10)     ;; changed to kCharacter to accommodate the Postgres DAM stementobj.$sqlstate which Returnｓ the 5 character code
+Do irErrorSQL.$cols.$add('NativeErrorText',kCharacter,kSimplechar,1000)
+Do irErrorSQL.$cols.$add('StatementSQL',kCharacter,kSimplechar,20000)
+Do irErrorSQL.$cols.$add('Connection',kCharacter,kSimplechar,100)
+
+Do ilValidation.$cols.$add('object',kCharacter,kSimplechar,50)     ;; typically a column name from a schema class
+Do ilValidation.$cols.$add('issue',kCharacter,kSimplechar,50)     ;; a string table entry that describes the validation issue
+Do ilValidation.$cols.$add('default',kCharacter,kSimplechar,100)     ;; default string if string table entry bnot found
+Do ilValidation.$cols.$add('severity',kInteger,kShortint)     ;; warning (1) or error (0)
+
+Do ilTablesWithChildren.$cols.$add('CTABLE',kCharacter,kSimplechar,50)
+Do ilTablesWithChildren.$cols.$add('COUNT',kInteger,k32bitint)
+
+;  initialise ilLinkTables for possible auto generated joins
+Do ilLinkTables.$cols.$add('TABLE',kCharacter,kSimplechar,50)
+Do ilLinkTables.$cols.$add('JOIN',kCharacter,kSimplechar,500)
+Do ilLinkTables.$cols.$add('OUTER',kBoolean)
+Do ilLinkTables.$cols.$add('EXTRAQUERYTEXT',kCharacter,kSimplechar,500)
+
+If isnull(ibHasSequence)
+	Calculate ibHasSequence as kTrue
+End If
+
+If icPrimarykey=''&ibHasSequence
+	Calculate icPrimarykey as con(icPrefix,'SEQ')
+End If
+
+Do ilAssociatedSchemas.$cols.$add('schemaClass',kCharacter,kSimplechar,100)
+
+Do ilRESTextensions.$cols.$add('mname',kCharacter,kSimplechar,50)
+Do ilRESTextensions.$cols.$add('colstring',kCharacter,kSimplechar,1000)
+Do ilRESTextensions.$cols.$add('outerjoin',kBoolean)
+Do ilRESTextensions.$cols.$add('alias',kCharacter,kSimplechar,255)
+
+Do method initUnusedVars

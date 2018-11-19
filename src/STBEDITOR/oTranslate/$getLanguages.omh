@@ -1,0 +1,30 @@
+
+Calculate lcURI as con('https://translation.googleapis.com/language/translate/v2/languages?key=',cAPIKey)
+
+Do iorefRest.$init(lcURI,kOWEBhttpMethodGet,ilHeaders,'') Returns lbOK
+
+Do iorefRest.$run() Returns lbOK
+If not(lbOK)
+	Calculate pcLangs as 'call to Google failed.'
+	Quit method kFalse
+End If
+
+Do iorefRest.$returnVal(irResponseHeaders,irResponse,irJSON) Returns icJSON
+
+If irResponse.httpStatusCode<>200
+	Calculate lbOK as kFalse
+Else
+	Calculate lrResult as OJSON.$jsontolistorrow(icJSON)
+	Calculate lrResult as lrResult.C1
+	Calculate lrResult as lrResult.C1
+	
+	Do llLangs.$cols.$add('language',kCharacter,kSimplechar,10)
+	For lnCol from 1 to lrResult.$colcount step 1
+		Calculate lrLang as lrResult.___[lnCol]
+		Do llLangs.$add(lrLang.language)
+		
+	End For
+	Calculate pcLangs as llLangs
+End If
+
+Quit method lbOK

@@ -1,0 +1,16 @@
+;  Do method $DynamicSession (loSession,loStatement) Returns lbOK
+;  If lbOK
+Do $DefineList(lrLog,'tsysLogErrors')
+;  Do lrLog.$SetSession(loSession,loStatement)
+
+Calculate lrLog.SLE_CWHEN as #D
+Calculate lrLog.SLE_CODE as pCode
+Calculate lrLog.SLE_SUBCODE as pSubCode
+Calculate lrLog.SLE_MESSAGE as pMessage
+Calculate lrLog.SLE_VHOST_REF as pick($ctask.trVirtualHost.PGS_SEQ>0,1,$ctask.trVirtualHost.PGS_SEQ)     ;; 1 is for console
+Calculate lrLog.SLE_SERVER_IP as tDefaultData.D_WEB_INTERNAL_ROUTER_IP_ADDR
+Calculate lrLog.SLE_SERVER_PORT as $root.$prefs.$serverport
+
+Do lrLog.$insert__()
+;  Do method $ReleaseSession (loSession,loStatement)     ;; required to destroy this session from task var trSequences
+;  End If

@@ -1,0 +1,2 @@
+;  abstract method
+;  should be overloaded in each application's Startup_Task to deal with Postgres DB minimum version check

@@ -1,0 +1,41 @@
+If prLicensor.$colcount>0
+	Do $cinst.$Progress(con('writing updated licensor file '))
+	;  <xml?><licensor>
+	;  <name>Platform Independent Systems Ltd</name>
+	;  <address>2 Kennel Cottages, Shendish, Hemel Hempstead   HP3 0AB</address>
+	;  <registered_office>112 Morden Road, London   SW19 3BP</registered_office>
+	;  <phone_sales></phone_sales.
+	;  </licensor></xml>
+	
+	Begin text block
+	Text: {<xml><licensor>} (Platform newline)
+	
+	Text: {<name>[prLicensor.name]</name>} (Platform newline)
+	Text: {<address>[prLicensor.address]</address>} (Platform newline)
+	Text: {<registered_office>[prLicensor.registered_office]</registered_office>} (Platform newline)
+	Text: {<country_code>[prLicensor.country_code]</country_code>} (Platform newline)
+	Text: {<company_no>[prLicensor.company_no]</company_no>} (Platform newline)
+	Text: {<VAT_no>[prLicensor.VAT_no]</VAT_no>} (Platform newline)
+	Text: {<phone_sales>[prLicensor.phone_sales]</phone_sales>} (Platform newline)
+	Text: {<phone_support>[prLicensor.phone_support]</phone_support>} (Platform newline)
+	Text: {<email_sales>[prLicensor.email_sales]</email_sales>} (Platform newline)
+	Text: {<email_support>[prLicensor.email_support]</email_support>} (Platform newline)
+	
+	Text: {</licensor></xml>}
+	End text block
+	Get text block lcContents
+	
+	Do FileOps.$doesfileexist(icPathLicensor) Returns lbExists
+	If not(lbExists)
+		Do loFileOps.$createfile(icPathLicensor) Returns lbExists
+	End If
+	
+	If lbExists
+		Do loFileOps.$openfile(icPathLicensor) Returns lbFileIsOpen
+		If lbFileIsOpen
+			Do loFileOps.$writecharacter(kUniTypeUTF8,lcContents) Returns lbReadOK
+			Do loFileOps.$closefile() Returns loFileOps.$closefile()     ;; Returnｓ nothing
+		End If
+	End If
+End If
+Quit method (lbFileIsOpen)

@@ -1,0 +1,2 @@
+;  Calculate iSmtp.$debuglog as iDebugLog
+Calculate iSmtp.$debuglog as pbDebugLog

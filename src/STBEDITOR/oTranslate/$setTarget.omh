@@ -1,0 +1,2 @@
+Calculate icTargetLang as pcTarget
+Calculate icURL as con('https://translation.googleapis.com/language/translate/v2?key=',cAPIKey,'&source=',icSourceLang,'&target=',icTargetLang)

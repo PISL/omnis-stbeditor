@@ -1,0 +1,49 @@
+;  overloaded to ignore tlDatabases.DAM='WebService'
+
+Do method InitDebugVars
+Calculate pWhereClause as trim(pWhereClause)
+If (pWhereClause<>'')
+	;  continue
+Else If pFetchAll
+	;  fetching all rows - continue
+Else
+	Quit method
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Begin statement
+Sta: {select [$cinst.$selectnames()]}
+Sta: {from [$cinst.$servertablenames]}
+If mid(upp(pWhereClause),1,6)='WHERE '
+	Sta: {[pWhereClause]}
+Else If mid(upp(pWhereClause),1,4)='AND '
+	Sta: {where [mid(pWhereClause,5,9999999)]}
+Else If pWhereClause<>''
+	Sta: {where [pWhereClause]}
+End If
+
+If $cinst.$extraquerytext<>''
+	Calculate lcJoinClause as $cinst.$extraquerytext
+	If mid(upp(lcJoinClause),1,6)='WHERE '
+		Sta: {and [mid(lcJoinClause,7,99999)]}
+	Else If mid(upp(lcJoinClause),1,4)='AND '
+		Sta: {[lcJoinClause]}
+	Else
+		Sta: {and [lcJoinClause]}
+	End If
+End If
+
+End statement
+Do $cinst.$executesqlandfetch() Returns lbOK
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lbOK

@@ -1,0 +1,4 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	Do ilGatherMultipleStringEntriesForDragDrop.$clear()
+	Calculate ibDragDropOn as not(ibDragDropOn)
+	Do $cinst.$behaviour()

@@ -1,0 +1,9 @@
+Do toValues.$initGlobal() Returns ilData
+If toValues.irErrorSQL.NativeErrorText<>''
+	OK message Database error {[toValues.irErrorSQL.NativeErrorText]}
+	Quit method
+Else
+	Calculate icColPrefix as 'RFG_'
+	
+	Do inherited
+End If

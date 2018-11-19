@@ -1,0 +1,49 @@
+;  Enter your initialization code here
+;  Breakpoint
+
+Do $DefineList(ilLibraries,'tomLibrary')
+Calculate ilLibrariesReverse as ilLibraries     ;; for reverse classifying when string search is used
+Do ilLibraries.$fetch_all()
+Do ilLibraries.$sort($ref.OML_NAME)
+
+Do ilGroupClasses.$definefromsqlclass('tomGroup',row('OMG_CLASS'))
+Do ilGroupClasses.$fetchDistinct('OMG_CLASS')
+Do ilGroupClasses.$sort(upp($ref.OMG_CLASS))
+
+Do $DefineList(ilGroups,'tomGroup')
+Calculate irGroupReverse as ilGroups     ;; for reverse classifying when string search is used
+Do ilGroups.$fetch_all()
+Do ilGroups.$sort($ref.OMG_FUNCTION)
+Do ilGroups.$smartlist.$assign(kTrue)
+
+Do $DefineList(ilLinks,'tomLibGroupLinks')
+Calculate ilGroupLinksReverse as ilLinks     ;; for reverse classifying when string search is used
+Do ilGroupLinksReverse.$addLinkedCols('OML_NAME')
+
+Do $DefineList(ilStrings,'tomStrings')
+Calculate $cinst.irCurrentRecord as ilStrings
+Calculate $cinst.irCurrentOriginal as $cinst.irCurrentRecord
+
+Do ilGatherMultipleStringEntriesForDragDrop.$cols.$add(ilStrings.OMS_SEQ)
+Do ilGatherMultipleStringEntriesForDragDrop.$cols.$add(ilStrings.STRINGID)
+
+Calculate inAcColsOffset as 8
+
+Do $schemas.somStrings.$objs.$makelist($ref.$ident,$ref.$name,$ref.$desc) Returns ilLangCodes
+Do ilLangCodes.$sort($ref.C1)
+Do ilLangCodes.$cols.$remove(1)
+Do ilLangCodes.$cols.1.$name.$assign('lang')
+Do ilLangCodes.$cols.2.$name.$assign('desc')
+Do ilLangCodes.$search($ref.lang=low($ref.lang)&$ref.lang<>'en',1,0,1,1)
+Do ilLangCodes.$remove(kListKeepSelected)
+Do ilLangCodes.$search(0)     ;; deselect all
+
+Set reference irefStringsGrid to $cinst.$objs.ilStrings
+
+Do $objects.oTranslate.$newref() Returns ioTranslate
+Do ioTranslate.$setSource('en')
+
+Do ilStrings.$WhichDatabase() Returns lcDatabase
+Calculate $cinst.$title as con('String Table Editor, connected to ',lcDatabase)
+
+Do $cinst.$behaviour()

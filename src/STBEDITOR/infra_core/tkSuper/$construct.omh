@@ -1,0 +1,3 @@
+Do method $buildStringTable     ;; this gets the STB entries from the DB at builds one string table from them
+
+Do $init

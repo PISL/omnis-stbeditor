@@ -1,0 +1,78 @@
+;  overloaded to ignore tlDatabases.DAM='WebService'
+;  overloaded to use the SQLite function last_insert_rowid() in place of the RETURNING clause which SQLite does not implement
+;       ;; copied code from CORE.tMaster.$insert and dropped call to $insert__
+
+;  Breakpoint
+If $cinst.$validation.$cando()     ;; check that the subclass has the method
+	Do $cinst.$validation Returns lbOK
+	If not(lbOK)
+		Quit method lbOK
+	End If
+End If
+
+If icForeignKey<>''
+	If $cinst.[icForeignKey]>0
+		;  valid
+	Else If $cinst.[icForeignKey]<>''
+		;  valid
+	Else
+		;  OK message  {Foreign key [icForeignKey] has no value}
+		;  Breakpoint
+		Quit method kFalse
+	End If
+End If
+
+If icPrimarykey<>''
+	If $cinst.[icPrimarykey].$type=kInteger
+		If $cinst.[icPrimarykey]>0
+			;  do not generate another pkey
+		Else
+			If ibHasSequence
+				Do $cinst.$ExcludeCols(icPrimarykey,'I')     ;; PK value will be inserted by a DB sequence so exclude the PK column from the insert
+			Else
+				Quit method kFalse
+			End If
+		End If
+	Else
+		If len($cinst.[icPrimarykey])>0
+			;  OK
+		Else
+			Quit method kFalse
+		End If
+	End If
+End If
+
+Do $cinst.$InsertCols()
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Begin statement
+Sta: {insert into [$cinst.$servertablenames()]}
+Sta: {[$cinst.$insertnames()]}
+End statement
+;  Get statement #S1
+
+Do $cinst.$executesql(pcIgnoreTheseErrors) Returns lbOK     ;; irErrorSQL
+
+If ibHasSequence&lbOK     ;; we need to fetch the inserted PK value back
+	Begin statement
+	Sta: {select last_insert_rowid()}
+	End statement
+	
+	Do $cinst.$executesqlandfetchinto($cinst.[icPrimarykey],pcIgnoreTheseErrors) Returns lbOK     ;; irErrorSQL
+End If
+
+
+
+
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lbOK

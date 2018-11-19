@@ -1,0 +1,43 @@
+;  check that the IP column contains a valid looking address
+;  and, if so, call freegeoip to get location info
+
+Calculate lcIP as pcIP
+Calculate lcSubnet as strtok('pcIP','.')
+If isnumber(lcSubnet)
+	Calculate lcSubnet as strtok('pcIP','.')
+Else
+	Quit method
+End If
+If isnumber(lcSubnet)
+	Calculate lcSubnet as strtok('pcIP','.')
+Else
+	Quit method
+End If
+If isnumber(lcSubnet)
+	Calculate lcSubnet as strtok('pcIP','.')
+Else
+	Quit method
+End If
+If isnumber(lcSubnet)
+	Calculate lcSubnet as strtok('pcIP','.')
+Else
+	Quit method
+End If
+
+;  if we've got here, let's make the call
+;  Breakpoint
+
+Calculate lcURI as con(lcURI,lcIP)
+Do llHeaders.$cols.$add('name',kCharacter,kSimplechar,255)
+Do llHeaders.$cols.$add('value',kCharacter,kSimplechar,255)
+Do llHeaders.$add("content-type","application/json")
+
+Do loRest.$init(lcURI,kOWEBhttpMethodGet,llHeaders,lcContent)
+
+Do loRest.$run() Returns lbStatus
+
+If lbStatus
+	Do loRest.$returnVal(lrResponseHeaders,lrResponse,irJSON) Returns lcJSON
+End If
+
+Do $cinst.$behaviour()

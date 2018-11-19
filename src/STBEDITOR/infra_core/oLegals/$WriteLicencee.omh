@@ -1,0 +1,55 @@
+Do toStrings.$HasRowBeenModified(irOriginalLicencee,prLicencee) Returns lbModified
+If lbModified
+	
+	Do FileOps.$doesfileexist(icPathLicensee) Returns lbFileExists
+	If not(lbFileExists)
+		Do loFileOps.$createfile(icPathLicensee) Returns lnFileOpsStatus
+	End If
+	
+	Do loFileOps.$openfile(icPathLicensee) Returns lbFileIsOpen
+	If lbFileIsOpen
+		If prLicencee.LCEE_CWHEN>dat('1 JAN 2005')
+			;  it has already been set
+		Else
+			Calculate prLicencee.LCEE_CWHEN as #D
+		End If
+		Calculate prLicencee.LCEE_MWHEN as #D
+		
+		Begin text block
+		Text: {<xml><licencee>}
+		Text: {<TYPE>[prLicencee.LCEE_TYPE]</TYPE>}
+		Text: {<PERSON>[prLicencee.LCEE_PERSON]</PERSON>}
+		Text: {<COMPANY>[prLicencee.LCEE_COMPANY]</COMPANY>}
+		
+		Text: {<BUILDING>[prLicencee.LCEE_ADDR_BUILDING]</BUILDING>}
+		Text: {<STREET>[prLicencee.LCEE_ADDR_STREET]</STREET>}
+		Text: {<LOCALITY>[prLicencee.LCEE_ADDR_LOCALITY]</LOCALITY>}
+		Text: {<TOWN>[prLicencee.LCEE_ADDR_TOWN]</TOWN>}
+		Text: {<COUNTY>[prLicencee.LCEE_ADDR_COUNTY]</COUNTY>}
+		Text: {<POSTCODE>[prLicencee.LCEE_ADDR_POSTCODE]</POSTCODE>}
+		Text: {<COUNTRY>[prLicencee.LCEE_ADDR_COUNTRY]</COUNTRY>}
+		
+		Text: {<LANGUAGE>[prLicencee.LCEE_LANG]</LANGUAGE>}
+		Text: {<PHONE_L>[prLicencee.LCEE_PHONE_L]</PHONE_L>}
+		Text: {<PHONE_M>[prLicencee.LCEE_PHONE_M]</PHONE_M>}
+		
+		Text: {<MAC>[prLicencee.LCEE_MAC]</MAC>}
+		Text: {<PASSWORD>[prLicencee.LCEE_PASSWD]</PASSWORD>}
+		Text: {<SEQ>[prLicencee.LCEE_SEQ]</SEQ>}
+		
+		Text: {<CWHEN>[prLicencee.LCEE_CWHEN]</CWHEN>}
+		Text: {<MWHEN>[prLicencee.LCEE_MWHEN]</MWHEN>}
+		Text: {</licencee></xml>}
+		End text block
+		
+		Get text block lcContents
+		
+		Do loFileOps.$writecharacter(kUniTypeUTF8,lcContents) Returns lbOK
+		Do loFileOps.$closefile()     ;; Returnｓ nothing
+		
+		Calculate irOriginalLicencee as prLicencee
+	End If
+Else     ;; not modified
+	Calculate lbOK as kTrue
+End If
+Quit method lbOK

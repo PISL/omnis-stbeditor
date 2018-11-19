@@ -1,0 +1,56 @@
+If pColName<>''&pListName<>''
+	;  make sure ilSortColumns points to correct list
+	If ilSortColumns.Listname=pListName
+		;  good
+	Else
+		Do ilSortColumns.$search($ref.Listname=pListName,1,0,0,0) Returns lbFound
+		If not(lbFound)
+			Do ilSortColumns.$add(pListName)
+			Calculate ilSortColumns.$line as ilSortColumns.$linecount
+		End If
+	End If
+	
+	
+	;  put  pColName  into the correct sort column position
+	If ilSortColumns.SortCol1=pColName
+		;  same column clicked again     ;; reverse the ascending / descending flag
+		Calculate ilSortColumns.SortDesc1 as not(ilSortColumns.SortDesc1)
+	Else
+		;  see if the column name is already in row
+		If ilSortColumns.SortCol2=pColName
+			Calculate ilSortColumns.SortCol2 as ilSortColumns.SortCol3
+			Calculate ilSortColumns.SortDesc2 as ilSortColumns.SortDesc3
+			Calculate ilSortColumns.SortCol3 as ''
+			Calculate ilSortColumns.SortDesc3 as 0
+			
+		Else If ilSortColumns.SortCol3=pColName
+			Calculate ilSortColumns.SortCol3 as ''
+			Calculate ilSortColumns.SortDesc3 as 0
+		End If
+		
+		;  shuffle other column down to make room for new column to go into SortCol1
+		Calculate ilSortColumns.SortCol3 as ilSortColumns.SortCol2
+		Calculate ilSortColumns.SortDesc3 as ilSortColumns.SortDesc2
+		Calculate ilSortColumns.SortCol2 as ilSortColumns.SortCol1
+		Calculate ilSortColumns.SortDesc2 as ilSortColumns.SortDesc1
+		Calculate ilSortColumns.SortCol1 as pColName
+		Calculate ilSortColumns.SortDesc1 as 0
+	End If
+Else If pListName<>''
+	Do ilSortColumns.$search($ref.Listname=pListName,1,0,0,0) Returns lbFound
+End If
+
+;  now sort the list !
+If ilSortColumns.SortCol3<>''
+	;  Do [ilSortColumns.Listname].$sort($ref.[ilSortColumns.SortCol1],ilSortColumns.SortDesc1,$ref.[ilSortColumns.SortCol2],ilSortColumns.SortDesc2,$ref.[ilSortColumns.SortCol3],ilSortColumns.SortDesc3)
+	Calculate lcDoString as con(ilSortColumns.Listname,'.$sort($ref.',ilSortColumns.SortCol1,',',ilSortColumns.SortDesc1,',$ref.',ilSortColumns.SortCol2,',',ilSortColumns.SortDesc2,',$ref.',ilSortColumns.SortCol3,',',ilSortColumns.SortDesc3,')')
+Else If ilSortColumns.SortCol2<>''
+	;  Do [ilSortColumns.Listname].$sort($ref.[ilSortColumns.SortCol1],ilSortColumns.SortDesc1,$ref.[ilSortColumns.SortCol2],ilSortColumns.SortDesc2)
+	Calculate lcDoString as con(ilSortColumns.Listname,'.$sort($ref.',ilSortColumns.SortCol1,',',ilSortColumns.SortDesc1,',$ref.',ilSortColumns.SortCol2,',',ilSortColumns.SortDesc2,')')
+Else If ilSortColumns.SortCol1<>''
+	;  Do [ilSortColumns.Listname].$sort($ref.[ilSortColumns.SortCol1],ilSortColumns.SortDesc1)
+	Calculate lcDoString as con(ilSortColumns.Listname,'.$sort($ref.',ilSortColumns.SortCol1,',',ilSortColumns.SortDesc1,')')
+End If
+
+;  Do $cinst.$redraw()
+Quit method lcDoString

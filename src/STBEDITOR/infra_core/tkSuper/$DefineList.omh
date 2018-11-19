@@ -1,0 +1,4 @@
+Do pListOrRow.$definefromsqlclass($classes.[pTableClass]) Returns #F
+If flag false
+	Breakpoint
+End If

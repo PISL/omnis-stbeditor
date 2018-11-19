@@ -1,0 +1,98 @@
+;  GRS 5/8/14 added call to $validation and replaced $NextSeqNo with $executesqlandfetchinto to get the primary key from the db sequence
+;       ;; copied code from CORE.tMaster.$insert and dropped call to $insert__
+
+;  Breakpoint
+If $cinst.$validation.$cando()     ;; check that the subclass has the method
+	Do $cinst.$validation Returns lbOK
+	If not(lbOK)
+		Quit method lbOK
+	End If
+End If
+
+If icForeignKey<>''
+	If isclear($cinst.[icForeignKey])
+		;  zero or null is not acceptable
+		Calculate icValidationMessage as 'invalid foreign key'
+		Quit method kFalse
+	Else If $cinst.[icForeignKey]<>''
+		;  valid
+	Else
+		;  OK message  {Foreign key [icForeignKey] has no value}
+		;  Breakpoint
+		Calculate icValidationMessage as 'invalid foreign key'
+		Quit method kFalse
+	End If
+End If
+
+If icPrimarykey<>''
+	If $cinst.[icPrimarykey].$type=kInteger
+		If $cinst.[icPrimarykey]>0
+			;  do not generate another pkey
+		Else
+			If ibHasSequence
+				Do $cinst.$ExcludeCols(icPrimarykey,'I')     ;; PK value will be inserted by a DB sequence so exclude the PK column from the insert
+			Else
+				Calculate $cinst.icValidationMessage as con(icPrimarykey,' cannot be zero')
+				Quit method kFalse
+			End If
+		End If
+	Else
+		If len($cinst.[icPrimarykey])>0
+			;  OK
+		Else
+			Calculate $cinst.icValidationMessage as con(icPrimarykey,' cannot be left empty')
+			Quit method kFalse
+		End If
+	End If
+End If
+
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Calculate ldtStart as #D
+	Do ioWeb.$callInsert($cinst,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,$cinst,row(P_COMMIT,pDoNotReportTheseErrors),ilRESTextensions)) Returns lbOK
+	Calculate inServiceMS as ddiff(kCentiSecond,ldtStart,#D)*10
+	Calculate inRESTserverMS as ioWeb.inServerTime
+	If not(lbOK)
+		;  irErrorSQL.NativeErrorText should already have content
+		Quit method kFalse
+	End If
+	Quit method kTrue
+End If
+
+Calculate inCountInsert as 0
+Do $cinst.$InsertCols()
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Calculate icStatementType as 'INSERT'
+
+Begin statement
+Sta: {insert into [$cinst.$servertablenames()]}
+Sta: {[$cinst.$insertnames()]}
+If ibHasSequence
+	Sta: {returning [icPrimarykey]}     ;; this will return the value inserted into the primary key by the postgres sequence
+End If
+End statement
+Get statement #S1
+
+If ibHasSequence     ;; we need to execute and fetch to get the inserted PK value back
+	Do $cinst.$executesqlandfetchinto($cinst.[icPrimarykey],pDoNotReportTheseErrors) Returns lbOK     ;; irErrorSQL
+Else
+	Do $cinst.$executesql(pDoNotReportTheseErrors) Returns lbOK     ;; irErrorSQL
+End If
+
+If $cinst.$statementobject.$rowsaffected>0
+	Calculate inCountInsert as inCountInsert+$cinst.$statementobject.$rowsaffected
+End If
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lbOK

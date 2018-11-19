@@ -1,0 +1,9 @@
+
+Calculate ilColumns as #NULL
+Do ilColumns.$cols.$add('SCHEMA',kCharacter,kSimplechar,100)
+Do ilColumns.$cols.$add('TABLE',kCharacter,kSimplechar,100)
+Do ilColumns.$cols.$add('COLUMN',kCharacter,kSimplechar,100)
+
+;  Do $clib.$schemas.$sendall($ref.$objs.$sendall(iColumns.$add($ref.$class().$name,$ref.$name)),$ref.$desc<>'VIEW')
+Do $clib.$schemas.$sendall($ref.$objs.$sendall(ilColumns.$add($ref.$class().$name,$ref.$class().$servertablename,$ref.$name)),(left($ref.$desc,4)<>'VIEW'&left($ref.$desc,10)<>'WEBSERVICE'))
+Quit method ilColumns

@@ -1,0 +1,7 @@
+;  Breakpoint
+Do irJSON.$clear()
+Do ilTaskStats.$fetchForLogin(prLogin.ULA_SEQ)
+
+Do $cinst.$behaviour()
+
+Do method getGeoLocation (prLogin.ULA_IP_ADDRESS)

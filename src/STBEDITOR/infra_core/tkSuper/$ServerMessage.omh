@@ -1,0 +1,22 @@
+If prVhost.PGS_SEQ>0
+	;  this server message goes to both virtual host webmaster and hosting webmaster
+	Do llMultipleRecipients.$cols.$add('address',kCharacter,kSimplechar,255)
+	If prVhost.PGS_EMAIL2<>''
+		Do llMultipleRecipients.$add(prVhost.PGS_EMAIL2)
+	End If
+	If tConstants.EmailAddressWebmaster<>''
+		If pbSendToVhostOnly&prVhost.PGS_EMAIL2<>''
+			;  then do not send to anyone else
+		Else
+			If prVhost.PGS_EMAIL2=tConstants.EmailAddressWebmaster
+				;  do not send twice
+			Else
+				Do llMultipleRecipients.$add(tConstants.EmailAddressWebmaster)
+			End If
+		End If
+	End If
+	
+	Do $cinst.$SendEmail(llMultipleRecipients,con($clib().$name,' ',pSubject),con(pMessage,kCr,kCr,lcDiagnosticInfo),#NULL,#NULL,#NULL,#NULL,#NULL,prVhost)
+Else
+	Do $SendEmail(tConstants.EmailAddressWebmaster,con($clib().$name,' ',pSubject),con(pMessage,kCr,kCr,lcDiagnosticInfo),#NULL,#NULL,#NULL,#NULL,#NULL)
+End If

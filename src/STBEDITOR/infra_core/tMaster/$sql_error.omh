@@ -1,0 +1,53 @@
+Set reference lrefStatement to $cinst.$statementobject
+Set reference lrefSession to $cinst.$sessionobject
+
+Calculate irErrorSQL.ErrorCode as $cinst.$statementobject.$errorcode()
+Calculate irErrorSQL.ErrorText as $cinst.$statementobject.$errortext()
+If $cinst.$sessionobject.$damname='PGSQLDAM'
+	Calculate irErrorSQL.NativeErrorCode as $cinst.$statementobject.$sqlstate()     ;; $sqlstate doesn't exist for the other DAMs
+Else
+	Calculate irErrorSQL.NativeErrorCode as $cinst.$statementobject.$nativeerrorcode()     ;; this always contains -1 in the postgres DAM so use $sqlstate
+End If
+Calculate irErrorSQL.NativeErrorText as $cinst.$statementobject.$nativeerrortext()
+Calculate irErrorSQL.StatementSQL as $cinst.$statementobject.$sqltext()
+Do method $WhichDatabase Returns irErrorSQL.Connection
+
+Calculate icErrorMessage as con(irErrorSQL.ErrorText,kCr,kCr,irErrorSQL.NativeErrorText)
+
+Quit method
+;  ### revisit this code as checkDbConnectionState is not working just isn't working!!
+Breakpoint
+;  2015-08-12 GRS trap disconnections and attempt to reconnect
+If lrefStatement.$errorcode=kStatementPrepareFailed
+	;  check the error text for a connection failure
+	If isclear(lrefStatement.$nativeerrortext)|pos('could not receive data from server',lrefStatement.$nativeerrortext)>0|pos('terminating connection',lrefStatement.$nativeerrortext)>0
+		Breakpoint
+		Do method checkDbConnectionState (lrefSession,lrefStatement,pbErrorLogged) Returns lbConnectionOK
+		
+		
+		
+		If not(lbConnectionOK)
+			If sys(2)=17     ;; DEV so check if this is a remote task
+				If $ctask.$classtype=kRemoteTask
+					Calculate icErrorMessage as 'There has been a problem with the server.  Please try again later'
+					Quit method
+				Else
+					Breakpoint
+				End If
+			Else     ;; RT or App Server?
+				If left(right(replaceall(sys(5),' ',''),12),1)='W'     ;; App server
+					Calculate icErrorMessage as 'There has been a problem with the server.  Please try again later'
+					Quit method
+				Else     ;; RT fat client
+					OK message  (Sound bell) {[con('There has been a database connection failure.  Please notify your administrator.  ',kCr,kCr,'OMNIS will now quit.')]}
+					Clear method stack
+					Quit Omnis (Force quit)
+				End If
+			End If
+		End If
+		
+		
+		
+	End If
+	;  End If
+End If

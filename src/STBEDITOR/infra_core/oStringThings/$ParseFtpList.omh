@@ -1,0 +1,47 @@
+Do llData.$cols.$add('protection',kCharacter,kSimplechar,50)
+Do llData.$cols.$add('unknown_int',kInteger,k32bitint)
+Do llData.$cols.$add('filesize',kInteger,k32bitint)
+Do llData.$cols.$add('owner',kCharacter,kSimplechar,50)
+Do llData.$cols.$add('ownergroup',kCharacter,kSimplechar,50)
+Do llData.$cols.$add('modified_date',kDate,kDate2000)
+Do llData.$cols.$add('modified_time',kDate,kTime)
+Do llData.$cols.$add('filename',kCharacter,kSimplechar,255)
+
+If pServer='OSX'
+	Calculate pList.$line as 0
+	While $Loop(pList)
+		If pList.$line=1
+			Calculate lnTotalFiles as mid(pList.C1,pos(' ',pList.C1)+1,9)
+		Else
+			Calculate lcTemp as pList.C1
+			
+			Do llData.$add()
+			Calculate llData.$line as llData.$linecount
+			
+			Calculate llData.protection as strtok(nam(lcTemp),' ')
+			Calculate lcTemp as trim(lcTemp)     ;; some columns are separated by double spaces
+			Calculate llData.unknown_int as strtok(nam(lcTemp),' ')
+			Calculate lcTemp as trim(lcTemp)
+			Calculate llData.owner as strtok(nam(lcTemp),' ')
+			Calculate lcTemp as trim(lcTemp)
+			Calculate llData.ownergroup as strtok(nam(lcTemp),' ')
+			Calculate lcTemp as trim(lcTemp)
+			Calculate llData.filesize as strtok(nam(lcTemp),' ')
+			Calculate lcTemp as trim(lcTemp)
+			;  the last two columns are a little tricky - modified as double spaces and time
+			;  so do last token, filename, first
+			Calculate llData.filename as mid(lcTemp,rpos(' ',lcTemp)+1,99)
+			Calculate lcTemp as mid(lcTemp,1,rpos(' ',lcTemp)-1)
+			Calculate lcTemp as trim(lcTemp)
+			;  then to time portion
+			Calculate llData.modified_time as dat(mid(lcTemp,rpos(' ',lcTemp)+1,99),'H:N')
+			Calculate lcTemp as mid(lcTemp,1,rpos(' ',lcTemp)-1)
+			;  and finally date
+			Calculate llData.modified_date as lcTemp
+		End If
+	End While
+Else
+	Breakpoint {Windows or Linux ??}
+End If
+
+Quit method llData

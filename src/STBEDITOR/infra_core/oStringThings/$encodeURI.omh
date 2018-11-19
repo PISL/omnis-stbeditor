@@ -1,0 +1,23 @@
+;  Do method pop_urlencodelist     ;; URLencodeList
+Calculate plNameValuePairs.$line as 0
+While $Loop(plNameValuePairs)
+	CGIEncode (plNameValuePairs.C1) Returns plNameValuePairs.C1
+	CGIEncode (plNameValuePairs.C2) Returns plNameValuePairs.C2
+End While
+
+Begin text block
+Text: {http://[pURL]/[pCGI]}
+If plNameValuePairs.$linecount>0
+	Text: {?}
+	While $Loop(plNameValuePairs)
+		If plNameValuePairs.$line=1
+			Text: {[plNameValuePairs.C1]=[plNameValuePairs.C2]}
+		Else
+			Text: {&[plNameValuePairs.C1]=[plNameValuePairs.C2]}
+		End If
+	End While
+End If
+End text block
+Get text block lcText
+
+Quit method lcText

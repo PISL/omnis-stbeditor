@@ -1,0 +1,7 @@
+On evClick     ;; Event Parameters - pRow ( Itemreference )
+	Calculate ilDBs as ilRemoteTables
+	Do ilDBs.$search($ref.servername=ilServers.servername,1,0,1,1)
+	Do ilDBs.$remove(kListKeepSelected)
+	Calculate ilDBs.$line as 1
+	
+	Do $cinst.$setRemoteDB()

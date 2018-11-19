@@ -1,0 +1,6 @@
+Calculate $cinst.$objs.TabPaneHeader.$visible as kFalse
+Calculate icComparisonDB as con('Server: ',plDBs.servername,'    DB: ',plDBs.dbname)
+Calculate $cinst.$objs.ilData.$enterable as kFalse
+Calculate $cinst.$objs.ilData.$dragmode as kDragData
+
+Do $cinst.$redraw(1,1)

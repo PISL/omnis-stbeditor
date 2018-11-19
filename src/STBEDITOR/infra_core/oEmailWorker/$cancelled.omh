@@ -1,0 +1,7 @@
+;  pResultSMTP.errorCode
+;  pResultSMTP.errorInfo
+;  pResultSMTP.log
+;  pResultSMTP.oauth2_authcodeurl
+Calculate cbEmailJobInMotion as kFalse
+Calculate crResult as pResultSMTP
+Do credVisualLayer.$emailCancelled(pResultSMTP)

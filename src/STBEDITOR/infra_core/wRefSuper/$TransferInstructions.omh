@@ -1,0 +1,13 @@
+;  No/Yes message  {Transfer ALL reference records ?}
+If pcPromptResult='pbCancel'
+	Quit event handler (Discard event)
+Else If pcPromptResult='pbYes'
+	Do method TransferData
+Else If pcPromptResult='pbScan'
+	Do method ScanDataAll
+Else     ;; all automatic, or all with prompt
+	Do method TransferDataAll (pcPromptResult)
+End If
+
+;  OK message  {transfer complete:  inserts=[inInserts], updates=[inUpdates], deletes=[inDeletes] and unchanged=[inNoChanges].}
+Do $cinst.$redraw()

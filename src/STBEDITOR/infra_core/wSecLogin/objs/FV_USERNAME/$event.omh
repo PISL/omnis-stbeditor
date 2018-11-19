@@ -1,0 +1,10 @@
+;  ------------------------------------------------------------------------------------------------
+;  This stops entry with a blank name - at the moment we wish to
+;  allow this,  therefore it is commented out
+;  ------------------------------------------------------------------------------------------------
+
+On evTab
+	If icUSERNAME=''
+		Sound bell
+		Quit event handler (Discard event)
+	End If

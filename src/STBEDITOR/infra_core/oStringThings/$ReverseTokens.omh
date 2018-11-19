@@ -1,0 +1,10 @@
+;  originated for the need to reverse the tokens in an IP address as Omnis seems to reverse them sometimes
+Do llTokens.$cols.$add('Token',kCharacter,kSimplechar,1000)
+While pString<>''
+	Calculate lcToken as strtok(nam(pString),pDelimiter)
+	Do llTokens.$add(lcToken)
+End While
+For lnLineCount from llTokens.$linecount to 1 step -1
+	Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',pDelimiter),llTokens.[lnLineCount].Token)
+End For
+Quit method lcReturn

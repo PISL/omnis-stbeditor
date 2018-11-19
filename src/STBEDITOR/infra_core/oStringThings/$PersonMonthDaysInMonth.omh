@@ -1,0 +1,7 @@
+;  As a default, a person expected to work 1575 hours per year, not more.
+;  - If you divide this by 12 (months), the resulting average monthly working hours are 131,25.
+;  at 8 hrs / day = 16.40625 days per month
+;  at 7.5 hours / day = 17.5 days per month
+Do method $HoursInWorkDay Returns lnHoursPerDay
+Calculate lnDaysInPersonMonth as 1575/12/lnHoursPerDay     ;; 1575 hours per year, 12 months per year, 60 minutes per hour = 7875
+Quit method lnDaysInPersonMonth

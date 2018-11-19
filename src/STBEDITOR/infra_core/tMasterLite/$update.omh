@@ -1,0 +1,61 @@
+;  overloaded to ignore tlDatabases.DAM='WebService'
+
+Do $cinst.$cols.$findname(con(icPrefix,'MCOUNT')) Returns lRefCol_MCOUNT     ;; 2015-08-07 GRS avoiding notation errors
+If lRefCol_MCOUNT
+	Calculate lnLastCount as $cinst.[icPrefix]MCOUNT
+Else
+	Do $cinst.$cols.$findname(con(icPrefix,'MWHEN')) Returns lRefCol_MWHEN
+	If lRefCol_MWHEN
+		Calculate ldtLastModified as $cinst.[icPrefix]MWHEN
+	End If
+End If
+
+Do $cinst.$UpdateCols()
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Begin statement
+Sta: {update [$cinst.$servertablenames()]}
+Sta: {[$cinst.$updatenames()]}
+Sta: {[$cinst.$wherenames()]}
+If lRefCol_MCOUNT
+	If isnull(lnLastCount)
+		Sta: {and    [icPrefix]MCOUNT is null}
+	Else
+		Sta: {and    [icPrefix]MCOUNT = @[lnLastCount]}
+	End If
+Else
+	If lRefCol_MWHEN&ldtLastModified>dat('1 JAN 2000')
+		If $cinst.$sessionobject.$damname='OMSQLDAM'
+			Sta: {and    [icPrefix]MWHEN = '[ldtLastModified]'}
+		Else
+			Sta: {and    [icPrefix]MWHEN = @[ldtLastModified]}
+		End If
+	End If
+End If
+End statement
+Do $cinst.$executesql(pDoNotReportTheseErrors) Returns lbOK
+
+;  Set reference lrefTemp to $cinst.$statementobject
+If $cinst.$statementobject.$rowsaffected=1
+	;  record was updated
+Else
+	If irErrorSQL.NativeErrorText<>''
+		;  leave as is
+	Else
+		Calculate irErrorSQL.NativeErrorText as con('Record failed to update in table ',$cinst.$servertablenames(),' / ',$cinst.[icPrimarykey],'.',kCr,kCr,'Perhaps someone else modified it between your reading of the record and your attempt to update.')
+		Calculate icErrorMessage as irErrorSQL.NativeErrorText
+	End If
+	Calculate lbOK as kFalse
+End If
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lbOK

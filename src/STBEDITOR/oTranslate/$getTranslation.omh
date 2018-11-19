@@ -1,0 +1,69 @@
+;  this method is to be used for translating HTML blocks only
+Do toStrings.$separateHTML(pcOriginalText) Returns llSplitText
+
+Calculate lnLine as 1
+Do llTranslations.$cols.$add(lcOriginal)
+Do llTranslations.$cols.$add('toLine',kInteger,k32bitint)
+Do llTranslations.$cols.$add('translation',kCharacter,kSimplechar,5000)
+
+For llSplitText.$line from 1 to llSplitText.$linecount step 1
+	Calculate lcOriginal as con(lcOriginal,llSplitText.escapedText)
+	If llSplitText.markBlock
+		Do llTranslations.$add(lcOriginal,llSplitText.$line)
+		Calculate lcOriginal as ''
+	End If
+End For
+Do llTranslations.$add(lcOriginal,llSplitText.$line)
+
+For llTranslations.$line from 1 to llTranslations.$linecount step 1
+	
+	Calculate lcURI as con(icURL,'&q=',llTranslations.lcOriginal)
+	
+	If len(lcURI)>2000     ;; Google imposes a limit of 2k on the full URL
+		Calculate pcTranslation as con('URL too long.  Please reduce the request by ',len(lcURI)-2000,' characters.')
+		Quit method kFalse
+	End If
+	
+	Do iorefRest.$init(lcURI,kOWEBhttpMethodGet,ilHeaders,'') Returns lbOK
+	
+	Do iorefRest.$run() Returns lbOK
+	If not(lbOK)
+		Calculate pcTranslation as 'call to Google failed.'
+		Quit method kFalse
+	End If
+	
+	Do iorefRest.$returnVal(irResponseHeaders,irResponse,irJSON) Returns icJSON
+	
+	If irResponse.httpStatusCode<>200
+		Calculate pcTranslation as irResponse.ResponseContent
+		Calculate lbOK as kFalse
+	Else
+		Calculate lrResult as OJSON.$jsontolistorrow(icJSON)
+		Calculate lrResult as lrResult.C1
+		Calculate lrResult as lrResult.C1
+		Calculate lrResult as lrResult.C1
+		
+		
+		Calculate llTranslations.translation as lrResult.translatedText
+	End If
+End For
+
+For llTranslations.$line from 1 to llTranslations.$linecount step 1
+	Calculate lcCompleteTranslation as con(lcCompleteTranslation,llTranslations.translation)
+End For
+
+;  reconstitute the original structure
+For llSplitText.$line from 1 to llSplitText.$linecount step 1
+	Calculate lcOriginal as llSplitText.original
+	While pos('[#',lcOriginal)
+		Calculate lcRepos as strtok('lcOriginal',']')
+		Calculate lcRepos as con(mid(lcRepos,pos('[',lcRepos)),']')
+		Calculate lcRebuiltTranslation as con(lcRebuiltTranslation,left(lcCompleteTranslation,pos('[',lcCompleteTranslation)-1),lcRepos)
+		Calculate lcCompleteTranslation as mid(lcCompleteTranslation,pos(']',lcCompleteTranslation)+1)
+	End While
+	Calculate lcCompleteTranslation as replace(lcCompleteTranslation,'§',con(kCr,llSplitText.[llSplitText.$line+1].whiteString))
+End For
+Calculate lcRebuiltTranslation as con(lcRebuiltTranslation,lcCompleteTranslation)
+Calculate pcTranslation as lcRebuiltTranslation
+
+Quit method lbOK

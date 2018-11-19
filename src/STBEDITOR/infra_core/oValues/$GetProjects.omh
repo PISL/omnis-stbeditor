@@ -1,0 +1,8 @@
+Calculate pcPrefix as replaceall(pcPrefix,'_','')
+
+Do method $initInherited ('PROJECTS_SYS') Returns llProjects
+Do method $initInherited (con('PROJECTS_',pcPrefix)) Returns llOtherProjects
+
+Do llProjects.$merge(llOtherProjects)
+
+Quit method llProjects

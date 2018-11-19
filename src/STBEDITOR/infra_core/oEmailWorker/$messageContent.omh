@@ -1,0 +1,24 @@
+Do iMessage.$createbodypartfromchar(pcMessageText,"text/plain",kUniTypeUTF8,"","inline") Returns inPlainTextBodyPartId
+If inPlainTextBodyPartId=0
+	;  OK message {Error [iMessage.$errorcode] creating text/plain body part for message text
+	Calculate icErrorMessage as con('Error ',iMessage.$errorcode,' creating text/plain body part for message text ',iMessage.$errortext)
+	Quit method kFalse
+End If
+Calculate pretBodyPartId as inPlainTextBodyPartId
+
+If pcAlternativeHTML<>''
+	If upp(pcAlternativeHTML)='YES'     ;; |pcAlternativeHTML='1'
+		;  debug version of HTML
+		Do iMessage.$createbodypartfromchar(con("HTML:",kCr,pcMessageText),"text/html",kUniTypeUTF8,"","inline") Returns inHTMLBodyPartId
+	Else
+		Do iMessage.$createbodypartfromchar(pcAlternativeHTML,"text/html",kUniTypeUTF8,"","inline") Returns inHTMLBodyPartId
+	End If
+	If inHTMLBodyPartId=0
+		;  OK message {Error [iMessage.$errorcode] creating text/html body part for message text
+		Calculate icErrorMessage as con('Error ',iMessage.$errorcode,' creating text/html body part for message text ',iMessage.$errortext)
+		Quit method kFalse
+	End If
+End If
+Calculate pretHTMLpartId as inHTMLBodyPartId
+
+Quit method kTrue

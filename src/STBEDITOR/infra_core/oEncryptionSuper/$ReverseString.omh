@@ -1,0 +1,5 @@
+Calculate lcNewString as ''
+For lnPos from len(pStringIn) to 1 step -1
+	Calculate lcNewString as con(lcNewString,mid(pStringIn,lnPos,1))
+End For
+Quit method lcNewString

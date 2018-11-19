@@ -1,0 +1,10 @@
+If trSequence.$colcount
+	;  already defined
+Else
+	Do $DefineList(trSequence,'tsysSequences')
+End If
+If trSequence.$sessionobject=pSessObj
+	;  no need to repeat
+Else
+	Do trSequence.$SetSession(pSessObj,pStateObj)
+End If

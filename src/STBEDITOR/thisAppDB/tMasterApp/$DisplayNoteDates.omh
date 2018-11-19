@@ -1,0 +1,10 @@
+Calculate $cinst.CWHEN as $cinst.[icPrefix]USER_TIMESTAMP
+Calculate $cinst.CBY as $cinst.[icPrefix]CBY
+Calculate $cinst.NOTE as $cinst.[icPrefix]NOTE
+Calculate $cinst.AGE_DAYS as ddiff(kDay,dat($cinst.CWHEN),#D)
+Calculate $cinst.AGE_TIME as toStrings.$TimeLapse(kDay,$cinst.AGE_DAYS,kFalse,120,2)
+If $cinst.AGE_DAYS<=120
+	Calculate $cinst.AGE_TIME as $cinst.AGE_DAYS
+Else
+	Do toStrings.$DaysLapse(dat($cinst.CWHEN),#D,kFalse,120,2,kTrue) Returns $cinst.AGE_TIME
+End If

@@ -1,0 +1,41 @@
+{
+	"classtype": "kTable",
+	"internalversion": 3,
+	"superclass": "tMasterLite",
+	"designtaskname": "Startup_Task",
+	"cvardefs": [
+
+	],
+	"ivardefs": [
+		{
+			"name": "___ROW1",
+			"order": 1,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		},
+		{
+			"name": "___ROW2",
+			"order": 2,
+			"type": "kRow",
+			"subtype": "",
+			"sublen": 0
+		}
+	],
+	"properties": {
+		"collectperformancedata": false,
+		"componenticon": 0,
+		"componenttype": "kCompStoreHidden",
+		"createdate": "2017-05-03 12:02:19",
+		"desc": "",
+		"editor": "",
+		"editordata": "",
+		"external": false,
+		"issupercomponent": false,
+		"moddate": "2015-07-31 15:01:45",
+		"showascheckedout": false,
+		"sqlclassname": "sIniLib",
+		"userinfo": "",
+		"version": "1.00"
+	}
+}

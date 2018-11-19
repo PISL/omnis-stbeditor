@@ -1,0 +1,13 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	Prompt for input Search for: Returns lcSearch
+	If flag true
+		Do ilData.$clear()
+		Do ilData.$fetch_(con("where ",icColPrefix,"CLASS like '%",upp(lcSearch),"%' or ",icColPrefix,"DESC like '%",lcSearch,"%' or ",icColPrefix,"CHAR like '%",lcSearch,"%' "))
+		If ilData.$linecount=0
+			Sound bell
+		End If
+		Do ilData.$sort($ref.[icColPrefix]CLASS,0,$ref.[icColPrefix]ORDER,0,$ref.[icColPrefix]VALUE,0)
+	End If
+	
+	Do $cinst.$behaviour()
+	Do $cinst.$redraw()

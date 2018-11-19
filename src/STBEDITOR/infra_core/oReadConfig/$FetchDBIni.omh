@@ -1,0 +1,5 @@
+
+Do $DefineList(ilDBList,'tIniDB')
+Do ilDBList.$setSession(ioSessionIni,ioStatementIni)
+Do ilDBList.$fetch_all()
+Do ilDBList.$sort($ref.DB_NO,0,$ref.DB_SEQ,0)

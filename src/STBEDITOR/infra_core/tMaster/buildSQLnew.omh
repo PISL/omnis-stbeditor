@@ -1,0 +1,30 @@
+;  create the SQL for all differences
+
+
+Sta: {with localdata as (}
+Sta: {select [icKeyCols]}     ;; get row key values in the local table
+Sta: {    from [$cinst.$servertablenames]}
+Sta: {)}
+Sta: {, remotedata as (}
+Sta: {select [icKeyCols]}     ;; get key values from the remote table
+Sta: {from [pList.$servertablenames]}
+Sta: {)}
+
+Sta: {select [$cinst.$selectnames()], 'local'::text as server}
+Sta: {from [$cinst.$servertablenames]}
+Sta: {where ([icKeyCols]) in}
+Sta: {(select * from localdata}     ;; get row key values in the local table
+Sta: {      except}     ;; subtract key values that exist in the remote table
+Sta: {select * from remotedata}
+Sta: {)}
+
+Sta: {union}
+
+Sta: {select [pList.$selectnames()], 'remote'::text as server}
+Sta: {from [pList.$servertablenames]}
+Sta: {where ([icKeyCols]) in}
+Sta: {(select * from remotedata}     ;; get key values from the remote table
+Sta: {      except}     ;; subtract the key values that exist in the local table
+Sta: {select * from localdata}
+Sta: {)}
+Sta: {order by server, [icKeyCols]}

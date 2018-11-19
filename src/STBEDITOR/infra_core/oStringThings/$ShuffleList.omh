@@ -1,0 +1,25 @@
+Calculate lList as pListIn
+Calculate lList2 as pListIn
+Calculate lnLinecount as pListIn.$linecount
+Do lLinesMaster.$cols.$add('LINENO',kInteger,k32bitint)
+For lnCount2 from 1 to lnLinecount step 1
+	Do lLinesMaster.$add(lnCount2)
+End For
+
+Do setseed(#CT)
+For lnCount from 1 to pShuffle step 1
+	Calculate lLines as lLinesMaster
+	Do lList2.$clear()
+	
+	For lnCount2 from lnLinecount to 1 step -1
+		Calculate lnNumber as randintrng(1,lnCount2)
+		Calculate lnLineToMove as lLines.[lnNumber].LINENO
+		Do lLines.$remove(lnNumber)
+		
+		Do lList2.$add()
+		Calculate lList2.[lList2.$linecount] as lList.[lnLineToMove]
+	End For
+	
+	Calculate lList as lList2
+End For
+Calculate pListOut as lList2

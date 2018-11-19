@@ -1,0 +1,8 @@
+;  reads the original INI files into the libini lists
+Do $GetVar('tlDatabases') Returns lList
+
+Do oConfig.$ReadConfig Returns lList
+
+Do $cinst.$GetSysPrefs() Returns lList
+
+;

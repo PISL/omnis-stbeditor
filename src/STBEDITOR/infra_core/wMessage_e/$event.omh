@@ -1,0 +1,11 @@
+On evOK
+	If inObjectCount=1
+		Close window instance $cinst
+		Quit event handler (Discard event)
+	End If     ;; else handled by enter data
+	
+On evCancel
+	If inObjectCount=1
+		Close window instance $cinst
+		Quit event handler (Discard event)
+	End If     ;; else handled by enter data

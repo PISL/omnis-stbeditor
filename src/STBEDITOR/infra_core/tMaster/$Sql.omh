@@ -1,0 +1,38 @@
+
+;  // If pId is null the current primary key value will be used.
+If pcId<>''
+	If isnumber(pcId)
+		Calculate inID as pcId
+		Calculate lcPrimarySQL as con(icPrimarykey,' = @[$cinst.inID]')
+	Else
+		Calculate icID as pcId
+		Calculate lcPrimarySQL as con(icPrimarykey,' = @[$cinst.icID]')
+	End If
+Else If (not(isnumber($cinst.[icPrimarykey]))&$cinst.[icPrimarykey]<>'')|(isnumber($cinst.[icPrimarykey])&$cinst.[icPrimarykey]<>0)     ;; (not(isnumber($cinst.[iPrimaryKey]))& $cinst.[iPrimaryKey]<>'')                                        |               (isnumber($cinst.[$cinst.iPrimaryKey])&        $cinst.[$cinst.iPrimaryKey]<>0)
+	Calculate lcPrimarySQL as con(icPrimarykey,' = @[$cinst.',icPrimarykey,']')
+End If
+
+If pcWhere<>''
+	If pos('WHERE',upp(pcWhere))=1
+		Calculate lcSQL as con(pcWhere,pick(len(lcPrimarySQL)>0,'',con(' and ',lcPrimarySQL)))
+	Else
+		Calculate lcSQL as con(pick(len(lcPrimarySQL)>0,'',con('where ',lcPrimarySQL)),pcWhere)     ;; ex: If pWhere= 'order by this_and_that' it has to go on the end
+	End If
+Else If lcPrimarySQL<>''
+	Calculate pcWhere as con('where ',lcPrimarySQL)
+	Calculate lcSQL as pcWhere
+End If
+
+If ilLinkTables.$linecount
+	Do method ForeignSql (lcSQL) Returns lcSQL
+Else
+	Calculate lcSQL as con('select ',pick(pbDistinct,'','distinct '),iHint,$cinst.$selectnames(),pick(icForeignCols<>'','',icForeignCols),chr(13),'from ',pick(pcFrom<>'',$cinst.$servertablenames,pcFrom),chr(13),pcWhere)
+End If
+
+Begin statement (Carriage return)
+Sta: {[lcSQL]}
+End statement
+
+If pbReturnSQL
+	Quit method lcSQL
+End If

@@ -1,0 +1,5 @@
+Calculate icPrefix as 'GON_'
+Calculate icPrimarykey as 'GON_SEQ'
+Calculate icForeignKey as 'GON_GO_REF'
+
+Do inherited

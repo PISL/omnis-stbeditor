@@ -1,0 +1,26 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	If ilOptionList.code='DB_CONNECT'
+		Do ilEditdata.$cols.DB_NO.$maximum() Returns lnNextGroup
+		Calculate lnNextGroup as lnNextGroup+1
+		Calculate lnNextLine as ilEditdata.$linecount+1
+		
+		Do ilEditdata.$add(#NULL,lnNextGroup,'Name')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'DAM')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'Host')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'DB')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'licence')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'autoBackupPath')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'InternalOmnisDbName')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'cloudDB')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'UserName')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'password')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'port')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'validif')
+		Do ilEditdata.$add(#NULL,lnNextGroup,'poolsize')
+		
+		Calculate ilEditdata.$line as lnNextLine
+	Else
+		Do ilEditdata.$add()
+		Calculate ilEditdata.$line as ilEditdata.$linecount()
+	End If
+	Do $cinst.$redraw()

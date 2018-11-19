@@ -1,0 +1,11 @@
+If ibThisIsProductionServer
+	If pos('syslogerrors',$cinst.$servertablenames())|pos('sysasyncemails',$cinst.$servertablenames())
+		;  if we don't trap this the stack gets blown
+		Breakpoint {[irErrorSQL.ErrorText]  [irErrorSQL.NativeErrorText]}
+	Else
+		Do $AppError(con('sql error on execute',kCr,'errorcode ',irErrorSQL.ErrorCode,kCr,'errortext ',irErrorSQL.ErrorText,kCr,kCr,'nativeerrorcode ',irErrorSQL.NativeErrorCode,kCr,'nativeerrortext ',irErrorSQL.NativeErrorText,kCr,kCr,'sql text:',kCr,irErrorSQL.StatementSQL),kFalse)
+		Do $LogError('SQL_EXECUTE',irErrorSQL.NativeErrorCode,con(irErrorSQL.NativeErrorText,kCr,irErrorSQL.StatementSQL))
+	End If
+Else
+	Breakpoint {[irErrorSQL.ErrorText]  [irErrorSQL.NativeErrorText]}
+End If

@@ -1,0 +1,6 @@
+Calculate ilEditdata as [ilOptionList.listVar]
+Calculate $cinst.$objs.grid_ini.$vscroll as 0
+
+Calculate $cinst.$objs.gbSpecialActions.$visible as ilSpecialActions.$linecount>0
+
+Do $cinst.$redraw(1,1)

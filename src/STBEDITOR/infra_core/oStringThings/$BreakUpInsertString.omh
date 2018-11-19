@@ -1,0 +1,37 @@
+Calculate lnPosStart as pos(pBegin,pStringIn)
+If lnPosStart
+	Calculate lnPosNoOfChars as pos(pEnd,mid(pStringIn,lnPosStart+len(pBegin),99999999))
+	If lnPosNoOfChars>0
+		If lnPosStart>1
+			Calculate lcTextBefore as mid(pStringIn,1,lnPosStart-1)
+		End If
+		Calculate lcExpression as mid(pStringIn,lnPosStart+len(pBegin),lnPosNoOfChars-len(pEnd)+1)
+		Calculate lcTextAfter as mid(pStringIn,lnPosStart+len(pBegin)+lnPosNoOfChars+len(pEnd)-1,9999999999)
+		Calculate lbReturnStatus as kTrue
+	Else
+		;  start string exists but end string does not     ;; this must be communicated back somehow
+		If pNoMateRemoveBegin
+			If lnPosStart>1
+				Calculate lcTextBefore as mid(pStringIn,1,lnPosStart-1)
+			End If
+			Calculate lcExpression as pBegin
+			Calculate lcTextAfter as mid(pStringIn,lnPosStart+len(pBegin),9999999999)
+			Calculate lbReturnStatus as kTrue
+		Else     ;; do nothing - leave string as is
+			Calculate pBefore as ''
+			Calculate pBetween as ''
+			Calculate pAfter as ''
+			Calculate lbReturnStatus as kFalse
+		End If
+	End If
+	
+	Calculate pBefore as lcTextBefore
+	Calculate pBetween as lcExpression
+	Calculate pAfter as lcTextAfter
+	Quit method lbReturnStatus
+Else
+	Calculate pBefore as ''
+	Calculate pBetween as ''
+	Calculate pAfter as ''
+	Quit method kFalse
+End If

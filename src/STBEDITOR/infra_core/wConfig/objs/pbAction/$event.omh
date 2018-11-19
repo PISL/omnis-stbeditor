@@ -1,0 +1,4 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	Do method SpecialAction Returns lbActioned
+	Do $cinst.$behaviour()
+	Do $cinst.$redraw()

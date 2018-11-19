@@ -1,0 +1,7 @@
+If tlDatabases.DAM='WebService'
+	;  assume column name has already been added to structure
+	Set reference liLastColRef to $cinst.$cols.[$cinst.$colcount].$ref
+	Do ilRESTextensions.$add('af',pFunctionText,#NULL,con(liLastColRef,$name,',',liLastColRef.$coltype,',',liLastColRef.$colsubtype,',',liLastColRef.$colsublen))
+End If
+
+Calculate icForeignCols as con(icForeignCols,',',chr(13),pFunctionText)

@@ -1,0 +1,7 @@
+;  ### refactor against $WhichDatabase
+If $cinst.$sessionobject.$state=kSessionStateLoggedOn
+	Quit method $cinst.$sessionobject.$hostname
+Else
+	Do $cinst.$ImmediateSession(loSession,loStatement)
+	Quit method con(loSession.$damname,' to ',loSession.$hostname,': ',loSession.$database)
+End If

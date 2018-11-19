@@ -1,0 +1,181 @@
+;  Breakpoint
+;  2015-08-12 GRS check the last connction attempt was more than 90 seconds ago ### (arbitrary timeout)
+;  Do ilConnectionAttempts.$search($ref.name=pSessionName,1,0,0,0) Returns lnLine
+;  If lnLine&ddiff(kSecond,ilConnectionAttempts.when,#D)<90
+;  Quit method kFalse
+;  End If
+;
+;  looks like it's been longer than 90 seconds since our last attempt
+;  so first set the attempt timestamp
+;  If lnLine
+;  Calculate ilConnectionAttempts.when as #D
+;  Else
+;  Do ilConnectionAttempts.$add(pSessionName,#D)
+;  End If
+
+;  ###  commented out the above section of code until we revisit DB reconnection project
+
+If upp(pWhichDAM)='OMNIS'|upp(pWhichDAM)='OMSQLDAM'
+	Calculate pWhichDAM as 'OMSQLDAM'
+Else If upp(pWhichDAM)='POSTGRES'|upp(pWhichDAM)='PGSQLDAM'
+	Calculate pWhichDAM as 'PGSQLDAM'
+Else If upp(pWhichDAM)='MYSQL'
+	Calculate pWhichDAM as 'MYSQLDAM'
+Else If upp(pWhichDAM)='SQLSERVER'|upp(pWhichDAM)='ODBC'
+	Calculate pWhichDAM as 'ODBCDAM'
+Else If upp(pWhichDAM)='ORACLE'
+	;  Calculate pWhichDAM as 'MYSQLDAM'
+End If
+
+Do $extobjects.$makelist($ref.$name,$ref) Returns llExternals
+Do llExternals.$search($ref.C1=pWhichDAM,1,0,0,0) Returns lbFound
+If lbFound
+	If llExternals.C1='OMSQLDAM'
+		Set reference lrefSession to $root.$extobjects.[llExternals.C1].$objects.OMSQLSESS
+	Else If llExternals.C1='MYSQLDAM'
+		Set reference lrefSession to $root.$extobjects.[llExternals.C1].$objects.MYSQLSESS
+	Else If llExternals.C1='PGSQLDAM'
+		Set reference lrefSession to $root.$extobjects.[llExternals.C1].$objects.PGSQLSESS
+	Else If llExternals.C1='JDBCDAM'
+		Set reference lrefSession to $root.$extobjects.[llExternals.C1].$objects.JDBCSESS
+	Else If llExternals.C1='ODBCDAM'
+		Set reference lrefSession to $root.$extobjects.[llExternals.C1].$objects.ODBCSESS
+	Else
+		Breakpoint
+	End If
+	
+	If not(isnull(pAltSession.$state))
+		;  Do lrefSession.$new() Returns pAltSession
+		Do lrefSession.$new() Returns loAltSession
+		If pWhichDatabaseName<>''&(llExternals.C1='PGSQLDAM')
+			Calculate loAltSession.$database as pWhichDatabaseName
+			If pnPort>0
+				Calculate loAltSession.$port as pnPort
+			Else If irConfigFile.dbport>0
+				Calculate loAltSession.$port as irConfigFile.dbport
+			Else If irConfigFile.port
+				Calculate loAltSession.$port as irConfigFile.port
+			End If
+			;  Calculate loAltSession.$usetimezone as kTrue     ;; added RSM 2 NOV 15     ;; buggers up timestamp without timezone columns !
+			Calculate loAltSession.$quotedidentifier as kFalse
+			Do loAltSession.$options.$assign(con("application_name=Omnis_",sys(1),'_',$clib().$name))
+		End If
+		If llExternals.C1='PGSQLDAM'
+			Calculate pLoginName as low(pLoginName)
+		End If
+		
+		If pnPoolSize>0
+			Do method $OpenSessionPool (pSessionName,pWhichDatabase,pLoginName,pPassword,pWhichDAM,pnPoolSize) Returns lbOK
+		Else
+			Do loAltSession.$logon(pWhichDatabase,pLoginName,pPassword,pSessionName) Returns lbOK
+		End If
+		If lbOK
+			Do loAltSession.$newstatement('STMT') Returns pAltStatement
+			Calculate pAltSession as loAltSession
+		Else
+			OK message  {Failed to logon to database [pWhichDAM] [pWhichDatabase]}
+		End If
+	Else
+		;  this is where usual db connection is made - overwriting tFormSession default attributes
+		Do lrefSession.$new() Returns loThisLoginConnection
+		If pWhichDatabaseName<>''
+			Calculate loThisLoginConnection.$database as pWhichDatabaseName
+		End If
+		If llExternals.C1='PGSQLDAM'
+			Calculate pLoginName as low(pLoginName)
+			;  Calculate tSession.$schema as     ;; required if db resources are not in publc schema     ;; apparently used by the sql browser - all table names will br prefixed with the schema name
+			Do loThisLoginConnection.$options.$assign(con("application_name=Omnis_",sys(1),'_',$clib().$name))
+			Calculate loThisLoginConnection.$quotedidentifier as kFalse
+			;  now set up the custon JSON and JSONB data types
+			Do loThisLoginConnection.$clearcustomtypes()
+			;  Do loThisLoginConnection.$addcustomtype(65533,'JSON') Returns lbOK
+			Do loThisLoginConnection.$addcustomtype(100000000,'JSONB')
+		End If
+		If pnPort>0
+			Calculate loThisLoginConnection.$port as pnPort
+		Else If irConfigFile.dbport>0
+			Calculate loThisLoginConnection.$port as irConfigFile.dbport
+		Else If irConfigFile.port>0
+			Calculate loThisLoginConnection.$port as irConfigFile.port
+		End If
+		
+		;  If $ctask.tlDatabases.CloudDb&$ctask.tlDatabases.UserName<>''
+		;  override the db login details with the configured ones     ;; this is for db access only
+		;  in this situation all cloud users login using same login to db followed by verification in USERS table     ;; i.e. users are verified the same as an Omnis db
+		;  Calculate pLoginName as $ctask.tlDatabases.UserName
+		;  Calculate pPassword as $ctask.tlDatabases.password
+		;  End If
+		
+		;  the following check is to detect a lower case character in case there is a problem with logon
+		;  this is not a very thorough check     ;; the upper/lower case check is an attempt to have it cope with non Latin characters
+		;  but there is no check for punctuation which should be tested before characters for the character test to be sound.
+		;  upp(';') will equal ';'     ;; will equal low(';')
+		For lnPos from 1 to len(pPassword) step 1
+			If isnumber(mid(pPassword,lnPos,1))
+				Calculate lbContainsNumber as kTrue
+			Else If mid(pPassword,lnPos,1)=upp(mid(pPassword,lnPos,1))     ;; A-Z
+				Calculate lbContainsUpperCase as kTrue
+			Else If mid(pPassword,lnPos,1)=low(mid(pPassword,lnPos,1))     ;; a-z
+				Calculate lbContainsLowerCase as kTrue
+			Else
+				Calculate lbContainsOtherChar as kTrue
+			End If
+		End For
+		
+		For lnCountAttempts from 1 to 2 step 1
+			If lnCountAttempts=1     ;; first time around mash the password
+				Do loSecurity.$MashLogin(pPassword,upp(pLoginName)) Returns lcPassword
+			Else
+				Calculate lcPassword as pPassword
+			End If
+			If pnPoolSize>0     ;; session pool
+				Do method $OpenSessionPool (pSessionName,pWhichDatabase,pLoginName,lcPassword,pWhichDAM,pnPoolSize) Returns lbOK
+			Else If pnPoolSize=0     ;; alternate connection
+				Do loThisLoginConnection.$logon(pWhichDatabase,pLoginName,lcPassword,pSessionName) Returns lbOK
+				If lbOK
+					If loThisLoginConnection.$state=kSessionStateLoggedOn
+						Do loThisLoginConnection.$newstatement('STMT') Returns loThisLoginStatement
+					End If
+				End If
+				Calculate pAltSession as loThisLoginConnection
+				Calculate pAltStatement as loThisLoginStatement
+			Else     ;; standard connection
+				Do loThisLoginConnection.$logon(pWhichDatabase,pLoginName,lcPassword,pSessionName) Returns lbOK
+				If lbOK
+					If loThisLoginConnection.$state=kSessionStateLoggedOn
+						Do loThisLoginConnection.$newstatement('STMT') Returns loThisLoginStatement
+					End If
+				End If
+				;  Calculate $ctask.tFormSession as loThisLoginConnection
+				;  Calculate $ctask.tFormStatement as loThisLoginStatement
+			End If
+			If lbOK
+				Break to end of loop
+			End If
+		End For     ;; lnCountAttempts
+		If not(lbOK)
+			If pnPoolSize>0     ;; session pool
+				Send to trace log {Connection to session pool failed, dam: [pWhichDAM], db: [pWhichDatabase], schema: [pWhichDatabaseName]}
+			Else If pnPoolSize=0     ;; alternate connection
+				Calculate lcError as con(loThisLoginStatement.$errortext,kCr,kCr,loThisLoginStatement.$nativeerrortext)
+			Else
+				Calculate lcError as con(loThisLoginStatement.$errortext,kCr,kCr,loThisLoginStatement.$nativeerrortext)
+			End If
+			If lbContainsLowerCase
+				;  OK message Failed to logon to database! {dam: [pWhichDAM], db: [pWhichDatabase],[kCr]schema: [pWhichDatabaseName], port: [$ctask.tFormSession.$port][kCr][kCr][lcError]}
+				OK message Failed to logon to database! {dam: [pWhichDAM], db: [pWhichDatabase],[kCr]schema: [pWhichDatabaseName],[kCr][kCr][lcError]}
+			Else
+				OK message Failed to logon to database! {dam: [pWhichDAM], db: [pWhichDatabase], schema: [pWhichDatabaseName][kCr][kCr]Do you have the caps lock on?[kCr][kCr][lcError]}
+			End If
+		End If
+	End If
+End If
+
+;  If $ctask.tFormSession.$state=kSessionStateLoggedOn
+;  Quit method kTrue     ;; ktrue
+;  Else
+;  Quit method kFalse
+;  End If
+Calculate tbDbConnectionOK as lbOK
+
+Quit method lbOK

@@ -1,0 +1,12 @@
+;  GRS 14/2/14
+;       ;; modified to use the DB sequence to return the PK
+;  RSM  30/5/14     ;; added use of pcIgnoreTheseErrors when cloning/copying permissions from one role to another
+
+Calculate lcForeignKey as icForeignKey
+Calculate icForeignKey as ''     ;; prevent inherited from failing
+
+Do inherited Returns lbOK
+
+Calculate icForeignKey as lcForeignKey
+
+Quit method lbOK

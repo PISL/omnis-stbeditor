@@ -1,0 +1,23 @@
+Calculate icValidationMessage as ''
+Do ilValidation.$clear()
+
+If $cinst.UGO_USR_REF>0
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'UGO_USR_REF missing')
+	Do ilValidation.$add('UGO_USR_REF_LBL','VAL_MISSING','UGO_USR_REF missing',0)
+End If
+
+If $cinst.UGO_GO_REF>0
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'UGO_GO_REF missing')
+	Do ilValidation.$add('UGO_GO_REF_LBL','VAL_MISSING','UGO_GO_REF missing',0)
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

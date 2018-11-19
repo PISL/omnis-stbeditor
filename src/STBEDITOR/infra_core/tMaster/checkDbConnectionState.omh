@@ -1,0 +1,39 @@
+;  call the server with a statement that will not fail the prepare to test the connection
+;  bypass our normal code because we don't want to be looping through $sql_error!!
+
+Do $DynamicSession(prefSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do loStatement.$execdirect("select now()")
+	Breakpoint
+	If loStatement.$errorcode=kDAMNoError     ;; all seems well with the connection
+		Do loStatement.$fetchinto(ldNow)
+		Quit method kTrue
+	Else     ;; we have lost the connection, so...
+		Do $itasks.[$clib().$name].$GetVar('irConfigFile') Returns lrConfigFile
+		If tlDatabases.poolsize>0
+			Do $CloseSessionPool(tlDatabases.Name) Returns lbOK
+			Do $ConnectToDb(tlDatabases.Host,lrConfigFile.UserName,lrConfigFile.password,tlDatabases.Name,tlDatabases.DAM,tlDatabases.DB,tlDatabases.port,#NULL,#NULL,tlDatabases.poolsize) Returns lbConnectionOK
+		Else
+			;  Calculate lcSessionName as con('x',tlDatabases.Name)     ;; we need a new session name as the original is in use
+			Do prefSession.$logoff()
+			Do $ConnectToDb(tlDatabases.Host,lrConfigFile.UserName,lrConfigFile.password,lcSessionName,tlDatabases.DAM,tlDatabases.DB,tlDatabases.port,prefSession,prefStatement,tlDatabases.poolsize) Returns lbConnectionOK
+		End If
+		
+		;  ######################################################
+		;  at this point, although lbConnectionOK is kTrue, the call to $LogError fails
+		;  prefSession.$state = kSessionStateLoggedOn and the PG DB is showing a logged in session
+		;  but the session is not showing in $sessions !!!
+		;  what am I doing wrong?
+		
+		If lbConnectionOK
+			;  log the error and continue
+			Do $LogError('DB_ERROR','Transient','database disconnection detected and resolved') Returns lbOK
+			Calculate pbErrorLogged as lbOK     ;; send this back to the original $execute...  method
+		Else
+			;  send email to admin (bypassing asyncemails, obviously)
+			;  ###  2015-08-13 GRS revisit this code at some point     ;; $sendEmail commented out as it currently tries to get data from sysRef tables
+			;  Do $SendEmail(tConstants.EmailAddressWebmaster,con($clib().$name,' DB disconnected'),'sql_error has tried to reconnect and failed',#NULL,#NULL,#NULL,#NULL,kFalse)
+		End If
+		Quit method lbConnectionOK
+	End If
+End If

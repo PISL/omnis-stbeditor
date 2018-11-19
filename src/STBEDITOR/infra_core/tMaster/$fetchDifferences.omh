@@ -1,0 +1,63 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Calculate ldtStart as #D
+	Do ioWeb.$callFetch(llRemoteData,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pcType),llRemoteData.$type,1,ilRESTextensions))
+	Calculate inServiceMS as ddiff(kCentiSecond,ldtStart,#D)*10
+	Calculate inRESTserverMS as ioWeb.inServerTime
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method llRemoteData
+	Else
+		Quit method kFalse
+	End If
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Do $cinst.$cols.$findname('server') Returns lrefCol
+If lrefCol
+	;  OK
+Else
+	Do $cinst.$cols.$add('server',kCharacter,kSimplechar,15)     ;; identifier for data source, local server or remote server
+End If
+
+Calculate llRemoteData as $cinst
+Do llRemoteData.$clear()
+Calculate llRemoteData.$servertablenames as con($cinst.$servertablenames,icRemoteDB)
+
+Calculate icStatementType as 'SELECT'
+
+Begin statement (Carriage return,Linefeed)
+If pcType='DIFF+NEW'
+	Do method buildSQLdiffsAll (llRemoteData)
+Else If pcType='DIFF-NEW'
+	Do method buildSQLdiffsOnly (llRemoteData)
+Else
+	Do method buildSQLnew (llRemoteData)
+End If
+
+Get statement lcSQL
+End statement
+
+Do $cinst.$executesqlandfetch() Returns lbOK
+
+If lbOK
+	Do $cinst.$search($ref.server='remote',1,0,1,1)
+	Do llRemoteData.$merge($cinst,kTrue,kTrue,kTrue)
+	Do $cinst.$remove(kListDeleteSelected)
+End If
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method llRemoteData

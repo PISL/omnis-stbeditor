@@ -1,0 +1,46 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Do ioWeb.$callFetch($cinst,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pcShortName),$cinst.$type,0,ilRESTextensions))
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method kTrue
+	Else
+		Quit method kFalse
+	End If
+End If
+
+;  this method is called on remote task $construct when the html page has a "param1" value denoting the internal company
+;  This is BEFORE any attempt at login
+If pcShortName<>''
+	;  proceed
+	Calculate icID as upp(pcShortName)
+Else
+	Quit method kFalse
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+;  $construct adds GON_NAME_FULL
+Do $cinst.$Sql(,"where upper(GO_NAME_SHORT) = @[icID]")
+
+;  Begin statement
+;  Sta: select [$cinst.$selectnames()]
+;  Sta: from  [$cinst.$servertablenames]
+;  Sta: where upper(GO_NAME_SHORT) = @[pcShortName]
+;  End statement
+
+Do $cinst.$executesqlandfetch() Returns lbOK
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lbOK

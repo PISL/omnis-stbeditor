@@ -1,0 +1,14 @@
+
+Calculate llLinks as $ctask.tlLinks
+If pcPath<>''
+	;  Do llLinks.$search($ref.TABLE=pcFromTable&$ref.FTABLE=pcToTable&$ref.TALIAS=pcPath)
+	Do llLinks.$search($ref.TABLE=pcFromTable&$ref.FTABLE=pcToTable&pos(pcPath,$ref.CHAIN)) Returns lbFound
+Else
+	Do llLinks.$search($ref.TABLE=pcFromTable&$ref.FTABLE=pcToTable) Returns lbFound
+End If
+If not(lbFound)
+	Breakpoint {[pcFromTable]  [pcToTable]  [pcPath]}
+End If
+Do llLinks.$remove(kListKeepSelected)
+Do llLinks.$sort($ref.LINKS,0,$ref.DEFAULT,1)
+Quit method llLinks.1.CHAIN

@@ -1,0 +1,97 @@
+;  $construct in the subclass:
+;  1)  initialises ilData
+;  2)  sets icColPrefix
+;  3)  calls "Do inherited"
+
+Do method getClassList
+
+Do ilKeyCols.$cols.$add('colName',kCharacter,kSimplechar,50)
+Do ilKeyCols.$cols.$add('enabled',kInteger)
+Do ilKeyCols.$add(con(icColPrefix,'CLASS'),0)
+Do ilKeyCols.$add(con(icColPrefix,'VALUE'),1)
+Do ilKeyCols.$search(1)     ;; select all
+Calculate icKeyCols as toStrings.$ListToString(ilKeyCols,'colName',',',#NULL,kTrue)
+
+Do ilComparisonCols.$cols.$add('colName',kCharacter,kSimplechar,50)
+Do ilComparisonCols.$cols.$add('enabled',kInteger)
+Do ilComparisonCols.$add(con(icColPrefix,'DESC'),1)
+Do ilComparisonCols.$add(con(icColPrefix,'ORDER'),1)
+Do ilComparisonCols.$add(con(icColPrefix,'ACTIVE'),1)
+Do ilComparisonCols.$add(con(icColPrefix,'CHAR'),1)
+Do ilComparisonCols.$add(con(icColPrefix,'INT'),1)
+Do ilComparisonCols.$add(con(icColPrefix,'NUMBER'),1)
+Do ilComparisonCols.$add(con(icColPrefix,'DATE'),1)
+Do ilComparisonCols.$add(con(icColPrefix,'BIN'),1)
+Do ilComparisonCols.$add(con(icColPrefix,'TIME'),1)
+Do ilComparisonCols.$add(con(icColPrefix,'EFFECTIVE'),1)
+Do ilComparisonCols.$add(con(icColPrefix,'EXPIRES'),1)
+Do ilComparisonCols.$search(1)     ;; select all
+Calculate icComparisonCols as toStrings.$ListToString(ilComparisonCols,'colName',',',#NULL,kTrue)
+
+Do ilData.$getRemoteTables() Returns ilRemoteTables
+If ilRemoteTables.$linecount
+	Do ilRemoteTables.$sort($ref.servername,0,$ref.dbname,0)
+Else
+	;  there are no remote tables available.  Hide the "sync. differences" tab.
+	Calculate $cinst.$objs.TabPaneHeader.$showpane(2,kFalse) as
+End If
+
+Calculate ilServers as ilRemoteTables
+Do ilServers.$cols.servername.$removeduplicates(kTrue)
+Calculate ilServers.$line as 1
+
+Calculate ilDBs as ilRemoteTables
+Do ilDBs.$search($ref.servername=ilServers.servername,1,0,1,1)
+Do ilDBs.$remove(kListKeepSelected)
+Calculate ilDBs.$line as 1
+
+Do $cinst.$setRemoteDB()     ;; en/disable the Fetch button and kDragging based on privileges on the foreign table
+
+Set reference irefCallingWindow to prefSpawnedFromThisInstance
+If irefCallingWindow
+	Calculate $cinst.$objs.ilData.$enterable as kFalse
+	Calculate $cinst.$objs.TabPaneHeader.$currenttab as 2
+	Do irefCallingWindow.$GetVar('ibRefetchAfterDrop') Returns ibRefetchAfterDrop
+End If
+
+Calculate $cinst.$enterable as kTrue
+
+Do ilData.$WhichDatabase() Returns lcDatabase
+Calculate $cinst.$title as con('library ',$clib().$name,' table=',ilData.$servertablenames,' connected to ',lcDatabase)
+
+If pOpenWithThisClass<>''
+	Do ilClasses.$search($ref.[icColPrefix]CLASS=pOpenWithThisClass,1,0,0,0)
+	Do $cinst.$refresh()
+End If
+
+Do ilSortColumns.$cols.$add('Listname',kCharacter,kSimplechar,40)
+Do ilSortColumns.$cols.$add('SortCol1',kCharacter,kSimplechar,40)
+Do ilSortColumns.$cols.$add('SortDesc1',kInteger,kShortint)
+Do ilSortColumns.$cols.$add('SortCol2',kCharacter,kSimplechar,40)
+Do ilSortColumns.$cols.$add('SortDesc2',kInteger,kShortint)
+Do ilSortColumns.$cols.$add('SortCol3',kCharacter,kSimplechar,40)
+Do ilSortColumns.$cols.$add('SortDesc3',kInteger,kShortint)
+
+Calculate ilDatabases as $ctask.tlDatabases
+Calculate inGoodConnection as ilDatabases.$line
+If prSelectedDatabase.$colcount>0
+	Do ilDatabases.$search($ref.Name=prSelectedDatabase.Name,1,0,0,0)
+	Calculate ilDatabases.UserName as prSelectedDatabase.UserName
+	Calculate ilDatabases.password as prSelectedDatabase.password
+	
+	Do method ConnectToDatabase
+End If
+
+Do method otherWindows Returns llWindows
+Calculate $cinst.$objs.ibStickyUpdates.$visible as llWindows.$linecount>0
+Do method sendMessage (llWindows,'$offerSync')
+
+If icColPrefix='RFG_'
+	Calculate $cinst.$objs.TabPaneHeader.$objs.PagedPane.$currentpage as 1
+Else If icColPrefix='RFL_'
+	Calculate $cinst.$objs.TabPaneHeader.$objs.PagedPane.$currentpage as 2
+Else     ;; RFO_
+	Calculate $cinst.$objs.TabPaneHeader.$objs.PagedPane.$currentpage as 3
+End If
+
+Do $cinst.$behaviour()

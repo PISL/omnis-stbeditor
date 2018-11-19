@@ -1,0 +1,19 @@
+;  set framework task references
+Set reference irefCORETASK to $itasks.[$clib().$name]
+;  Set reference irefSTARTTASK to $itasks.START
+
+If icPGschema=''
+	;  ### set this properly
+	;  Calculate icPGschema as 'conf.'
+End If
+If tFormSession.$state=kSessionStateLoggedOn
+	;  ### set this properly
+	Calculate $cinst.$sessionobject as tFormSession
+	Calculate $cinst.$statementobject as tFormStatement
+End If
+
+Do inherited
+
+If icPrefix=''
+	Breakpoint {[$cinst.$servertablenames()]}
+End If

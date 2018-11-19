@@ -1,0 +1,37 @@
+;  Breakpoint
+
+;  replaces oConfig.$WriteConfig
+Do lrIni.$SetSession(ioSessionIni,ioStatementIni)
+
+Do ilConfigList.$search(0)     ;; deselect all lines
+
+Calculate plNewValues.$line as 0
+While $Loop(plNewValues)
+	Calculate lrTemp as plNewValues
+	If len(lrTemp.CFG_KEY)>0
+		Do lrIni.$assignrow(lrTemp,kTrue)
+		If lrTemp.CFG_SEQ>0
+			Do ilConfigList.$search($ref.CFG_SEQ=plNewValues.CFG_SEQ,1,0,0,0)
+			Calculate ilConfigList.$selected as kTrue     ;; select the line
+			Calculate lrTemp as ilConfigList
+			If toStrings.$HasRowBeenModified(lrTemp,lrIni)
+				Do lrIni.$update()
+			End If
+		Else
+			Do lrIni.$insert()
+		End If
+	End If
+End While
+
+Do ilConfigList.$remove(kListDeleteSelected)
+If ilConfigList.$linecount<>0
+	;  delete the remaining lines
+	Calculate ilConfigList.$line as 0
+	While $Loop(ilConfigList)
+		Calculate lrTemp as ilConfigList
+		Do lrIni.$assignrow(lrTemp)
+		Do lrIni.$delete() Returns lbOK
+	End While
+End If
+
+Do $cinst.$fetchConfigIni     ;; now get all the new values

@@ -1,0 +1,24 @@
+;  does the tag have attributes?
+If pDotNetPandering
+	Calculate lcTagDelimiterStart as '&LT;'
+	Calculate lcTagDelimiterEnd as '&GT;'
+End If
+
+Calculate lnTagStart as pos(con(lcTagDelimiterStart,pTag,lcTagDelimiterEnd),pString)
+If lnTagStart=0
+	;  then it probably does have attributes
+	Calculate lnTagStart as pos(con(lcTagDelimiterStart,pTag,' '),pString)
+	If lnTagStart=0
+		Quit method pString
+	End If
+	Calculate lnTagWithAttributesEnd as pos(lcTagDelimiterEnd,mid(pString,lnTagStart,kFetchAll))
+End If
+Calculate lnTagEnd as pos(con(lcTagDelimiterStart,'/',pTag,lcTagDelimiterEnd),pString)
+If lnTagEnd=0&lnTagWithAttributesEnd>0
+	;  tag does not have content     ;; the "content" is within the attributes
+	;  and the tag is terminated with a  />
+	Calculate lnTagEnd as pos(con('/',lcTagDelimiterEnd),pString)
+End If
+
+Calculate lcTemp as con(mid(pString,1,lnTagStart-1),mid(pString,lnTagEnd+len(pTag)+3,kFetchAll))
+Quit method lcTemp

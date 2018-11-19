@@ -1,0 +1,21 @@
+If pExceptThese<>''
+	Calculate pExceptThese as con(',',pExceptThese,',')
+End If
+
+Calculate lnLength as len(pString)
+Calculate lnPos as 1
+While lnPos<=lnLength
+	If unicode(pString,lnPos)>31     ;; space, 32, is first printing character
+		Calculate lcString as con(lcString,mid(pString,lnPos,1))
+	Else
+		If pExceptThese<>''     ;; frequently we will want kCr, possibly kLf and sometimes kTab
+			Calculate lnThisValue as unicode(pString,lnPos)
+			If pos(con(',',lnThisValue,','),pExceptThese)
+				Calculate lcString as con(lcString,mid(pString,lnPos,1))
+			End If
+		End If
+	End If
+	Calculate lnPos as lnPos+1
+End While
+
+Quit method lcString

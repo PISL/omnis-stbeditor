@@ -1,0 +1,11 @@
+Calculate llStack as sys(192)     ;; method stack
+While $Loop(llStack)
+	;  line 1 is this method which we want to ignore in the message
+	;  line 2 is the method that calls this method which can be excluded also
+	If llStack.$line>2
+		Calculate llParams as llStack.params
+		Set reference liClassItem to llStack.classitem
+		Calculate lcDiagnosticInfo as con(lcDiagnosticInfo,pick(lcDiagnosticInfo<>'','',kCr),liClassItem.$name(),'  ',llStack.object,'  mthd:',llStack.method,'  ln:',llStack.line,'  ',llStack.linetext,pick(llParams.$linecount>0,'',con(kCr,OJSON.$formatjson(OJSON.$listorrowtojson(llParams,kUniTypeCharacter,lcError)),kCr)))
+	End If
+End While
+Quit method lcDiagnosticInfo

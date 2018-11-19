@@ -1,0 +1,12 @@
+If (inSelectedClasses&inSelectedGroups)|(icStringSearch<>'')
+	Do ilStrings.$fetchClassAndFunction(ilGroupClasses,ilGroups,icStringSearch,ilLangCodes)
+Else     ;; one of the lists has no selected lines
+	Do ilStrings.$clear()
+End If
+Calculate inStringCount as ilStrings.$linecount
+;  get the contents of the first grid cell
+Calculate inHorzCell as 1
+Calculate inVertCell as 1
+Calculate icContentsOrig as ilStrings.1.STRINGID
+
+Do $cinst.$behaviour()

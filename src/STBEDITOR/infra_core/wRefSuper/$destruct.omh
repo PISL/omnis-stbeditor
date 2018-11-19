@@ -1,0 +1,13 @@
+If irefCallingWindow
+	Do irefCallingWindow.$childClosed()
+Else
+	If ilData.$linecount>0
+		Do ilData.$dowork()
+	End If
+End If
+
+If irefRemoteWindow
+	Do irefRemoteWindow.$close()
+End If
+
+Do inherited

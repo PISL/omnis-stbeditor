@@ -1,0 +1,16 @@
+Do oEncrypt.$initkey(517)
+Do oEncrypt2.$initkey(9677)
+Do oEncrypt3.$initkey(1091)
+
+;  positions must be 49 or less, and never 22     ;; and there must be 12 positions presented
+;  see oEncryptionSuper / MashNumber and ReverseMash
+Do ilFolds1.$cols.$add('Positions',kCharacter,kSimplechar,50)
+Do ilFolds1.$add('8,4,24,19,17,6,2,15,27,12,21,10')
+Do ilFolds1.$add('7,5,23,14,9,28,26,2,17,11,19,21')
+Do ilFolds1.$add('9,21,16,2,25,7,18,14,4,27,23,12')
+Do ilFolds1.$add('14,9,11,5,28,3,23,16,7,18,21,25')
+Do ilFolds1.$add('28,12,3,21,19,14,7,5,26,9,17,23')
+Do ilFolds1.$add('15,10,8,22,4,19,17,6,2,12,28,25')
+Do ilFolds1.$add('11,9,21,28,3,6,23,25,17,19,15,13')
+Do ilFolds1.$add('20,2,15,7,28,5,13,9,11,25,22,18')
+Do ilFolds1.$add('5,17,11,3,24,9,22,7,15,13,29,20')

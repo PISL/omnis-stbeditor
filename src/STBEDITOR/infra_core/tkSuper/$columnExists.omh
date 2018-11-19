@@ -1,0 +1,6 @@
+Do pListOrRow.$cols.$findname(pcColName) Returns lrefCol
+If lrefCol
+	Quit method kTrue
+Else
+	Quit method kFalse
+End If

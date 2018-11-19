@@ -1,0 +1,26 @@
+Do irErrorSQL.$clear()
+Do $cinst.$statementobject.$execute() Returns lbExecuteOk
+If not(lbExecuteOk)
+	Do $cinst.$sql_error()
+	
+	If pos(con(',',irErrorSQL.NativeErrorCode,','),con(',',pDoNotReportTheseErrors,','))>0
+		;  do not report error
+		Calculate lbExecuteOk as kTrue
+	Else If pos(con(',',irErrorSQL.ErrorCode,','),con(',',pDoNotReportTheseErrors,','))>0
+		;  do not report error
+		Calculate lbExecuteOk as kTrue
+	Else
+		Do method ReportError
+	End If
+End If
+
+Calculate inRowsAffected as $cinst.$statementobject.$rowsaffected
+Calculate inRowsFetched as $cinst.$statementobject.$rowsfetched
+If trTaskStats.STS_TYPE='F'|trTaskStats.STS_TYPE='J'     ;; (F)at or (J)s client
+	Do $cinst.$recordStats()     ;; do not bother recording the method/parameters
+Else
+	Calculate llStack as sys(192)
+	Do $cinst.$recordStats(llStack.2.method,OJSON.$listtoobjectarray(llStack.2.params,kUniTypeCharacter))
+End If
+
+Quit method lbExecuteOk

@@ -1,0 +1,7 @@
+;  Returns a substring from a string,
+;  specifiying the source, the delimiter character, and position to stop at
+Repeat
+	Calculate lcTempChar as strtok('pSource',',')
+	Calculate lnCount as lnCount+1
+Until len(pSource)=0|pPosition=lnCount
+Quit method lcTempChar

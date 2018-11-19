@@ -1,0 +1,20 @@
+;  Breakpoint {does this even work ?}
+Calculate lnThisLine as pFrom+int((pTo-pFrom)/2)
+Calculate lcListVal as pList.[lnThisLine].[pSearchCol]
+
+If lcListVal=pSearchVal
+	Calculate lnResultLine as lnThisLine     ;; just for Dev testing
+	Quit method lnThisLine
+Else If pTo-pFrom<=1
+	;  Calculate lnResultLine as lnThisLine+1     ;; is this what i wanted
+	Quit method lnThisLine+1     ;; not sure if this is a bug or a planned feature ?
+End If
+
+If lcListVal<pSearchVal     ;; THIS CANNOT BE A CHARACTER AND BE EVALUATED IN THIS WAY
+	Do method $BinaryChop (pList,pSearchCol,pSearchVal,lnThisLine,pTo) Returns lnResultLine
+Else If lcListVal>pSearchVal
+	;  Do method $BinaryChop (pList,pSearchCol,pSearchVal,lnThisLine,pTo)
+	Do method $BinaryChop (pList,pSearchCol,pSearchVal,pFrom,lnThisLine) Returns lnResultLine
+End If
+
+Quit method lnResultLine

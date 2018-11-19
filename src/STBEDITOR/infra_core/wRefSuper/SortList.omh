@@ -1,0 +1,15 @@
+;  if there are multiple lists in window that can be sorted by clicking on columns
+;  discern which column and list here then let superclass method handle the sort
+If pColName<>''
+	If mid(pColName,1,pos('_',pColName))=icColPrefix
+		Do $cinst.$SortList(pColName,nam(ilData)) Returns lcDoString
+	End If
+Else
+	;  default sort after a $Refresh
+	Do $cinst.$SortList('',nam(ilData)) Returns lcDoString
+End If     ;; pColName<>''
+
+If lcDoString<>''
+	Do [lcDoString]
+End If
+Do $cinst.$redraw()

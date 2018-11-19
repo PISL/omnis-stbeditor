@@ -1,0 +1,20 @@
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Begin statement
+Sta: {select max([icPrimarykey]) from [$cinst.$servertablenames]}
+End statement
+Do $cinst.$executesqlandfetchinto(lnHighestSeq)
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+If isnull(lnHighestSeq)
+	Quit method 1
+End If
+Quit method lnHighestSeq+1

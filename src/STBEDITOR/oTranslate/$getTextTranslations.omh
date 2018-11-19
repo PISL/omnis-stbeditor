@@ -1,0 +1,83 @@
+;  this method is to be used for translating snippets of text, eg. string table entires
+;  expects a three column list, col1 = unique id, col2 =  source text, col3 is empty to receive translations
+;  if col1 is already URL encoded, pass pbPreEncoded as kTrue
+
+Calculate lbNewCall as kTrue
+Do llTranslations.$cols.$add(icTargetLang,kCharacter,kSimplechar,2000)
+
+For plOriginalTexts.$line from 1 to plOriginalTexts.$linecount step 1
+	
+	If lbNewCall
+		Calculate lcURI as icURL
+		Calculate lbNewCall as kFalse
+	End If
+	If pbPreEncoded
+		Calculate lcOriginal as plOriginalTexts.C2
+	Else
+		Calculate lcOriginal as OWEB.$escapeuritext(plOriginalTexts.C2)
+	End If
+	If len(con(lcURI,'&q=',lcOriginal))>2000
+		;  translate what we have before continuing
+		Calculate lbTranslateNow as kTrue
+	Else
+		Calculate lcURI as con(lcURI,'&q=',lcOriginal)
+	End If
+	
+	If plOriginalTexts.$line=plOriginalTexts.$linecount
+		Calculate lbTranslateNow as kTrue
+	End If
+	
+	If lbTranslateNow
+		Calculate lbTranslateNow as kFalse     ;; reset
+		Calculate lbNewCall as kTrue     ;; reset
+		If plOriginalTexts.$line<plOriginalTexts.$linecount
+			Calculate plOriginalTexts.$line as plOriginalTexts.$line-1     ;; get the current line again when we loop
+		End If
+		
+		If len(lcURI)>2000     ;; Google imposes a limit of 2k on the full URL
+			Calculate pcError as con('URL too long.  Please reduce the request by ',len(lcURI)-2000,' characters.')
+			Quit method kFalse
+		End If
+		
+		Do iorefRest.$init(lcURI,kOWEBhttpMethodGet,ilHeaders,'') Returns lbOK
+		
+		Do iorefRest.$run() Returns lbOK
+		If not(lbOK)
+			Calculate pcError as 'call to Google failed.'
+			Quit method kFalse
+		End If
+		
+		Do iorefRest.$returnVal(irResponseHeaders,irResponse,irJSON) Returns icJSON
+		
+		If irResponse.httpStatusCode<>200
+			Calculate pcError as irResponse.ResponseContent
+			Calculate lbOK as kFalse
+		Else
+			Calculate lrResult as OJSON.$jsontolistorrow(icJSON)
+			Calculate lrResult as lrResult.C1
+			Calculate lrResult as lrResult.C1
+			;  we may have sent multiple q parameters so loop over the columns
+			For lnCount from 1 to lrResult.$colcount step 1
+				Calculate lrTranslation as lrResult.C[lnCount]
+				While pos('&',lrTranslation.translatedText)
+					Calculate lcEscapeSeq as mid(lrTranslation.translatedText,pos('&',lrTranslation.translatedText),pos(';',lrTranslation.translatedText)+1-pos('&',lrTranslation.translatedText))
+					Do method decodeEscapedChar (lcEscapeSeq) Returns lcUnescapedChar
+					Calculate lrTranslation.translatedText as replaceall(lrTranslation.translatedText,lcEscapeSeq,lcUnescapedChar)
+				End While
+				Do llTranslations.$add(lrTranslation.translatedText)
+			End For
+			
+		End If
+		If not(lbOK)
+			Break to end of loop
+		End If
+	End If     ;; lbTranslateNow
+End For
+
+If lbOK
+	For plOriginalTexts.$line from 1 to plOriginalTexts.$linecount step 1
+		Calculate plOriginalTexts.C3 as llTranslations.[plOriginalTexts.$line].[icTargetLang]
+	End For
+End If
+
+Quit method lbOK

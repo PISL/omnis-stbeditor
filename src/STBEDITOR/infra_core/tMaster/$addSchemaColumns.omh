@@ -1,0 +1,28 @@
+Do ilAssociatedSchemas.$clear()
+
+If pcSchemaClass<>''
+	
+	Do lrRow.$definefromsqlclass(pcSchemaClass)
+	For lnColNo from 1 to lrRow.$colcount step 1
+		Set reference liColRef to lrRow.$cols.[lnColNo].$ref
+		Do $cinst.$cols.$add(liColRef.$name,liColRef.$coltype,liColRef.$colsubtype,liColRef.$colsublen)
+	End For
+	
+	Do ilAssociatedSchemas.$add(pcSchemaClass)
+	
+Else If plListOfSchemas.$linecount>0
+	
+	Calculate plListOfSchemas.$line as 0
+	While $Loop(plListOfSchemas)
+		
+		Do lrRow.$definefromsqlclass(plListOfSchemas.C1)
+		For lnColNo from 1 to lrRow.$colcount step 1
+			Set reference liColRef to lrRow.$cols.[lnColNo].$ref
+			Do $cinst.$cols.$add(liColRef.$name,liColRef.$coltype,liColRef.$colsubtype,liColRef.$colsublen)
+		End For
+		
+		Do ilAssociatedSchemas.$add(plListOfSchemas.C1)
+		
+	End While
+	
+End If

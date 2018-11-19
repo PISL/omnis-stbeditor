@@ -1,0 +1,188 @@
+;  an empty string will not be validated and return true
+Calculate lvcToken as pcPhoneNo
+Do method $ConsistentPhoneFormat (lvcToken)
+
+Begin reversible block
+	Set current list lvlTokens
+End reversible block
+Define list {lvcToken}
+Do method $StringToList (lvcToken,' ',kTrue) Returns lvlTokens
+
+;  Set current list llBigNumbers
+;  Define list {lccBigNoPrefix,lccBigNoCurrLength,lccBigNoNewPrefix,lccBigNoPrefixNo}
+;
+;  Add line to list {('0171',7,'020','7')}     ;; London 0171
+;  Add line to list {('0181',7,'020','8')}     ;; London 0181
+;
+;  Add line to list {('01222',6,'029','20')}     ;; Cardiff
+;  Add line to list {('01203',6,'024','76')}     ;; Coventry
+;  Add line to list {('01705',6,'023','92')}     ;; Portsmouth
+;  Add line to list {('01703',6,'023','80')}     ;; Southampton
+;
+;  Antrim
+;  Add line to list {('012657',5,'028','207')}
+;  Add line to list {('012667',5,'028','217')}
+;  Add line to list {('01266',5,'028','256')}
+;  Add line to list {('01266',6,'028','25')}
+;  Add line to list {('012656',5,'028','276')}
+;  Add line to list {('01574',6,'028','28')}
+;  Add line to list {('012665',5,'028','295')}
+;  Londonderry
+;  Add line to list {('01265',5,'028','703')}
+;  Add line to list {('01265',6,'028','70')}
+;  Add line to list {('01504',6,'028','71')}
+;  Add line to list {('015047',5,'028','777')}
+;  Add line to list {('01648',5,'028','796')}
+;  Add line to list {('01648',6,'028','79')}
+;  Belfast District
+;  Add line to list {('01232',6,'028','90')}
+;  Add line to list {('01247',6,'028','91')}
+;  Add line to list {('01846',6,'028','92')}
+;  Add line to list {('01960',6,'028','93')}
+;  Add line to list {('01849',6,'028','94')}
+;  Add line to list {('01238',6,'028','97')}
+;  Tyrone
+;  Add line to list {('016627',5,'028','807')}
+;  Add line to list {('016626',5,'028','816')}
+;  Add line to list {('01662',6,'028','82')}
+;  Add line to list {('016625',5,'028','855')}
+;  Add line to list {('016487',5,'028','867')}
+;  Add line to list {('01868',6,'028','87')}
+;  Add line to list {('013655',5,'028','895')}
+;  Down
+;  Add line to list {('018206',5,'028','406')}
+;  Add line to list {('016937',5,'028','417')}
+;  Add line to list {('012477',5,'028','427')}
+;  Add line to list {('013967',5,'028','437')}
+;  Add line to list {('01396',6,'028','44')}
+;  Armagh
+;  Add line to list {('01693',5,'028','302')}
+;  Add line to list {('01693',6,'028','30')}
+;  Add line to list {('01861',6,'028','37')}
+;  Add line to list {('01762',6,'028','38')}
+;  Fermanagh
+;  Add line to list {('01365',6,'028','66')}
+;  Add line to list {('013657',5,'028','677')}
+;  Add line to list {('013656',5,'028','686')}
+
+Set current list lvlTokens
+;  check number is broken up into portions
+Calculate lbInternationalNo as mid(lvlTokens.1.lvcToken,1,2)='00'
+If lbInternationalNo
+	;  don't bother checking formats
+	Calculate #F as 1
+	Quit method ''
+End If
+
+If #LN=1     ;; only 1 token
+	Calculate lvcMessage as con(lvcMessage,pick(lvcMessage<>'','',con(',',kCr)),'you must separate the std code from the phone number with a space')
+	
+Else If #LN>1
+	For each line in list from 1 to #LN step 1
+		;  Load from list
+		Calculate lvcToken as lvlTokens.LINE
+		
+		If #L=1     ;; remove parentheses from 1st token only
+			Calculate lvcTempString1 as replaceall(lvcToken,'(','')
+			Calculate lvcToken as replaceall(lvcTempString1,')','')
+			
+			If mid(lvcToken,1,1)<>'0'
+				Calculate lvcMessage as con(lvcMessage,pick(lvcMessage<>'','',con(',',kCr)),'1st digit of std code must be 0')
+			End If
+			If len(lvcToken)<3     ;; now support 020 for london
+				Calculate lvcMessage as con(lvcMessage,pick(lvcMessage<>'','',con(',',kCr)),'length of std code less than minimum of 3 digits')
+			Else If len(lvcToken)>6
+				Calculate lvcMessage as con(lvcMessage,pick(lvcMessage<>'','',con(',',kCr)),'length of std code greater than maximum of 6 digits')
+			End If
+			
+		Else If #L>1&#L<#LN
+			Calculate lnNoOfDigits as lnNoOfDigits+len(lvcToken)
+			
+		Else If #L=#LN     ;; allow 'x' for extension in last token only
+			Calculate lvcToken as lvlTokens.LINE
+			Calculate lvbExtnExistsAlone as upp(mid(lvcToken,1,1))='X'
+			Calculate lvbExtnExistsWithin as pos('x',lvcToken)>1|pos('X',lvcToken)>1
+			Calculate lvcTempString1 as replace(lvcToken,'x','')
+			Calculate lvcToken as replace(lvcTempString1,'X','')
+			If not(lvbExtnExistsAlone)&not(lvbExtnExistsWithin)
+				Calculate lnNoOfDigits as lnNoOfDigits+len(lvcToken)     ;; no extension - count the no of digits
+			End If
+		End If
+		
+		;  check maximum length of 2nd and subsequent tokens     ;; remember 'x' has been removed from token now
+		;  if extension exists alone, max length is 4     ;; if extension exists within, max length is 12 (8+4)
+		If #L>1
+			If len(lvcToken)>pick(lvbExtnExistsWithin,pick(lvbExtnExistsAlone,8,4),12)
+				Calculate lvcMessage as con(lvcMessage,pick(lvcMessage<>'','',con(',',kCr)),'length of part ',#L,' too long')
+			Else
+				Calculate lvnLengthWithoutSTD as lvnLengthWithoutSTD+len(lvcToken)
+			End If
+		End If
+		
+		If not(chk(lvcToken,mid('00000000000000000000',1,len(lvcToken)),mid('99999999999999999999',1,len(lvcToken))))
+			Calculate lvcMessage as con(lvcMessage,pick(lvcMessage<>'','',con(',',kCr)),'illegal character in part ',#L)
+		End If
+		
+		Calculate lvlTokens.LINE as lvcToken
+		;  Replace line in list
+	End For
+	
+	If lvnLengthWithoutSTD>pick((lvbExtnExistsWithin|lvbExtnExistsAlone),8,12)
+		Calculate lvcMessage as con(lvcMessage,pick(lvcMessage<>'','',con(',',kCr)),'length of phone number (non-STD portion) too long')
+	Else If len(lvlTokens.1.LINE)=3&lnNoOfDigits<>8
+		Calculate lvcMessage as con(lvcMessage,pick(lvcMessage<>'','',con(',',kCr)),'3 digit STD code requires 8 digit phone no')
+	Else If len(lvlTokens.1.LINE)<>3&lnNoOfDigits>=8
+		Calculate lvcMessage as con(lvcMessage,pick(lvcMessage<>'','',con(',',kCr)),'length of phone number (non-STD portion) too long')
+	Else If len(lvlTokens.1.LINE)+lnNoOfDigits>=12
+		Calculate lvcMessage as con(lvcMessage,pick(lvcMessage<>'','',con(',',kCr)),'too many digits in phone number')
+	End If
+End If
+
+;  Calculate lbBigNumber as kFalse
+;  If isnull(len(pcNewPhoneNo))
+;  do not reformat the phone number
+;  Else     ;; convert new std codes
+;  Do llBigNumbers.$search(lccBigNoPrefix=lvlTokens.1.lvcToken&lccBigNoCurrLength=lnNoOfDigits,kTrue,kFalse,kFalse,kFalse) Returns #F     ;; clBigNumbers   lvlTokens
+;  If flag true
+;  Calculate lvlTokens.1.lvcToken as llBigNumbers.lccBigNoNewPrefix
+;  Calculate lvlTokens.2.lvcToken as con(llBigNumbers.lccBigNoPrefixNo,lvlTokens.2.lvcToken)
+;  Calculate lbBigNumber as kTrue
+;  End If
+
+Calculate lbOmitLastToken as (lvbExtnExistsAlone|lvbExtnExistsWithin)
+;  If lbBigNumber
+;  For each line in list from 1 to #LN step 1
+;  If #L=1
+;  Calculate lcNewPhoneNo as con(lcNewPhoneNo,pick(lcNewPhoneNo<>'','',' '),lst(lvcToken))     ;; removed parenthesis
+;  Else If #L>1
+;  If #L=#LN&lbOmitLastToken
+;  omit it
+;  Else
+;  Calculate lcNewBigPhoneNo as con(lcNewBigPhoneNo,lst(lvcToken))     ;; removed parenthesis
+;  End If
+;  End If
+;  End For
+;  Calculate lcNewBigPhoneNo as con(mid(lcNewBigPhoneNo,1,4),' ',mid(lcNewBigPhoneNo,5,4))     ;; split new 8 digit number into 2 x 4 digit components
+;  Calculate lcNewPhoneNo as con(lcNewPhoneNo,pick(lcNewPhoneNo<>'','',' '),lcNewBigPhoneNo,pick(lbOmitLastToken,'',con(' x',lst(#LN,lvcToken))))     ;; removed parenthesis lvlTokens
+;  Else
+For each line in list from 1 to #LN step 1
+	If #L=#LN&lbOmitLastToken
+		Calculate lcNewPhoneNo as con(lcNewPhoneNo,pick(lcNewPhoneNo<>'','',' x'),lvlTokens.LINE)     ;; removed parenthesis
+	Else
+		Calculate lcNewPhoneNo as con(lcNewPhoneNo,pick(lcNewPhoneNo<>'','',' '),lvlTokens.LINE)     ;; removed parenthesis
+	End If
+End For
+;  End If
+;  End If
+
+If lvcMessage<>''
+	;  OK message  (Icon) {[con('ILLEGAL TELEPHONE NUMBER FORMAT in ',kCr,'"',pcPhoneNo,'" due to:',kCr,lvcMessage,'.')]}
+	Calculate #F as 0
+	Quit method lvcMessage
+Else
+	Do method $ConsistentPhoneFormat (lcNewPhoneNo)
+	Calculate pcPhoneNo as lcNewPhoneNo
+	Do $cobj.$redraw()
+	Calculate #F as 1
+	Quit method ''
+End If

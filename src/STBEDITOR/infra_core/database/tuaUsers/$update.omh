@@ -1,0 +1,7 @@
+Do inherited Returns lbOK     ;; update the record normally
+
+If lbOK&$cinst.PW<>''     ;; a new password has been entered so store the hash
+	Do $cinst.$setPassword() Returns lbOK
+End If
+
+Quit method lbOK

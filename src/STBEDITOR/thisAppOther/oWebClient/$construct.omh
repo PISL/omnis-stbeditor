@@ -1,0 +1,11 @@
+;  OK message [$cinst.$class().$name] {Instances:  [$clib.$objects.oWebClient.$insts.$count()]}
+;  Enter your initialization code here
+Do ilHeaders.$define(lcHeaderName,lcHeaderValue)
+Do ilHeaders.$add("content-type","application/json")
+
+Calculate ibEncryptInternally as kFalse
+
+Do $objects.$findname('oRestApp') Returns lrefObj
+If lrefObj
+	Do lrefObj.$newref() Returns ioRest     ;; wrapped this with the $findname to avoid errors in libs such as HTMLp
+End If

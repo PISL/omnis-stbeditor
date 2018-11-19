@@ -1,0 +1,14 @@
+;  Builds a list of all possible ways of linking to foreign tables
+Do llLinks.$cols.$add('TABLE',kCharacter,kSimplechar,100)     ;; Table that is being linked from
+Do llLinks.$cols.$add('FTABLE',kCharacter,kSimplechar,100)     ;; Foreign Table that is being linked to
+Do llLinks.$cols.$add('CHAIN',kCharacter,kSimplechar,1000)     ;; Link Path NOTE:  there must be no spaces either side of any '=' signs
+Do llLinks.$cols.$add('LINKS',kInteger,kShortint)     ;; Number of links
+Do llLinks.$cols.$add('DEFAULT',kInteger,kShortint)     ;; If a table can link to the foreign table in more than one way, this signifies the default link.
+Do llLinks.$cols.$add('TALIAS',kCharacter,kSimplechar,100)     ;; table alias for FTABLE if it can be linked to in more than a single way
+;  Example:
+;       ;; Do llLinks.$add('ThisTable','OtherTable','TT_OT_REF=OT_SEQ and OT_TYPE='TYPE1',1,0,'AliasOne')
+;       ;; Do llLinks.$add('ThisTable','OtherTable','TT_OT_REF=OT_SEQ and OT_TYPE='TYPE2',1,0,'AliasTwo')
+
+Do llLinks.$add('ualogaccess',lrUsers.$servertablenames(),'ula_usr_ref=usr_seq',1,1)
+
+Quit method llLinks

@@ -1,0 +1,3 @@
+If ilData.$linecount>0
+	Do ilData.$dowork()
+End If

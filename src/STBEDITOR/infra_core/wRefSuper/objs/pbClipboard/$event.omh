@@ -1,0 +1,21 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	Calculate llTemp as ilData
+	;  clear the <CR> from JSON and CHAR columns
+	Calculate llTemp.$line as 0
+	While $Loop(llTemp)
+		Calculate llTemp.[icColPrefix]CHAR as replaceall(llTemp.[icColPrefix]CHAR,kTab,'<tab>')
+		Calculate llTemp.[icColPrefix]CHAR as replaceall(llTemp.[icColPrefix]CHAR,kCr,'<cr>')
+		Calculate llTemp.[icColPrefix]CHAR as replaceall(llTemp.[icColPrefix]CHAR,kLf,'<lf>')
+		
+		Calculate llTemp.[icColPrefix]JSON as replaceall(llTemp.[icColPrefix]JSON,kTab,'<tab>')
+		Calculate llTemp.[icColPrefix]JSON as replaceall(llTemp.[icColPrefix]JSON,kCr,'<cr>')
+		Calculate llTemp.[icColPrefix]JSON as replaceall(llTemp.[icColPrefix]JSON,kLf,'<lf>')
+	End While
+	
+	Calculate lcSpecificColumns as 'RFG_CLASS,RFG_VALUE,RFG_DESC,RFG_ORDER,RFG_ACTIVE,RFG_INT,RFG_NUMBER,RFG_DATE,RFG_TIME,RFG_EFFECTIVE,RFG_EXPIRES,RFG_CHAR,RFG_JSON'     ;; omit RFG_BIN
+	If icColPrefix<>'RFG_'
+		Calculate lcSpecificColumns as replaceall(lcSpecificColumns,'RFG_',icColPrefix)
+	End If
+	Do toStrings.$ExportList(llTemp,'TAB',kTrue,'CLIPBOARD',,lcSpecificColumns)
+	
+	Do $cinst.$redraw()

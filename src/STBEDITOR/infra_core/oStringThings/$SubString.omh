@@ -1,0 +1,11 @@
+
+;  Returns a substring of pString Starting on the pos of pStartString and ending on the pos of pEndString
+;  If pInclude is true, the returned string will include the text in pStartString and pEndString
+Calculate vReturn as pString
+If pStartString<>''
+	Calculate vReturn as mid(vReturn,pos(pStartString,vReturn)+pick(pInclude,len(pStartString),0),len(vReturn))
+End If
+If pEndString<>''
+	Calculate vReturn as mid(vReturn,1,pos(pEndString,vReturn)+pick(pInclude,-1,len(pEndString)-1))
+End If
+Quit method vReturn

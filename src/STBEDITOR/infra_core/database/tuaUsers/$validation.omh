@@ -1,0 +1,29 @@
+Calculate icValidationMessage as ''
+Do ilValidation.$clear()
+
+If $cinst.USR_NAME<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'USR_NAME missing')
+	Do ilValidation.$add('USR_NAME_LBL','VAL_MISSING','USR_NAME missing',0)
+End If
+
+If $cinst.USR_REAL_NAME<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'USR_REAL_NAME missing')
+	Do ilValidation.$add('USR_REAL_NAME_LBL','VAL_MISSING','USR_REAL_NAME missing',0)
+End If
+
+If $cinst.USR_SALT<>''
+	;  good
+Else
+	;  Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'USR_SALT missing')
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

@@ -1,0 +1,8 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	If len(irefStringsGrid.$columnnames)-len(replaceall(irefStringsGrid.$columnnames,',',''))=2
+		;  we have just 3 columns, so continue
+		Do method translateList
+	Else
+		OK message Please ensure there is just one foreign column in the grid before translation can occur. (Sound bell)
+		
+	End If

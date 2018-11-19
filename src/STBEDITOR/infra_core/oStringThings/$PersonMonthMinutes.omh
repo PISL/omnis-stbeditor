@@ -1,0 +1,4 @@
+;  As a default, a person expected to work 1575 hours per year, not more.
+;  - If you divide this by 12 (months), the resulting average monthly working hours are 131,25.
+Calculate lnPersonMonthMinutes as 1575/12*60     ;; 1575 hours per year, 12 months per year, 60 minutes per hour = 7875
+Quit method lnPersonMonthMinutes

@@ -1,0 +1,4 @@
+Calculate icPrefix as 'DB_'
+Calculate icPrimarykey as 'DB_SEQ'
+Calculate ibHasSequence as kTrue
+Do inherited

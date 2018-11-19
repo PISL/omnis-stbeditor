@@ -1,0 +1,9 @@
+;  between STS_START and STS_END
+Do $cinst.$cols.$add('durationTask',kInteger,k32bitint)
+Do $cinst.$cols.$add('elapsedTask',kCharacter,kSimplechar,20)
+;  between STS_START and STS_LAST_RESPONSE
+Do $cinst.$cols.$add('durationUser',kInteger,k32bitint)
+Do $cinst.$cols.$add('elapsedUser',kCharacter,kSimplechar,20)
+
+Do $cinst.$cols.$add('unused',kInteger,k32bitint)
+Do $cinst.$cols.$add('elapsedUnused',kCharacter,kSimplechar,20)

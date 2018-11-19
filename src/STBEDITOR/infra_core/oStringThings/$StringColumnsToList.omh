@@ -1,0 +1,39 @@
+;  determine the columns that need to be created
+If pbFirstRowIsHeadings
+	Calculate lcLine as strtok(nam(pcClipboard),pcLineDelim)
+Else
+	Calculate lcLine as mid(pcClipboard,1,pos(pcLineDelim,pcColumnDelim)-1)
+End If
+Calculate lnColNo as 0
+While lcLine<>''
+	Calculate lnColNo as lnColNo+1
+	Calculate lcToken as strtok(nam(lcLine),pcColumnDelim)
+	Calculate lcToken as trim(lcToken)
+	;  Calculate llContent.C[lnColNo] as lcToken
+	If pbFirstRowIsHeadings
+		Do llContent.$cols.$add(lcToken,kCharacter,kSimplechar,255)
+	Else
+		Do llContent.$cols.$add(con('C',lnColNo),kCharacter,kSimplechar,255)
+	End If
+End While
+
+;  now process the clipboard for content
+While pcClipboard<>''
+	Calculate lcLine as strtok(nam(pcClipboard),pcLineDelim)
+	Calculate lcLine as trim(lcLine,kTrue,kTrue,kLf)
+	
+	If lcLine<>''
+		Do llContent.$add()
+		Calculate llContent.$line as llContent.$linecount
+		
+		Calculate lnColNo as 0
+		While lcLine<>''
+			Calculate lnColNo as lnColNo+1
+			Calculate lcToken as strtok(nam(lcLine),pcColumnDelim)
+			Calculate lcToken as trim(lcToken)
+			Calculate llContent.C[lnColNo] as lcToken
+		End While
+	End If
+End While
+
+Quit method llContent

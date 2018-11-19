@@ -1,0 +1,111 @@
+If isnull(pDateStart)
+	Quit method
+End If
+If isnull(pDateEnd)
+	Quit method
+End If
+;  OK message  {[ddiff(kYear,pDateStart,pDateEnd)]}
+Calculate lnDays as ddiff(kDay,pDateStart,pDateEnd)
+Calculate lnTotalDays as lnDays
+;  ddiff rounds the answer and returns an integer every time!     ;; so 279 days Returnｓ 1
+;  Hah!  just spoken to RD/TL and its because the date range spas an end of year!
+;  so its doing what it is supposed to do     ;; and I want it to do something else!
+
+;  this is frustrating because I want whole (floor) years, not rounded years
+Calculate ldDebugDate as dat('1/10/2008')
+If lnDays>=365
+	Calculate lnnWholeUnits as rnd((lnDays/365.25)-0.4999999,0)
+	Calculate lnrYears as lnnWholeUnits
+	Calculate lnDays as lnDays-rnd((lnrYears*365.25),0)
+End If
+If lnDays>=28
+	Calculate lnnWholeUnits as rnd((lnDays/(365.25/12))-0.4999999,0)
+	Calculate lnrMonths as lnnWholeUnits
+	Calculate lnDays as lnDays-rnd((lnrMonths*(365.25/12)),0)
+End If
+If lnDays>=7
+	Calculate lnnWholeUnits as rnd((lnDays/7)-0.4999999,0)
+	Calculate lnrWeeks as lnnWholeUnits
+	Calculate lnDays as lnDays-(lnrWeeks*7)
+End If
+If pDateStart<=ldDebugDate
+	;  Breakpoint {[pDateStart]  [lnrYears]  [lnrMonths]  [lnrWeeks]}
+End If
+
+If pLargerUnitsOver>0&lnTotalDays>pLargerUnitsOver
+	Calculate lnYears as lnrYears
+	;  Calculate lnMonths as lnrMonths-(lnYears*12)
+	Calculate lnMonths as lnrMonths
+	If pOmitWeeksWithLargerUnits
+		Calculate lnWeeks as 0     ;; this will include all weeks as days in next statement
+	Else
+		;  Calculate lnWeeks as ddiff(kMonth,dim(pDateStart,(lnYears*12)+lnMonths),pDateEnd)
+		If lnrMonths<12
+			;  Calculate lnWeeks as
+		End If
+		Calculate lnnWholeUnits as rnd(ddiff(kWeek,dim(pDateStart,lnYears*12+lnMonths),pDateEnd)-0.499999,0)
+		Calculate lnWeeks as lnnWholeUnits
+	End If
+	
+	;  OK message  {[dim(pDateStart,(lnYears*12))+lnMonths]}
+	;  OK message  {[dadd(kWeek,lnWeeks,dim(pDateStart,lnYears*12+lnMonths))]}
+	Calculate lnDays as ddiff(kDay,dadd(kWeek,lnWeeks,dim(pDateStart,lnYears*12+lnMonths)),pDateEnd)
+	If pDateStart<=ldDebugDate
+		;  Breakpoint {[pDateStart]  [lnrYears]/[lnYears]  [lnrMonths]/[lnMonths]  [lnrWeeks]/[lnWeeks]    [lnDays]}
+	End If
+Else
+	;  express in days oly
+	Calculate lnYears as 0
+	Calculate lnMonths as 0
+	Calculate lnWeeks as 0
+End If
+
+If lnYears>0
+	If lnYears>1
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnYears,pick(pCompleteWords,'y',' years'))
+	Else
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnYears,pick(pCompleteWords,'y',' year'))
+	End If
+	Calculate lnCountUnits as lnCountUnits+1
+End If
+If pLargerUnitsCutoff>0&lnCountUnits>=pLargerUnitsCutoff
+	Quit method lcReturn
+End If
+
+If lnMonths>0
+	If lnMonths>1
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnMonths,pick(pCompleteWords,'m',' months'))
+	Else
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnMonths,pick(pCompleteWords,'m',' month'))
+	End If
+	Calculate lnCountUnits as lnCountUnits+1
+End If
+If pLargerUnitsCutoff>0&lnCountUnits>=pLargerUnitsCutoff
+	Quit method lcReturn
+End If
+
+If lnWeeks>0
+	If lnWeeks>1
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnWeeks,pick(pCompleteWords,'w',' weeks'))
+	Else
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnWeeks,pick(pCompleteWords,'w',' week'))
+	End If
+	Calculate lnCountUnits as lnCountUnits+1
+End If
+If pLargerUnitsCutoff>0&lnCountUnits>=pLargerUnitsCutoff
+	Quit method lcReturn
+End If
+
+If lnDays>0
+	If lnDays>1
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnDays,pick(pCompleteWords,'d',' days'))
+	Else
+		Calculate lcReturn as con(lcReturn,pick(lcReturn<>'','',' '),lnDays,pick(pCompleteWords,'d',' day'))
+	End If
+	Calculate lnCountUnits as lnCountUnits+1
+End If
+;  If pLargerUnitsCutoff>0&lnCountUnits>=pLargerUnitsCutoff
+;  Quit method lcReturn
+;  End If
+
+Quit method lcReturn

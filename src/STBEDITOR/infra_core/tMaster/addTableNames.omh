@@ -1,0 +1,29 @@
+
+Calculate lcForeignCol as mid(pTable.LINE,pos('=',pTable.LINE)+1,99)
+Calculate lcForeignTable as irefCORETASK.$FindTable(lcForeignCol)
+;  Calculate pcForeignTable as con(pick(pos('.',lcForeignTable)=0,'',icPGschema),lcForeignTable)
+Calculate pcForeignTable as con(lcForeignTable)     ;; had icPGschema at beginning within a pick()
+Calculate lcLocalCol as mid(pTable.LINE,1,pos('=',pTable.LINE)-1)
+Calculate lcLocalTable as con(irefCORETASK.$FindTable(lcLocalCol))     ;; had icPGschema at beginning
+
+If lcLocalTable=''&pos('.',lcLocalCol)     ;; RSM 23 JAN 04  to cope with $Links between T_AOWN and T_TS
+	;  leave vLinkList.C1 as is     ;; the $Links entry explicitly specifies the table alias
+Else If lcLocalTable=''&pos('(',lcLocalCol)     ;; RSM 25 MAY 05  to cope with to_char() $Links between T_PRH and T_NT
+	;  leave vLinkList.C1 as is     ;; the $Links entry explicitly specifies the table alias
+Else
+	If len(lcLocalTable)>0
+		Calculate pTable.LINE as con(lcLocalTable,'.',pTable.LINE)     ;; Add Table name
+	End If
+	;  alias only necessary for top parent table which will be last in join list from $Links
+	If pcTableAlias<>''&pTable.$line=pTable.$linecount     ;; Use a table alias
+		Calculate pcForeignTable as con(pcForeignTable,' ',pcTableAlias)
+		
+		;  rsm added 28 MAY 05 to support multiple joins to same table
+		Calculate lcForeignColPrefix as con('=',mid(lcForeignCol,1,pos('_',lcForeignCol)))
+		Calculate lcForeignAliasPrefix as con('=',pcTableAlias,'.',mid(lcForeignColPrefix,2,999))     ;; move the initial '=' in front of the table alias, eg. products.prd_go_ref=go_seq  becomes products.prd_go_ref=TableAlias.go_seq
+		Calculate pTable.LINE as replaceall(pTable.LINE,lcForeignColPrefix,lcForeignAliasPrefix)     ;; vLinkList
+		
+		;  Else If len(pcForeignTable)>len(icPGschema)
+		;  Calculate pTable.LINE as replace(pTable.LINE,lcForeignCol,con(pcForeignTable,'.',lcForeignCol))
+	End If
+End If

@@ -1,0 +1,10 @@
+If #SHIFT
+	Open window instance wRefLocal/*/CEN
+Else
+	Test for window open {wRefLocal}
+	If flag true
+		Bring window instance to front wRefLocal
+	Else
+		Open window instance wRefLocal/CEN
+	End If
+End If

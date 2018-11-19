@@ -1,0 +1,27 @@
+{
+	"ident": 1094,
+	"order": 16393,
+	"objtype": "kLabel",
+	"properties": {
+		"align": "kLeftJst",
+		"backcolor": "kColorBackFill",
+		"backpattern": 15,
+		"designactive": true,
+		"edgefloat": "kEFnone",
+		"fieldstyle": "",
+		"font": 1,
+		"fontsize": 12,
+		"fontstyle": "kPlain",
+		"forecolor": "kColorForeFill",
+		"height": 16,
+		"left": 321,
+		"objlink": 131086,
+		"text": "GLOBAL entries exist",
+		"textcolor": "kBlue",
+		"top": 15,
+		"userinfo": "",
+		"vertcentertext": false,
+		"visible": false,
+		"width": 130
+	}
+}

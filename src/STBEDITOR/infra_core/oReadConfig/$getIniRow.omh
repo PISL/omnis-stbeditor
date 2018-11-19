@@ -1,0 +1,3 @@
+Do ilIniRaw.$search($ref.LIB_NAME=pcLibrary&$ref.LIB_KEY=pcKey,1,0,0,0)
+Calculate lrIni as ilIniRaw
+Quit method lrIni

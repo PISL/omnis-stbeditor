@@ -1,0 +1,2 @@
+On evClick     ;; Event Parameters - pRow ( Itemreference )
+	Calculate icComparisonCols as toStrings.$ListToString(ilComparisonCols,'colName',',',#NULL,kTrue)

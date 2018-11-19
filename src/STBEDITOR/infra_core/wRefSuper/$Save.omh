@@ -1,0 +1,61 @@
+If ilData.$linecount>0
+	Calculate ilData.$line as 0
+	Do ilData.$search(0)
+	Do ilData.$search(len($ref.[icColPrefix]CLASS)=0|len($ref.[icColPrefix]VALUE)=0,1,0,1,0)
+	While $Loop(ilData,kTrue)
+		Calculate lRow as ilData
+		If lRow.[icColPrefix]SEQ>=0
+			Do lRow.$delete() Returns lbOK
+		End If
+		Calculate lbDeletes as kTrue
+	End While
+	Do ilData.$remove(kListDeleteSelected)
+	
+	While $Loop(ilData)
+		Calculate lbUpdateDB as kFalse
+		Calculate lRow as ilData
+		If lRow.[icColPrefix]SEQ>0
+			Do ilOriginal.$search($ref.[icColPrefix]SEQ=lRow.[icColPrefix]SEQ,1,0,0,0) Returns lbFound
+			If lbFound
+				Do toStrings.$HasRowBeenModified(ilOriginal,lRow) Returns lbModified
+				If lbModified
+					Calculate lbUpdateDB as kTrue
+					Do lRow.$update() Returns lbOK
+					If lbOK
+						Calculate inUpdates as inUpdates+1
+						Calculate ilData.[ilData.$line] as lRow
+					Else
+						Calculate inUpdatesFailed as inUpdatesFailed+1
+					End If
+				End If
+			End If
+		Else
+			Calculate lbUpdateDB as kTrue
+			If icColPrefix='RFO_'
+				Calculate lRow.RFO_GO_REF as ilOrganisations.GO_SEQ
+			End If
+			Do lRow.$insert() Returns lbOK
+			If lbOK
+				Calculate inInserts as inInserts+1
+				Calculate ilData.[ilData.$line] as lRow
+			Else
+				Calculate inInsertsFailed as inInsertsFailed+1
+			End If
+		End If
+		If lbUpdateDB&lbOK
+			Calculate ilData.[ilData.$line] as lRow
+		Else If lbUpdateDB&not(lbOK)
+			OK message  {line [ilData.$line]: [pick(lRow.icValidationMessage<>'',lRow.irErrorSQL.NativeErrorText,lRow.icvalidationMessage)]}
+		End If
+	End While
+	
+	If inUpdatesFailed|inInsertsFailed
+		;  leave ilOriginal and ilData as is
+	Else
+		Calculate ilOriginal as ilData
+	End If
+End If
+
+If lbDeletes|lbUpdateDB
+	Do method getClassList
+End If

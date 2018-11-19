@@ -1,0 +1,26 @@
+If pcPW<>''
+	;  do proper hashing here     ;; 2014-01-09 GRS not sure if we ever will but leaving this here for now
+	Calculate lcHashPass as pcPW     ;; not used for now
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Begin statement
+Sta: {select [$cinst.$selectnames()]}
+Sta: {from [$cinst.$servertablenames]}
+Sta: {where USR_NAME = @[pcID]}
+Sta: {and    USR_HASHPASS = md5(concat(USR_SALT,@[pcPW]::text,USR_SALT))}     ;; 8.0.3 DAM needs the CAST to text
+End statement
+
+Do $cinst.$executesqlandfetch() Returns lbOK
+
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method lbOK

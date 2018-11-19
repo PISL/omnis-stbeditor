@@ -1,0 +1,15 @@
+If ilWebErrorLog.$colcount>0
+	;  initialised
+Else
+	Do ilWebErrorLog.$cols.$add('Subject',kCharacter,kSimplechar,1000)
+	Do ilWebErrorLog.$cols.$add('Message',kCharacter,kSimplechar,1000000)
+	Do ilWebErrorLog.$cols.$add('Timestamp',kDate,kDatetime)
+	Calculate ilWebErrorLog.$linemax as 200
+End If
+Do ilWebErrorLog.$addbefore(1,pSubject,pMessage,#D)
+
+
+Test for window open {wWebErrorLog}
+If flag true
+	Do $iwindows.wWebErrorLog.$LogWebError()     ;; this calls back here and gets latest copy of ilWebErroRLOG
+End If

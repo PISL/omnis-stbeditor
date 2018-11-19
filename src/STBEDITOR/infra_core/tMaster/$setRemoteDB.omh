@@ -1,0 +1,5 @@
+If isclear(pcRemoteServer)
+	Calculate icRemoteDB as ''
+Else
+	Calculate icRemoteDB as low(con('_',pcRemoteServer,'__',pcRemoteDB))
+End If

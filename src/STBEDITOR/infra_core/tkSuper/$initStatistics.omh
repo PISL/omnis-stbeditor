@@ -1,0 +1,14 @@
+;  must be called after connection to the DB     ;; for obvious reasons
+Do $DefineList(trTaskStats,'tsysTaskStats')     ;; trTaskStats is used in $ServerTime
+If tConstants.LogTaskStats
+	Calculate trTaskStats.STS_START as #D
+	Calculate trTaskStats.STS_COUNT_START as 1
+	TCPGetMyAddr  Returns trTaskStats.STS_IP4     ;; IP address of this computer
+	Calculate trTaskStats.STS_TYPE as 'F'     ;; (F)at client
+	Calculate trTaskStats.STS_DB_REQUESTS as 0
+	Calculate trTaskStats.STS_FETCHES as 0
+	Calculate trTaskStats.STS_INSERTS as 0
+	Calculate trTaskStats.STS_UPDATES as 0
+	Calculate trTaskStats.STS_DELETES as 0
+	Do trTaskStats.$insert() Returns lbOK
+End If

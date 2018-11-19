@@ -1,0 +1,123 @@
+;  Build the email message
+;  Do iMessage.$deleteaallbodyparts()
+;  Calculate inExecuteMilliseconds as 0
+Calculate ibToHasBeenAssigned as prAttributes.to<>''
+Calculate icErrorMessage as ''
+
+;  TAB 2 attributes
+;  Do $cinst.$newMessage()     ;; moved to $initialiseMessage
+Calculate lErrorCount as lErrorCount+$cinst.$messageassign("$from",prAttributes.from)
+If lErrorCount<>lnLastErrorCount
+	Calculate icErrorMessage as con(icErrorMessage,pick(icErrorMessage<>'','',', '),'from')
+	Calculate lnLastErrorCount as lErrorCount
+End If
+Calculate lErrorCount as lErrorCount+$cinst.$messageassign("$subject",prAttributes.subject)
+If lErrorCount<>lnLastErrorCount
+	Calculate icErrorMessage as con(icErrorMessage,pick(icErrorMessage<>'','',', '),'subject')
+	Calculate lnLastErrorCount as lErrorCount
+End If
+Calculate lErrorCount as lErrorCount+$cinst.$messageassign("$to",prAttributes.to)
+If lErrorCount<>lnLastErrorCount
+	Calculate icErrorMessage as con(icErrorMessage,pick(icErrorMessage<>'','',', '),'to')
+	Calculate lnLastErrorCount as lErrorCount
+End If
+Calculate lErrorCount as lErrorCount+$cinst.$messageassign("$cc",prAttributes.cc)
+If lErrorCount<>lnLastErrorCount
+	Calculate icErrorMessage as con(icErrorMessage,pick(icErrorMessage<>'','',', '),'cc')
+	Calculate lnLastErrorCount as lErrorCount
+End If
+Calculate lErrorCount as lErrorCount+$cinst.$messageassign("$bcc",prAttributes.bcc)
+If lErrorCount<>lnLastErrorCount
+	Calculate icErrorMessage as con(icErrorMessage,pick(icErrorMessage<>'','',', '),'bcc')
+	Calculate lnLastErrorCount as lErrorCount
+End If
+Calculate lErrorCount as lErrorCount+$cinst.$messageassign("$priority",prAttributes.priority)
+If lErrorCount<>lnLastErrorCount
+	Calculate icErrorMessage as con(icErrorMessage,pick(icErrorMessage<>'','',', '),'priority')
+	Calculate lnLastErrorCount as lErrorCount
+End If
+;  Extra headers
+If plExtraHeaders.$linecount
+	;  Remove empty lines
+	For lLineNumber from plExtraHeaders.$linecount to 1 step -1
+		Calculate plExtraHeaders.$line as lLineNumber
+		If len(trim(plExtraHeaders.iExtraHeaderName))=0&len(trim(plExtraHeaders.iExtraHeaderValue))=0
+			Calculate plExtraHeaders.[lLineNumber].$selected as kTrue
+		End If
+	End For
+	Do plExtraHeaders.$remove(kListDeleteSelected)
+	If plExtraHeaders.$linecount
+		Calculate lErrorCount as lErrorCount+$cinst.$messageassign("$extraheaders",plExtraHeaders)
+		If lErrorCount<>lnLastErrorCount
+			Calculate icErrorMessage as con(icErrorMessage,pick(icErrorMessage<>'','',', '),'extraheaders')
+			Calculate lnLastErrorCount as lErrorCount
+		End If
+	End If
+End If
+If lErrorCount>0
+	;  Failed to assign at least one message property
+	Quit method kFalse
+End If
+
+;  TAB 3 attributes     ;; message and attachments
+;  append a carriage return at end of message, if not already there, for better presentation
+If right(prBody.text,1)<>kCr
+	Calculate prBody.text as con(prBody.text,kCr)
+End If
+
+;  Now build the content
+If prBody.attachments.$linecount>0
+	Calculate lAttachments as prBody.attachments
+Else
+	Calculate lAttachments as ilAttachments
+End If
+;  If lAttachments.$linecount=0
+;  Depending on where is is called from, there may be an entry in lAttachments representing the the "part" for the plain text.
+;  This part must exist in this attachments list for the rest to work.
+;  Do lAttachments.$addbefore(1)
+;  End If
+;  The list of attachments will be a list of other files to attach.
+;  The list has to include the part of plain text when it comes to using $setAttachments method.
+If lAttachments.$linecount>0
+	Calculate lcMultiPartType as 'mixed'
+Else If prBody.html<>''
+	Calculate lcMultiPartType as 'mixed'
+Else
+	Calculate lcMultiPartType as 'mixed'
+End If
+
+Do $cinst.$messageContent(prBody.text,prBody.html,lPlainTextBodyPartId,lHTMLBodyPartId) Returns lbOK
+If lbOK
+	If prBody.html=''
+		Do lAttachments.$addbefore(1,lPlainTextBodyPartId)     ;; insert the plain text body part id
+	End If
+Else
+	;  error message already set
+	Quit method kFalse
+End If
+
+;  and include attachments
+Do $cinst.$setAttachmentsList(lAttachments,prBody.html,lcMultiPartType) Returns lbOK
+If not(lbOK)
+	;  error message already set
+	Quit method kFalse
+End If
+
+;  TAB 1 - credentials     ;; server account pw secure authenticationTypes OAUTH2 domain realm
+If prServer.configCode<>''
+	Do $cinst.$setServerByCode(prServer.configCode,plPropertiesJavamail) Returns lbOK
+Else
+	Do $cinst.$setServerCredentials(prServer.server,prServer.account,prServer.pw,prServer.secure,prServer.authenticationTypes,prServer.debugLog,prServer.timeout,prServer.OAUTH2,prServer.realm,prServer.domain,plPropertiesJavamail) Returns lbOK
+End If
+If not(lbOK)
+	;  error message already set
+	Quit method kFalse
+End If
+
+Do $cinst.$send(pRun) Returns lbOK
+If not(lbOK)
+	;  OK message  {[$cinst.icErrorMessage]}
+	Quit method kFalse
+End If
+
+Quit method kTrue

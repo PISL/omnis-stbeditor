@@ -1,0 +1,6 @@
+If ilEscapedChars.$linecount=0
+	Do toValues.$escapeChars() Returns ilEscapedChars
+End If
+
+Do ilEscapedChars.$search($ref.C2=pcEscapeString|$ref.C3=pcEscapeString,1,0,0,0)
+Quit method ilEscapedChars.C1

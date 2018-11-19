@@ -1,0 +1,7 @@
+;  Enter your initialization code here
+Do $DefineList(ilTaskStats,'tsysTaskStats')
+
+Do $cinst.$objs.TaskStats.$setcolumnalign(3,kRightJst)
+Do $cinst.$objs.TaskStats.$setcolumnalign(4,kRightJst)
+Do $cinst.$objs.TaskStats.$setcolumnalign(5,kRightJst)
+Do $cinst.$objs.TaskStats.$setcolumnalign(6,kRightJst)

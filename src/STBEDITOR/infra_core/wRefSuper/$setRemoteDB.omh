@@ -1,0 +1,5 @@
+Do ilData.$setRemoteDb(ilServers.servername,ilDBs.dbname)
+Do ilData.$HasRemotePrivilege('SELECT') Returns ibCanSelectRemote
+Do ilData.$HasRemotePrivilege('UPDATE') Returns ibCanUpdateRemote
+
+;  Do $cinst.$behaviour()

@@ -1,0 +1,36 @@
+;  Breakpoint
+
+Do lrIni.$SetSession(ioSessionIni,ioStatementIni)
+
+Do ilDBList.$search(0)     ;; deselect all lines
+
+Calculate plNewValues.$line as 0
+While $Loop(plNewValues)
+	Calculate lrTemp as plNewValues
+	If len(lrTemp.DB_KEY)>0     ;; insert or update
+		Do lrIni.$assignrow(lrTemp,kTrue)
+		If lrTemp.DB_SEQ>0
+			Do ilDBList.$search($ref.DB_SEQ=plNewValues.DB_SEQ,1,0,0,0)
+			Calculate ilDBList.$selected as kTrue     ;; select the lineq
+			Calculate lrTemp as ilDBList
+			If toStrings.$HasRowBeenModified(lrTemp,lrIni)
+				Do lrIni.$update()
+			End If
+		Else
+			Do lrIni.$insert()
+		End If
+	End If
+End While
+
+Do ilDBList.$remove(kListDeleteSelected)
+If ilDBList.$linecount>0
+	;  delete the remaining lines
+	Calculate ilDBList.$line as 0
+	While $Loop(ilDBList)
+		Calculate lrTemp as ilDBList
+		Do lrIni.$assignrow(lrTemp)
+		Do lrIni.$delete() Returns lbOK
+	End While
+End If
+
+Do $cinst.$fetchDBIni     ;; now get all the new values

@@ -1,0 +1,4 @@
+Do $cinst.$CharShift(pExternalClientRef,-2) Returns lnPrimed
+;  Do method CharShift (pExternalClientRef,-2) Returns lnPrimed
+Calculate lnTheNumber as lnPrimed/cnPrimeNo
+Quit method lnTheNumber

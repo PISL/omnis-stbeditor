@@ -1,0 +1,11 @@
+Calculate #FD as 'D m Y'
+Calculate #FDT as 'D m Y H:N'
+Calculate #FT as 'H:N'
+
+Calculate tcLicence as upp(tlDatabases.license)     ;; 'DOMESTIC'  'EDUCATION'  'COMMERCIAL'  'PUBLIC'  'PERSONAL'
+
+If trCurrUser.USR_NAME<>''
+	;  the autologin feature in Read_config was used
+Else
+	Open window instance wSecLogin/wSecLogin_[$clib().$name]/CEN
+End If

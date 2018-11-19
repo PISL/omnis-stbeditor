@@ -1,0 +1,8 @@
+Do $cinst.$executesqldirect(con('commit',pick(pcName<>'','',' '),pcName))
+
+Do pobjSession.$transactionmode.$assign(kSessionTranAutomatic)
+
+Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+
+Calculate pobjSession as #NULL
+Calculate pobjStatement as #NULL

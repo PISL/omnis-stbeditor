@@ -1,0 +1,10 @@
+Calculate lnFold as mid(pMash,22,1)
+Calculate pMash as con(mid(pMash,1,21),mid(pMash,23,99))
+Calculate lcPositions as ilFolds1.[lnFold].Positions
+
+While lcPositions<>''
+	Calculate lnPos as strtok(nam(lcPositions),',')
+	Calculate lcFoundation as con(lcFoundation,mid(pMash,lnPos,1))
+End While
+
+Quit method lcFoundation

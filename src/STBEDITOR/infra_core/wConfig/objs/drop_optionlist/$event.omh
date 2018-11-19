@@ -1,0 +1,6 @@
+On evClick     ;; Event Parameters - pRow ( Itemreference )
+	Calculate [ilOptionList.[inCurrentOption].listVar] as ilEditdata
+	Calculate inCurrentOption as ilOptionList.$line
+	Do method WhichSpecialActions
+	
+	Do $cinst.$behaviour()

@@ -1,0 +1,5 @@
+Calculate icPrefix as 'OMS_'
+Calculate icPrimarykey as 'OMS_SEQ'
+Calculate ibHasSequence as kTrue
+
+Do inherited

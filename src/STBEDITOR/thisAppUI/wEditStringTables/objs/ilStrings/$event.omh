@@ -1,0 +1,54 @@
+On evExtend
+	Calculate inStringCount as ilStrings.$linecount
+	Do $cinst.$objs.inStringCount.$redraw()
+	
+On evAfter
+	;  OK message evAfter {H: [inHorzCell]    V: [inVertCell][kCr]Old: [icContentsToTrapEvAfter][kCr]New: [ilStrings.[inVertCell].C[inHorzCell+inAcColsOffset]]}
+	If ilStrings.$linecount&ilStrings.[inVertCell].C[inHorzCell+inAcColsOffset]<>icContentsToTrapEvAfter
+		Do method saveModification (kTrue)
+	End If
+	
+	
+On evCellChanging
+	;  OK message evCellChanging {H: [pHorzCell]    V: [pVertCell]   Contents: [pCellData]}
+	If ilStrings.[pVertCell].OMS_SEQ>0
+		If pCellData<>icContentsOrig
+			Do method saveModification (kFalse)
+		End If
+	Else
+		;  blank line
+		If len(pCellData)
+			Do irCurrentRecord.$clear()
+			Do ilGroups.$search($ref.$selected,1,0,0,0)
+			Calculate irCurrentRecord.OMS_OMG_REF as ilGroups.OMG_SEQ
+			Calculate irCurrentRecord.C[pHorzCell+inAcColsOffset] as pCellData
+			Do irCurrentRecord.$insert() Returns lbOK
+			If lbOK
+				;  great
+				Do ilStrings.[pVertCell].$assignrow(irCurrentRecord)
+			Else
+				Do ilStrings.[pVertCell].C[pHorzCell+inAcColsOffset] Returns icContentsOrig
+				OK message SQL Error {[irCurrentRecord.irErrorSQL.NativeErrorText]}
+			End If
+		End If
+	End If
+	
+On evCellChanged
+	;  OK message evCellChanged {H: [pHorzCell]    V: [pVertCell]   Contents: [pCellData]}
+	Calculate inHorzCell as pHorzCell
+	Calculate inVertCell as pVertCell
+	Calculate icContentsToTrapEvAfter as icContentsOrig
+	Calculate icContentsOrig as pCellData
+	
+	If icStringSearch<>''     ;; &totc(ilGroupClasses,#LSEL)=0&totc(ilGroups,#LSEL)=0
+		Do method reverseClassify (pVertCell)
+	End If
+	If ibDragDropOn
+		Do ilGatherMultipleStringEntriesForDragDrop.$search($ref.OMS_SEQ=ilStrings.[pVertCell].OMS_SEQ,1,0,0,0) Returns lbFound
+		If not(lbFound)
+			Do ilGatherMultipleStringEntriesForDragDrop.$add(ilStrings.[pVertCell].OMS_SEQ,ilStrings.[pVertCell].STRINGID)
+		End If
+	End If
+	
+	Do $cinst.$behaviour()
+	Do $cinst.$redraw()

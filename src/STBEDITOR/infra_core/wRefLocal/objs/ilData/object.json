@@ -1,0 +1,129 @@
+{
+	"ident": 1021,
+	"order": 1,
+	"objtype": "kComplexGrid",
+	"properties": {
+		"active": true,
+		"backcolor": "kWhite",
+		"backpattern": 0,
+		"bordercolor": "kDarkGray",
+		"calculation": "",
+		"canclickvertheader": false,
+		"candropcursor": 0,
+		"canresizecolumns": true,
+		"canresizeheader": true,
+		"canresizerows": "kResizeHeaderAndRows",
+		"contextmenu": "",
+		"cursor": 0,
+		"dataname": "ilData",
+		"desgroup": 0,
+		"designactive": true,
+		"deslock": false,
+		"disablesystemfocus": false,
+		"dragborder": false,
+		"dragiconid": 0,
+		"dragmode": "kNoDragging",
+		"dragrange": "kRangeAll",
+		"dropmode": "kAcceptAll",
+		"edgefloat": "kEFbottom",
+		"effect": "kBorderCtrlList",
+		"enabled": true,
+		"enterable": true,
+		"extendable": true,
+		"fieldstyle": "CtrlEditText",
+		"forecolor": "kWhite",
+		"headerborder": "kBorderCtrlListCell",
+		"headerfillcolor": "RGB(238,238,238)",
+		"headerheight": 29155228,
+		"headerlinestyle": 1,
+		"height": 380,
+		"helpfile": 0,
+		"horzheaderborder": "kBorderCtrlListCell",
+		"horzheaderfillcolor": "RGB(238,238,238)",
+		"horzheaderheight": 20,
+		"horzheaderlinestyle": 1,
+		"horzscroll": true,
+		"keyevents": false,
+		"left": 8,
+		"mouseevents": false,
+		"multipleselect": false,
+		"nodropcursor": 0,
+		"objlink": 0,
+		"rmouseevents": false,
+		"rowborder": "kBorderCtrlListCell",
+		"rowdividerlinestyle": 1,
+		"rowheight": 20,
+		"showheader": false,
+		"showhorzheader": true,
+		"showvertheader": true,
+		"statusevents": false,
+		"tooltip": "",
+		"top": 115,
+		"userinfo": "",
+		"vertheaderborder": "kBorderCtrlListCell",
+		"vertheaderfillcolor": "RGB(238,238,238)",
+		"vertheaderlinecolor": "RGB(0,0,0)",
+		"vertheaderlinestyle": 1,
+		"vertheaderwidth": 195,
+		"vertscroll": true,
+		"visible": true,
+		"width": 985
+	},
+	"dividers": [
+		{
+			"forecolor": "RGB(0,0,0)",
+			"linestyle": 1,
+			"posn": 127
+		},
+		{
+			"forecolor": "RGB(0,0,0)",
+			"linestyle": 1,
+			"posn": 157
+		},
+		{
+			"forecolor": "RGB(0,0,0)",
+			"linestyle": 1,
+			"posn": 191
+		},
+		{
+			"forecolor": "RGB(0,0,0)",
+			"linestyle": 1,
+			"posn": 321
+		},
+		{
+			"forecolor": "RGB(0,0,0)",
+			"linestyle": 1,
+			"posn": 375
+		},
+		{
+			"forecolor": "RGB(0,0,0)",
+			"linestyle": 1,
+			"posn": 441
+		},
+		{
+			"forecolor": "RGB(0,0,0)",
+			"linestyle": 1,
+			"posn": 491
+		},
+		{
+			"forecolor": "RGB(0,0,0)",
+			"linestyle": 1,
+			"posn": 613
+		},
+		{
+			"forecolor": "RGB(0,0,0)",
+			"linestyle": 1,
+			"posn": 690
+		},
+		{
+			"forecolor": "RGB(0,0,0)",
+			"linestyle": 1,
+			"posn": 805
+		},
+		{
+			"forecolor": "RGB(0,0,0)",
+			"linestyle": 1,
+			"posn": 880
+		}
+	]
+}

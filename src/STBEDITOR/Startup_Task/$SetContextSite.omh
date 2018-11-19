@@ -1,0 +1,3 @@
+;  pList will be a list of sites for this user who has identified one of them as the curret site
+Calculate tContext.Sites as pList
+Calculate tContext.Site as pList     ;; current line only here

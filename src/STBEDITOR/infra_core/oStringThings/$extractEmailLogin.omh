@@ -1,0 +1,8 @@
+Do prData.$cols.$findname('loginName') Returns liColRef
+If liColRef
+	Calculate lcValue as prData.loginName
+Else
+	Calculate lcValue as pcDefault
+End If
+
+Quit method lcValue

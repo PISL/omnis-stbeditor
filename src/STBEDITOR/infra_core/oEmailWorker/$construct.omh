@@ -1,0 +1,80 @@
+;  Enter your initialization code here
+Do $objects.oSMTPWorker.$newref() Returns iSmtp
+Do iSmtp.$setCallingInst($cinst)
+
+Do $extobjects.OWEB.$objects.EMAILMessage.$newref() Returns iMessage
+
+Do iSecureConnectionList.$define(iSecureConnectionName,iSecureConnectionValue)
+Do iSecureConnectionList.$add("kOWEBsmtpSecureNotSecure",kOWEBsmtpSecureNotSecure)
+Do iSecureConnectionList.$add("kOWEBsmtpSecureSSL",kOWEBsmtpSecureSSL)
+Do iSecureConnectionList.$add("kOWEBsmtpSecureSTARTTLS",kOWEBsmtpSecureSTARTTLS)
+Calculate iSecureConnectionList.$line as 3     ;; for practical use, TL put 2 here
+
+Do iAuthTypeList.$define(iAuthTypeName,iAuthTypeValue)
+Do iAuthTypeList.$add("kOWEBsmtpAuthTypeCRAMMD5",kOWEBsmtpAuthTypeCRAMMD5)
+Do iAuthTypeList.$add("kOWEBsmtpAuthTypeDIGESTMD5",kOWEBsmtpAuthTypeDIGESTMD5)
+Do iAuthTypeList.$add("kOWEBsmtpAuthTypeLOGIN",kOWEBsmtpAuthTypeLOGIN)
+Do iAuthTypeList.$add("kOWEBsmtpAuthTypeNTLM",kOWEBsmtpAuthTypeNTLM)
+Do iAuthTypeList.$add("kOWEBsmtpAuthTypeOAUTH2",kOWEBsmtpAuthTypeOAUTH2)
+Do iAuthTypeList.$add("kOWEBsmtpAuthTypePLAIN",kOWEBsmtpAuthTypePLAIN)
+Do iAuthTypeList.$add("kOWEBsmtpAuthTypeNone",kOWEBsmtpAuthTypeNone)
+Do iAuthTypeList.3.$selected.$assign(kTrue)
+
+Do iPropsList.$define(iPropName,iPropValue)
+
+Do iPriorityList.$define(iPriorityName,iPriorityValue)
+Do iPriorityList.$add("kOWEBmsgPriorityLowest",kOWEBmsgPriorityLowest)
+Do iPriorityList.$add("kOWEBmsgPriorityLow",kOWEBmsgPriorityLow)
+Do iPriorityList.$add("kOWEBmsgPriorityNormal",kOWEBmsgPriorityNormal)
+Do iPriorityList.$add("kOWEBmsgPriorityHigh",kOWEBmsgPriorityHigh)
+Do iPriorityList.$add("kOWEBmsgPriorityHighest",kOWEBmsgPriorityHighest)
+Calculate iPriorityList.$line as 3
+
+Do iExtraHeaderList.$define(iExtraHeaderName,iExtraHeaderValue)
+
+Do iServerList.$define(iServer)
+Do iServerList.$add("smtp.gmail.com")
+Do iServerList.$add("smtp.gmail.com:465")
+Do iServerList.$add("smtp.gmail.com:587")
+Do iServerList.$add("smtp.live.com:587")
+Do iServerList.$line.$assign(2)
+
+Do ilAttachments.$define(inBodyPartId,filepath,filename,attachAs,mimetype,charset,encoding,disposition)
+
+Do irCredentials.$cols.$add('configCode',kCharacter,kSimplechar,15)
+Do irCredentials.$cols.$add('server',kCharacter,kSimplechar,100)
+Do irCredentials.$cols.$add('account',kCharacter,kSimplechar,100)
+Do irCredentials.$cols.$add('pw',kCharacter,kSimplechar,100)
+Do irCredentials.$cols.$add('secure',kInteger,kShortint)     ;; kCharacter,kSimplechar,100
+Do irCredentials.$cols.$add('authenticationTypes',kInteger,k32bitint)
+Do irCredentials.$cols.$add('OAUTH2',kCharacter,kSimplechar,1000000)
+Do irCredentials.$cols.$add('domain',kCharacter,kSimplechar,100000)
+Do irCredentials.$cols.$add('realm',kCharacter,kSimplechar,100000)
+Do irCredentials.$cols.$add('debugLog',kBoolean)
+Do irCredentials.$cols.$add('timeout',kInteger,k32bitint)
+Do irCredentials.$cols.$add('verifyCertificate',kBoolean)
+
+Do irMessageAttributes.$cols.$add('from',kCharacter,kSimplechar,100)
+Do irMessageAttributes.$cols.$add('subject',kCharacter,kSimplechar,255)
+Do irMessageAttributes.$cols.$add('to',kCharacter,kSimplechar,1000)
+Do irMessageAttributes.$cols.$add('cc',kCharacter,kSimplechar,1000)
+Do irMessageAttributes.$cols.$add('bcc',kCharacter,kSimplechar,1000)
+Do irMessageAttributes.$cols.$add('priority',kInteger,kShortint)     ;; 1-5
+
+Do irMessageBody.$cols.$add('text',kCharacter,kSimplechar,100000)
+Do irMessageBody.$cols.$add('html',kCharacter,kSimplechar,100000)
+Do irMessageBody.$cols.$add('attachments',kList)
+Calculate irMessageBody.attachments as ilAttachments
+
+If clServerCache.$colcount>0
+	;  cache has been defined
+Else
+	Do clServerCache.$cols.$add('configCode',kCharacter,kSimplechar,15)
+	Do clServerCache.$cols.$add('attributes',kRow)
+	Do clServerCache.$cols.$add('GO_SEQ',kInteger,k32bitint)
+	Do $ctask.toValues.$initInherited('EM_SRVR_FROM','DEFAULT') Returns lrReference
+	Do OJSON.$jsontolistorrow(lrReference.RFO_CHAR,lcError) Returns lrAttributes
+	If lrAttributes.$colcount>0
+		Do clServerCache.$add('DEFAULT',lrAttributes,trGroupOrg.GO_SEQ)
+	End If
+End If

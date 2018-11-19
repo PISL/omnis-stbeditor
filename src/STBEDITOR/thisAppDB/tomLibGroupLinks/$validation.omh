@@ -1,0 +1,23 @@
+Calculate icValidationMessage as ''
+Do ilValidation.$clear()
+
+If $cinst.OLG_OML_REF<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'OLG_OML_REF missing')
+	Do ilValidation.$add('OLG_OML_REF_LBL','VAL_MISSING','OLG_OML_REF missing',0)
+End If
+
+If $cinst.OLG_OMG_REF<>''
+	;  good
+Else
+	Calculate lcMessage as con(lcMessage,pick(lcMessage<>'','',', '),'OLG_OMG_REF missing')
+	Do ilValidation.$add('OLG_OMG_REF_LBL','VAL_MISSING','OLG_OMG_REF missing',0)
+End If
+
+If lcMessage<>''
+	Calculate icValidationMessage as lcMessage
+	Quit method kFalse
+End If
+
+Quit method kTrue

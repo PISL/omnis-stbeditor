@@ -1,0 +1,33 @@
+If pAltDb.$colcount>0
+	;  a specific database is being offered
+	Calculate irAltDb as pAltDb
+	Set reference irefCallingObj to prefCallingObj
+Else
+	;  there could be multiple databases on offer
+	Calculate ilDatabases as tlDatabases
+	;  even though an instance copy is made, the $line of ilDatabases will be copied to tlDatabases
+End If
+Calculate inPoolSize as pnPoolSize
+
+Calculate $cinst.$bobjs.1035.$visible as ilDatabases.$linecount>1
+Calculate $cinst.$objs.ilDatabases.$visible as ilDatabases.$linecount>1
+;  make a little more aethetic room if choice of database is displayed
+Calculate $cinst.$objs.gbCredentials.$top as $cinst.$objs.gbCredentials.$top+(pick(ilDatabases.$linecount>1,0,10))
+
+If ilDatabases.$linecount=1&ilDatabases.DAM='WebService'
+	Do method initWebService
+End If
+
+;  in case there are multiple login windows, tile them so user can see multiple logins
+Do $iwindows.$makelist($ref.$name,$ref.$top,$ref.$left) Returns llWindows
+Do llWindows.$search(mid($ref.C1,1,9)='wSecLogin',1,0,1,0)
+Do llWindows.$remove(kListKeepSelected)
+If llWindows.$linecount>0
+	Do llWindows.$sort($ref.C2,0)
+	Calculate $cinst.$top as llWindows.[llWindows.$linecount].C2+30
+	Calculate $cinst.$left as llWindows.[llWindows.$linecount].C3+30
+End If
+
+Calculate icHeading as pcApplicationName
+
+Calculate $cinst.$enterable as kTrue

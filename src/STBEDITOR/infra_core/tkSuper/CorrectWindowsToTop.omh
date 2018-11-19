@@ -1,0 +1,26 @@
+;  bring windows to top in reverse order as the last windwo to top will be the top window
+;  Test for window open {wWebPageEvents}
+;  If flag true
+;  Bring window instance to front wWebPageEvents
+;  End If
+
+Do $iwindows.$makelist($ref.$name,$ref) Returns llMessages
+Do llMessages.$search(pos('wMessage_e',$ref.C1)=0,1,0,1,0)
+Do llMessages.$remove(kListDeleteSelected)
+Calculate llMessages.$line as 0
+While $Loop(llMessages)
+	Bring window instance to front [llMessages.C1]
+End While
+;  Test for window open {wMessage_e}
+;  If flag true
+;  Bring window instance to front wMessage_e
+;  End If
+
+;  if the event memo window is open make the top most as person
+;  starting up app is expected to give an explanation for restart     ;; after which window closes
+Test for window open {wEventMemo}
+If flag true
+	Bring window instance to front wEventMemo
+End If
+
+;

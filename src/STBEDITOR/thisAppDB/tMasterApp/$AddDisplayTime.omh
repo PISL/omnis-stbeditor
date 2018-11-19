@@ -1,0 +1,1 @@
+Do $cinst.$cols.$add('DisplayTime',kCharacter,kSimplechar,100)

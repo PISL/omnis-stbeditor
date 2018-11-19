@@ -1,0 +1,28 @@
+;  Depending on the presence of fields, pass only as many parameters as are necessary
+ReadBinFile (plAttachments.filepath,lBinary)
+Do utf8tochar(lBinary) Returns lChar     ;; For testing, convert from UTF-8
+If len(iFilename)>0
+	;  Do iMessage.$createbodypartfromchar(lChar,iMIMEtypeList.type,iCharsetList.iCharsetId,iEncodingList.iEncoding,iDispositionList.iDisposition,iFilename) Returns pBodyPartID
+	Do iMessage.$createbodypartfromchar(lChar,plAttachments.mimetype,plAttachments.charset,plAttachments.encoding,plAttachments.disposition,plAttachments.filename) Returns pBodyPartID
+Else If iDispositionList.$line
+	;  Do iMessage.$createbodypartfromchar(lChar,iMIMEtypeList.type,iCharsetList.iCharsetId,iEncodingList.iEncoding,iDispositionList.iDisposition) Returns pBodyPartID
+	Do iMessage.$createbodypartfromchar(lChar,plAttachments.mimetype,plAttachments.charset,plAttachments.encoding,plAttachments.disposition) Returns pBodyPartID
+Else If iEncodingList.$line
+	;  Do iMessage.$createbodypartfromchar(lChar,iMIMEtypeList.type,iCharsetList.iCharsetId,iEncodingList.iEncoding) Returns pBodyPartID
+	Do iMessage.$createbodypartfromchar(lChar,plAttachments.mimetype,plAttachments.charset,plAttachments.encoding) Returns pBodyPartID
+Else If iCharsetList.iCharsetId
+	;  Do iMessage.$createbodypartfromchar(lChar,iMIMEtypeList.type,iCharsetList.iCharsetId) Returns pBodyPartID
+	Do iMessage.$createbodypartfromchar(lChar,plAttachments.mimetype,plAttachments.charset) Returns pBodyPartID
+Else If len(iMIMEtypeList.type)>0
+	;  Do iMessage.$createbodypartfromchar(lChar,iMIMEtypeList.type) Returns pBodyPartID
+	Do iMessage.$createbodypartfromchar(lChar,plAttachments.mimetype) Returns pBodyPartID
+Else
+	;  Do iMessage.$createbodypartfromchar(lChar) Returns pBodyPartID
+	Do iMessage.$createbodypartfromchar(lChar) Returns pBodyPartID
+End If
+If pBodyPartID=0
+	;  OK message  {Error [pMessage.$errorcode] creating character body part for path [iPath]}
+	Calculate icErrorMessage as con('Error ',iMessage.$errorcode,' creating character body part for path ',plAttachments.filepath)
+	Quit method kFalse
+End If
+Quit method kTrue

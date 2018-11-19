@@ -1,0 +1,11 @@
+On evAfter     ;; Event Parameters - pClickedField, pClickedWindow, pMenuLine, pCommandNumber, pRow
+	Do ilREFERENCE.$search($ref.REF_VALUE=ilData.RFU_VALUE,1,0,0,0) Returns lbFound
+	If lbFound
+		OK message  {The internal code [ilData.RFU__VALUE] cannot be used.  It is used already by the application master list.}
+		Quit event handler (Discard event)
+	End If
+	
+	If pos(' ',ilData.RFU__VALUE)>0
+		OK message  {Spaces are not allowed.}
+		Quit event handler (Discard event)
+	End If

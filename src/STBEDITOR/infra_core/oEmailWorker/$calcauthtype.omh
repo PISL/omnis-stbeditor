@@ -1,0 +1,6 @@
+Set reference lLine to pAuthTypeList.$first(kTrue)
+While not(isnull(lLine))
+	Calculate lAuthTypeValue as lAuthTypeValue+lLine.iAuthTypeValue
+	Set reference lLine to pAuthTypeList.$next(lLine,kTrue)
+End While
+Quit method lAuthTypeValue

@@ -1,0 +1,6 @@
+;
+Do llSectionList.$define(lcSectionName)
+Calculate llCalcList as ilIniList
+Do llCalcList.$cols.SectionName.$removeduplicates(1)
+Do llSectionList.$merge(llCalcList,1)
+Quit method llSectionList

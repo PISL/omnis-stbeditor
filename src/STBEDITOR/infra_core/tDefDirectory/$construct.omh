@@ -1,0 +1,4 @@
+Calculate icPrefix as 'DD_'
+Calculate icPrimarykey as 'DD_METHOD'
+Calculate ibHasSequence as kFalse
+Do inherited

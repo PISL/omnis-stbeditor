@@ -1,0 +1,10 @@
+Calculate lcSearch as 'TYPE="SUBMIT" VALUE="'
+Calculate lnSearchLen as len(lcSearch)
+
+While pos(lcSearch,upp(pStringIn))>0
+	Calculate pStringIn as mid(pStringIn,pos(lcSearch,upp(pStringIn))+lnSearchLen,kFetchAll)
+	Calculate lcContent as con(lcContent,pick(lcContent<>'','',kCr),mid(pStringIn,1,pos('"',pStringIn)-1))
+	Calculate pStringIn as mid(pStringIn,pos('"',pStringIn)+1,kFetchAll)
+End While
+
+Quit method lcContent

@@ -1,0 +1,51 @@
+If tlDatabases.DAM='WebService'
+	;  pass parameters to web service
+	;  $callService (pFieldReference, row(TableClassName, CurrentMethodName, p1,...,pn) )     ;; result will be returned in pFieldReference, row() contains the parameters for the call
+	Calculate ldtStart as #D
+	Do ioWeb.$callFetch(llData,irErrorSQL,row($cinst.$class().$name,$cmethod().$name,row(pcDistinctColumn,pbWithCount),llData.$type,1,ilRESTextensions))
+	Calculate inServiceMS as ddiff(kCentiSecond,ldtStart,#D)*10
+	Calculate inRESTserverMS as ioWeb.inServerTime
+	If ioWeb.irResponse.httpStatusCode=200
+		;  the result should be in this object     ;; however there may be a SQL error
+		If irErrorSQL.NativeErrorText<>''
+			Quit method kFalse
+		End If
+		Quit method llData
+	Else
+		Quit method kFalse
+	End If
+End If
+
+Do llData.$cols.$add('column',kCharacter,kSimplechar,100)     ;; [pcDistinctColumn] does not work in this situation
+If pbWithCount
+	Do llData.$cols.$add('count',kInteger,k32bitint)
+End If
+
+Do $cinst.$ImmediateSession(loSession,loStatement) Returns lbImmediateSession
+If lbImmediateSession
+	Do $cinst.$SetSession(loSession,loStatement)
+Else If not(ibGoodConnectionToDb)
+	Quit method kFalse
+End If
+
+Calculate icStatementType as 'SELECT'
+
+Begin statement
+If pbWithCount
+	Sta: {select [pcDistinctColumn], count(*)}
+Else
+	Sta: {select distinct [pcDistinctColumn]}
+End If
+Sta: {from [$cinst.$servertablenames]}
+If pbWithCount
+	Sta: {group by [pcDistinctColumn]}
+End If
+End statement
+Do $cinst.$executesqlandfetch(llData) Returns lbOK
+
+Do $cinst.$executesqlandfetch() Returns lbOK
+If lbImmediateSession
+	Do $cinst.$SetSession(#NULL,#NULL,kTrue)
+End If
+
+Quit method llData

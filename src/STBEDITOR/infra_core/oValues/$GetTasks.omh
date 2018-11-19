@@ -1,0 +1,20 @@
+Do method $initInherited ('TASKS_SYS') Returns llTasks
+
+Calculate plProjects.$line as 0
+;  While $Loop(plProjects)     ;; Studio 8.0.1 bug - losing scope with task
+For plProjects.$line from 1 to plProjects.$linecount step 1
+	Do method $initInherited (con('TASKS_',plProjects.RFO_VALUE),'') Returns llOtherTasks
+	Do llTasks.$merge(llOtherTasks)
+	;  End While
+End For
+
+Do llTasks.$cols.$add('PersonMonths',kNumber,k2dp)
+Calculate llTasks.$line as 0
+;  While $Loop(llTasks)     ;; Studio 8.0.1 bug - losing scope with task
+For llTasks.$line from 1 to llTasks.$linecount step 1
+	Do toStrings.$TagContent(llTasks.RFO_CHAR,'pm') Returns llTasks.PersonMonths
+	;  End While
+End For
+
+Calculate llTasks.$smartlist as kTrue
+Quit method llTasks

@@ -1,0 +1,4 @@
+On evClick     ;; Event Parameters - pRow( Itemreference )
+	Open window instance wSetGetBinary ($cinst,ilData,'$callbackSetBinary')
+	Do $cinst.$behaviour()
+	Do $cinst.$redraw()

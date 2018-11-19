@@ -1,0 +1,23 @@
+If $cinst.$sessionobject.$state=kSessionStateLoggedOn
+	;  ready
+	Calculate ibGoodConnectionToDb as kTrue
+	Quit method kFalse
+	
+Else If $ctask.tFormSession.$state=kSessionStateLoggedOn
+	;  this will remain persistently connected
+	Calculate $cinst.$sessionobject as tFormSession
+	Calculate $cinst.$statementobject as tFormStatement
+	
+	Calculate ibGoodConnectionToDb as kTrue
+	Quit method kFalse
+	
+Else
+	If icWhichDatabase<>''
+		Do $DynamicSession(pSession,pStatement,icWhichDatabase) Returns lbOK
+	Else
+		Do $DynamicSession(pSession,pStatement) Returns lbOK
+	End If
+	Calculate ibGoodConnectionToDb as lbOK
+	Quit method lbOK
+End If
+Quit method kFalse

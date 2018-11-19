@@ -1,0 +1,277 @@
+;  Do iSmtp.$init(iMessage,iServer,iSecureConnectionList.iSecureConnectionValue,lAuthTypeValue,iUser,iPassword,iOAUTH2,iRealm,iNTLMDomain,iPropsList) Returns lOk
+Calculate icErrorMessage as ''
+
+;  Calculate irCredentials.secure as pcSecure
+Do iPropsList.$clear()
+Do iPropsList.$merge(plJavaProperties)
+
+If pcConfigCode=''
+	Calculate icErrorMessage as 'configCode not provided'
+	Quit method kFalse
+End If
+
+Do clServerCache.$search($ref.configCode=pcConfigCode&$ref.GO_SEQ=trGroupOrg.GO_SEQ,1,0,0,0) Returns lbFound
+If not(lbFound)
+	;  see if its in cache without a GO_REF
+	Do clServerCache.$search($ref.configCode=pcConfigCode,1,0,0,0) Returns lbFound
+End If
+If lbFound
+	Calculate lrAttributes as clServerCache.attributes
+Else
+	Do $ctask.toValues.$initInherited('EM_SRVR_FROM',pcConfigCode) Returns lrReference
+	If lrReference.RFO_JSON<>''
+		Do OJSON.$jsontolistorrow(lrReference.RFO_JSON,lcError) Returns lrAttributes
+	Else If lrReference.RFO_CHAR<>''
+		Do OJSON.$jsontolistorrow(lrReference.RFO_CHAR,lcError) Returns lrAttributes
+	End If
+	If lrAttributes.$colcount>0
+		Do clServerCache.$add(pcConfigCode,lrAttributes,lrReference.RFO_GO_REF)
+	End If
+End If
+
+If lrAttributes.$colcount>0
+	;  we have a defined structure     ;; continue
+Else
+	Calculate icErrorMessage as con('Error invalid JSON when referencing server code ',pcConfigCode,': ',kDq,lrReference.RFO_CHAR,kDq,kCr,lcError)
+	Quit method kFalse
+End If
+
+;  the email server
+Calculate irCredentials.server as toStrings.$extractEmailServer(lrAttributes)
+;  Do lrAttributes.$cols.$findname('server') Returns liColRef
+;  If liColRef
+;  Calculate irCredentials.server as lrAttributes.server
+;  End If
+
+Calculate lcSenderName as $ctask.toStrings.$extractEmailFromName(lrAttributes)
+;  Do lrAttributes.$cols.$findname('senderName') Returns liColRef
+;  If liColRef
+;  Calculate lcSenderName as lrAttributes.senderName
+;  Else
+;  Do lrAttributes.$cols.$findname('name') Returns liColRef
+;  If liColRef
+;  Calculate lcSenderName as lrAttributes.name
+;  End If
+;  End If
+
+Calculate lcSenderAddress as $ctask.toStrings.$extractEmailFromAddress(lrAttributes)
+;  Do lrAttributes.$cols.$findname('senderAddress') Returns liColRef
+;  If liColRef
+;  Calculate lcTemp as lrAttributes.senderAddress
+;  Else
+;  backward compatability
+;  Do lrAttributes.$cols.$findname('address') Returns liColRef
+;  If liColRef
+;  Calculate lcTemp as lrAttributes.address
+;  End If
+;  End If
+Calculate lcTemp as ''
+If lcSenderAddress<>''
+	If lcSenderName<>''
+		;  combine the from into a sender name and address
+		Calculate lcTemp as con(lcSenderName,'<',lcSenderAddress,'>')
+	End If
+	Do method $messageassign ("$from",lcTemp) Returns lbError     ;; iMessage
+	If lbError
+		Quit method kFalse
+	End If
+End If
+
+;  Calculate ccSMTP_AuthenticationMethod as $ctask.toStrings.$extractEmailAuthentication(lrAttributes)
+;  Calculate ccSMTP_ID as $ctask.toStrings.$extractEmailLogin(lrAttributes,ccOutFrom)
+;  Calculate ccSMTP_PASSWORD as $ctask.toStrings.$extractEmailPassword(lrAttributes)
+;  Calculate cnSecure as $ctask.toStrings.$extractEmailSecurity(lrAttributes)
+;  Calculate ibVerifyCertificate as $ctask.toStrings.$extractEmailCertificate(lrAttributes)
+;  Calculate ccStaticTo as $ctask.toStrings.$extractEmailTo(lrAttributes)
+;  Calculate ccStaticCC as $ctask.toStrings.$extractEmailCC(lrAttributes)
+;  Calculate ccStaticBCC as $ctask.toStrings.$extractEmailBCC(lrAttributes)
+
+;  sender name and address
+
+
+;  secure sockets choice     ;; SSL
+Calculate irCredentials.secure as $ctask.toStrings.$extractEmailSecurity(lrAttributes)
+;  Calculate lcVarName as ''
+;  Do lrAttributes.$cols.$findname('smtpSecure') Returns liColRef
+;  If liColRef
+;  If isnumber(lrAttributes.smtpSecure)
+;  Calculate irCredentials.secure as lrAttributes.smtpSecure
+;  Else
+;  Calculate lcVarName as con('kOWEBsmtpSecure',lrAttributes.smtpSecure)     ;; e.g. kOWEBsmtpSecureNotSecure
+;  End If
+;
+;  Else
+;  Do lrAttributes.$cols.$findname('secureValue') Returns liColRef
+;  If liColRef
+;  If isnumber(lrAttributes.secureValue)
+;  Calculate irCredentials.secure as lrAttributes.secureValue
+;  Else
+;  Calculate lcVarName as con('kOWEBsmtpSecure',lrAttributes.secureValue)
+;  End If
+;  Else
+;  Calculate lcVarName as nam(kOWEBsmtpSecureNotSecure)
+;  End If
+;  End If
+;  If lcVarName<>''
+;  Test for valid calculation {eval(lcVarName)}
+;  If flag true
+;  Calculate irCredentials.secure as eval(lcVarName)
+;  Else
+;  Calculate icErrorMessage as con('Error invalid secureValue ',lrAttributes.secureValue,': ',kDq,lcVarName,kDq)
+;  Quit method kFalse
+;  End If
+;  End If
+
+Calculate irCredentials.verifyCertificate as $ctask.toStrings.$extractEmailCertificate(lrAttributes)
+;  Do lrAttributes.$cols.$findname('verifyCertificate') Returns liColRef
+;  If liColRef
+;  Breakpoint
+;  Calculate irCredentials.verifyCertificate as lrAttributes.verifyCertificate
+;  End If
+
+;  authentication method
+Calculate llTemp as iAuthTypeList
+Do llTemp.$search(0)
+
+Calculate lcTemp as ''
+Do lrAttributes.$cols.$findname('authType') Returns liColRef     ;; authentication
+If liColRef
+	;  this could be a space, comma or semicolon separated list of authenitcation type suffixes.
+	;  e.g. kOWEBsmtpAuthTypeCRAMMD5 as CRAMMD5     ;; or kOWEBsmtpAuthTypeDIGESTMD5 as DIGESTMD5
+	;  expected values are: CRAMMD5, DIGESTMD5, LOGIN, None, NTLM, OAUTH2, PLAIN
+	Calculate lcTemp as lrAttributes.authType
+Else
+	Do lrAttributes.$cols.$findname('authentication') Returns liColRef     ;; backward compatability
+	If liColRef
+		Calculate lcTemp as lrAttributes.authentication
+	Else
+		;  default authentication
+		;  Do llTemp.$search($ref.iAuthTypeName=nam(kOWEBsmtpAuthTypePLAIN),1,0,1,0) Returns lbFound
+		Do llTemp.$search($ref.iAuthTypeName=nam(kOWEBsmtpAuthTypeNone),1,0,1,0) Returns lbFound
+		Do method $calcauthtype (llTemp) Returns irCredentials.authenticationTypes
+	End If
+End If
+If lcTemp<>''
+	;  convert the authentication type to all possible values
+	If pos(kSp,lcTemp)
+		Calculate lcDelimiter as kSp
+	Else If pos(',',lcTemp)
+		Calculate lcDelimiter as ','
+	Else If pos(';',lcTemp)
+		Calculate lcDelimiter as ';'
+	Else
+		Calculate lcDelimiter as kSp
+	End If
+	While lcTemp<>''
+		Calculate lcToken as strtok(nam(lcTemp),lcDelimiter)
+		Calculate lcToken as trim(lcToken)
+		If lcToken<>''
+			;  Calculate kOWEBsmtpAuthTypeCRAMMD5 as
+			;  Calculate kOWEBsmtpAuthTypeDIGESTMD5 as
+			;  Calculate kOWEBsmtpAuthTypeLOGIN as
+			;  Calculate kOWEBsmtpAuthTypeNone as
+			;  Calculate kOWEBsmtpAuthTypeNTLM as
+			;  Calculate kOWEBsmtpAuthTypeOAUTH2 as
+			;  Calculate kOWEBsmtpAuthTypePLAIN as
+			
+			Calculate lcVarName as con('kOWEBsmtpAuthType',lcToken)     ;; e.g. kOWEBsmtpAuthTypeCRAMMD5
+			Do llTemp.$search($ref.iAuthTypeName=lcVarName,1,0,1,0) Returns lbFound
+			If not(lbFound)
+				Calculate icErrorMessage as con('Error invalid authType ',lrAttributes.authType,': ',kDq,lcVarName,kDq)
+				Quit method kFalse
+			End If
+		End If
+	End While
+	Do method $calcauthtype (llTemp) Returns irCredentials.authenticationTypes
+End If
+
+;  debug log
+Do lrAttributes.$cols.$findname('debuglog') Returns liColRef
+If liColRef
+	Do method $setDebugLog (lrAttributes.debuglog)
+Else
+	Do lrAttributes.$cols.$findname('debugLog') Returns liColRef
+	If liColRef
+		Do method $setDebugLog (lrAttributes.debugLog)
+	End If
+End If
+;  timeout
+Do lrAttributes.$cols.$findname('timeout') Returns liColRef
+If liColRef
+	Do method $setTimeout (lrAttributes.timeout)
+End If
+
+Do lrAttributes.$cols.$findname('oauth2') Returns liColRef
+If liColRef
+	Calculate irCredentials.OAUTH2 as lrAttributes.oauth2
+End If
+Do lrAttributes.$cols.$findname('realm') Returns liColRef
+If liColRef
+	Calculate irCredentials.realm as lrAttributes.realm
+End If
+Do lrAttributes.$cols.$findname('domain') Returns liColRef
+If liColRef
+	Calculate irCredentials.domain as lrAttributes.domain
+End If
+
+;  SMTP server credentials
+Do lrAttributes.$cols.$findname('loginName') Returns liColRef
+If liColRef
+	Calculate irCredentials.account as lrAttributes.loginName
+Else
+	Do lrAttributes.$cols.$findname('account') Returns liColRef
+	If liColRef
+		Calculate irCredentials.account as lrAttributes.account
+	End If
+End If
+Do lrAttributes.$cols.$findname('loginPassword') Returns liColRef
+If liColRef
+	Calculate irCredentials.pw as lrAttributes.loginPassword
+Else
+	Do lrAttributes.$cols.$findname('pw') Returns liColRef
+	If liColRef
+		Calculate irCredentials.pw as lrAttributes.pw
+	End If
+End If
+
+;  hard coded addressees?
+Do lrAttributes.$cols.$findname('emailTO') Returns liColRef
+If liColRef
+	If lrAttributes.emailTO<>''
+		;  If an email is triggered by $AppError then there is no "to" provided when the sendEmail is raised because it is a configured addressee.
+		;  Whereas if sendEmail is triggered from almost anywhere else, the "to" address will have been provided.
+		;  The DEFAULT email configuration should have a TO address but there is no need to use this if the address has been provided explicitly.
+		If not(ibToHasBeenAssigned)
+			Do method $messageassign ("$to",toStrings.$ListToString(lrAttributes.emailTO,'C1')) Returns lbError
+		End If
+		If lbError
+			Quit method kFalse
+		End If
+	End If
+End If
+Do lrAttributes.$cols.$findname('emailCC') Returns liColRef
+If liColRef
+	If lrAttributes.emailCC.$linecount
+		Do method $messageassign ("$cc",toStrings.$ListToString(lrAttributes.emailCC,'C1')) Returns lbError
+		If lbError
+			Quit method kFalse
+		End If
+	End If
+End If
+Do lrAttributes.$cols.$findname('emailBCC') Returns liColRef
+If liColRef
+	If lrAttributes.emailBCC.$linecount
+		Do method $messageassign ("$bcc",toStrings.$ListToString(lrAttributes.emailBCC,'C1')) Returns lbError
+		If lbError
+			Quit method kFalse
+		End If
+	End If
+End If
+
+Do iSmtp.$init(iMessage,irCredentials.server,irCredentials.secure,irCredentials.authenticationTypes,irCredentials.account,irCredentials.pw,irCredentials.OAUTH2,irCredentials.realm,irCredentials.domain,iPropsList) Returns lbOK
+If not(lbOK)
+	Calculate icErrorMessage as con('$init error ',iSmtp.$errorcode,': ',kDq,iSmtp.$errortext,kDq)
+	Quit method kFalse
+End If
+
+Quit method kTrue

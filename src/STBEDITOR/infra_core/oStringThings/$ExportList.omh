@@ -1,0 +1,170 @@
+If upp(pDestination)='FILE'
+	If sys(21)<>''
+		Close print or export file
+	End If
+	If pPath<>''
+		Do FileOps.$doesfileexist(pPath) Returns lbFileExists
+		;  Do loFileOps.$d
+		If lbFileExists
+			Yes/No message  {file [pPath] already exists.  Overwrite it?}
+			If flag true
+				Do FileOps.$deletefile(pPath) Returns lnFileCode
+			Else
+				
+			End If
+		End If
+		
+		;  strange - this workd for Windoze but not OSX
+		Set print or export file name {[pPath]}
+		If flag false
+			Prompt for print or export file
+		End If
+	Else
+		Prompt for print or export file
+	End If
+	
+	If flag false
+		Quit method kFalse
+	End If
+	
+Else If upp(pDestination)='CLIPBOARD'
+	Begin text block
+	
+Else If upp(pDestination)='TEXT'
+	Begin text block
+	
+End If
+
+;  delimiter relates to FILE and CLIPBOARD export
+Switch upp(pFormat)
+	Case 'TAB'
+		Calculate lcDelimiter as kTab
+	Case 'COMMA','CSV'
+		Calculate lcDelimiter as ','
+	Case 'XML'
+		;  Calculate lcRowBegin as '<tr>'
+		;  Calculate lcCellBegin as '<td>'
+		;  Calculate lcDelimiter as ''
+		;  Calculate lcCellEnd as '</td>'
+		;  Calculate lcRowEnd as '</tr>'
+	Case 'HTML'
+		Calculate lcRowBegin as '<tr>'
+		Calculate lcCellBegin as '<td>'
+		Calculate lcDelimiter as ''
+		Calculate lcCellEnd as '</td>'
+		Calculate lcRowEnd as '</tr>'
+	Default
+		OK message  {unrecognised export format}
+		Quit method kFalse
+End Switch
+
+If upp(pDestination)='FILE'
+	Switch upp(pFormat)
+		Case 'TAB'
+			Prepare for export to file {Delimited (tabs)}
+			If flag false
+				Quit method kFalse
+			End If
+		Case 'COMMA','CSV'
+			Prepare for export to file {Delimited (commas)}
+			If flag false
+				Quit method kFalse
+			End If
+	End Switch
+End If
+
+;  send out heading line first, if required
+If pIncludeHeading
+	If upp(pDestination)='CLIPBOARD'&pPath<>''
+		;  A path to a clipboard is nonsense.
+		;  The path is a Heading line.     ;; e.g. we are exporting a series of Meter Readings and we want the Meter name to start each group of readings.
+		Calculate pPath as replaceall(pPath,',',lcDelimiter)
+		Text: {[pPath]} (Carriage return)
+	End If
+	
+	If pcOnlyTheseCols<>''
+		Calculate lcHeadings as replaceall(pcOnlyTheseCols,',',lcDelimiter)
+	Else
+		For lnColCount from 1 to pList.$colcount step 1
+			Calculate lcColName as pList.$cols.[lnColCount].$name()
+			If upp(pFormat)='HTML'
+				Calculate lcHeadings as con(lcHeadings,pick(lcHeadings<>'','',lcCellBegin),pList.[lcColName],lcCellEnd)
+			Else If upp(pFormat)='XML'
+				Breakpoint
+			Else
+				Calculate lcHeadings as con(lcHeadings,pick(lcHeadings<>'','',lcDelimiter),lcColName)
+			End If
+		End For
+	End If
+	If upp(pFormat)='HTML'
+		Calculate lcHeadings as con(lcRowBegin,lcHeadings,lcRowEnd)
+	Else If upp(pFormat)='XML'
+		
+	End If
+	
+	If upp(pDestination)='FILE'
+		Transmit text to print file (Add newline) {[lcHeadings]}
+	Else If upp(pDestination)='CLIPBOARD'
+		Text: {[lcHeadings]} (Carriage return)
+	Else If upp(pDestination)='TEXT'
+		Text: {[lcHeadings]} (Carriage return)
+	End If
+End If
+
+;  now process the data
+If upp(pDestination)='FILE'
+	Export data pList
+	Close print or export file
+	
+Else If upp(pDestination)='CLIPBOARD'|upp(pDestination)='TEXT'
+	Calculate pList.$line as 0
+	While $Loop(pList)
+		If upp(pFormat)='HTML'
+			Text: {[lcRowBegin]}
+		Else If upp(pFormat)='XML'
+		Else
+			;  nothing
+		End If
+		
+		;  column by column
+		Calculate lnColumnExportedCount as 0
+		If pcOnlyTheseCols<>''
+			Calculate lcTemp as pcOnlyTheseCols
+			While lcTemp<>''
+				Calculate lcColName as strtok(nam(lcTemp),',')
+				Calculate lcColumnContent as pList.[lcColName]
+				Calculate lnColumnExportedCount as lnColumnExportedCount+1
+				Do method TextExport (lcColumnContent,upp(pFormat),lcDelimiter,lnColumnExportedCount,lcCellBegin,lcCellEnd)
+			End While
+		Else
+			For lnColCount from 1 to pList.$colcount step 1
+				Calculate lcColName as pList.$cols.[lnColCount].$name()
+				Calculate lcColumnContent as pList.[lcColName]
+				Do method TextExport (lcColumnContent,upp(pFormat),lcDelimiter,lnColCount,lcCellBegin,lcCellEnd)
+			End For
+		End If
+		
+		If upp(pFormat)='HTML'
+			Text: {[lcRowEnd]}
+		Else If upp(pFormat)='XML'
+		Else
+			;  nothing
+		End If
+		
+		Text: (Carriage return)
+	End While
+	End text block
+	
+	Get text block lcTextBlock
+	If upp(pFormat)='HTML'
+		Calculate lcTextBlock as con('<table>',lcTextBlock,'</table>')
+	End If
+	
+	If upp(pDestination)='CLIPBOARD'
+		Copy to clipboard lcTextBlock
+	Else If upp(pDestination)='TEXT'
+		Quit method lcTextBlock
+	End If
+End If
+
+Quit method kTrue
