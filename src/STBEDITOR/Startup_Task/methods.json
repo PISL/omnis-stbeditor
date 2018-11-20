@@ -24,20 +24,6 @@
 		],
 		"lvardefs": [
 			{
-				"name": "lbOK",
-				"order": 2,
-				"type": "kBoolean",
-				"subtype": 0,
-				"sublen": 0
-			},
-			{
-				"name": "lbSessionPoolOK",
-				"order": 3,
-				"type": "kBoolean",
-				"subtype": 0,
-				"sublen": 0
-			},
-			{
 				"name": "lcHostDB",
 				"order": 1,
 				"type": "kCharacter",
@@ -45,8 +31,15 @@
 				"sublen": 255
 			},
 			{
-				"name": "lrefMenuExists",
-				"order": 18,
+				"name": "lrefCol",
+				"order": 3,
+				"type": "kItemref",
+				"subtype": "",
+				"sublen": 0
+			},
+			{
+				"name": "lrefObj",
+				"order": 2,
 				"type": "kItemref",
 				"subtype": "",
 				"sublen": 0
@@ -141,27 +134,7 @@
 
 		],
 		"lvardefs": [
-			{
-				"name": "llSites",
-				"order": 2,
-				"type": "kList",
-				"subtype": "",
-				"sublen": 0
-			},
-			{
-				"name": "lnCount",
-				"order": 3,
-				"type": "kInteger",
-				"subtype": "k32bitint",
-				"sublen": 0
-			},
-			{
-				"name": "lrOwner",
-				"order": 1,
-				"type": "kRow",
-				"subtype": "",
-				"sublen": 0
-			}
+
 		]
 	},
 	{
@@ -205,27 +178,6 @@
 				"sublen": 0
 			},
 			{
-				"name": "lcHostDB",
-				"order": 1,
-				"type": "kCharacter",
-				"subtype": "kSimplechar",
-				"sublen": 255
-			},
-			{
-				"name": "lcLoginID",
-				"order": 3,
-				"type": "kCharacter",
-				"subtype": "kSimplechar",
-				"sublen": 20
-			},
-			{
-				"name": "lcLoginPassword",
-				"order": 4,
-				"type": "kCharacter",
-				"subtype": "kSimplechar",
-				"sublen": 20
-			},
-			{
 				"name": "lcPathFrom",
 				"order": 6,
 				"type": "kCharacter",
@@ -240,21 +192,6 @@
 				"sublen": 1000
 			},
 			{
-				"name": "lcSessionName",
-				"order": 5,
-				"type": "kCharacter",
-				"subtype": "kSimplechar",
-				"sublen": 20,
-				"initval": "$clib().$name"
-			},
-			{
-				"name": "lcSTB_name",
-				"order": 8,
-				"type": "kCharacter",
-				"subtype": "kSimplechar",
-				"sublen": 100
-			},
-			{
 				"name": "llFiles",
 				"order": 12,
 				"type": "kList",
@@ -264,13 +201,6 @@
 			{
 				"name": "lnFileStatus",
 				"order": 10,
-				"type": "kInteger",
-				"subtype": "k32bitint",
-				"sublen": 0
-			},
-			{
-				"name": "lnSTB_status",
-				"order": 7,
 				"type": "kInteger",
 				"subtype": "k32bitint",
 				"sublen": 0
