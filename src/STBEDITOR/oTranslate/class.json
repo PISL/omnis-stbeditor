@@ -1,19 +1,19 @@
 {
 	"classtype": "kObjectclass",
-	"internalversion": 7,
+	"internalversion": 12,
 	"designtaskname": "Startup_Task",
 	"cvardefs": [
+
+	],
+	"ivardefs": [
 		{
-			"name": "cAPIKey",
-			"order": 1,
+			"name": "icAPIKey",
+			"order": 13,
 			"type": "kCharacter",
 			"subtype": "kSimplechar",
 			"sublen": 100000000,
-			"initval": "\"### ENTER a valid Google Translate API key here ###\"",
 			"desc": "Obtain a Google Translate API key for this value"
-		}
-	],
-	"ivardefs": [
+		},
 		{
 			"name": "icErrorText",
 			"order": 5,
@@ -49,7 +49,7 @@
 			"type": "kCharacter",
 			"subtype": "kSimplechar",
 			"sublen": 100000000,
-			"initval": "con('https://translation.googleapis.com/language/translate/v2?key=',cAPIKey,'&source=',icSourceLang,'&target=',icTargetLang)"
+			"initval": "con('https://translation.googleapis.com/language/translate/v2?key=',icAPIKey,'&source=',icSourceLang,'&target=',icTargetLang)"
 		},
 		{
 			"name": "ilEscapedChars",
@@ -112,7 +112,7 @@
 		"editordata": "",
 		"external": true,
 		"issupercomponent": false,
-		"moddate": "2018-11-19 15:48:34",
+		"moddate": "2018-11-21 15:19:11",
 		"selfcontained": false,
 		"showascheckedout": false,
 		"userinfo": "",

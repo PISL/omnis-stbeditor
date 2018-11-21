@@ -9,7 +9,7 @@
 		"align": "kCenterJst",
 		"alpha": 255,
 		"backcolor": "RGB(238,238,238)",
-		"backgroundtheme": "kBGThemeNone",
+		"backgroundtheme": "kBGThemeParent",
 		"backpattern": 0,
 		"bordercolor": "RGB(0,0,128)",
 		"buttonmode": "kBMok",

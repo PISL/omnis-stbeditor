@@ -2,7 +2,7 @@
 	{
 		"name": "$getVersion",
 		"ident": 0,
-		"order": 1,
+		"order": 2,
 		"pvardefs": [
 
 		],
@@ -13,7 +13,18 @@
 	{
 		"name": "$getDbVersion",
 		"ident": 1,
-		"order": 2,
+		"order": 4,
+		"pvardefs": [
+
+		],
+		"lvardefs": [
+
+		]
+	},
+	{
+		"name": "--- COPYRIGHT ---",
+		"ident": 2,
+		"order": 5,
 		"pvardefs": [
 
 		],

@@ -24,8 +24,9 @@ On evOK
 	Close window instance $cinst
 	
 On evCancel
-	If sys(2)=1
-		Breakpoint
+	If #SHIFT
+		Do $windows.wConfig.$openonce('*')
+		Do $cinst.$close()
 	Else
 		Do $libs.$makelist($ref.$name) Returns llLibraries
 		;  this library will be one of them     ;; if its the only open library quit Omnis

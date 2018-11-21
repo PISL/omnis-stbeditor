@@ -1,6 +1,6 @@
 {
 	"classtype": "kSchema",
-	"internalversion": 3,
+	"internalversion": 4,
 	"nextident": 32004,
 	"properties": {
 		"componenticon": 0,
@@ -11,7 +11,7 @@
 		"editor": "",
 		"editordata": "",
 		"external": true,
-		"moddate": "2015-10-27 10:44:04",
+		"moddate": "2018-11-21 08:53:37",
 		"servertablename": "defdirectory",
 		"showascheckedout": false,
 		"userinfo": "",

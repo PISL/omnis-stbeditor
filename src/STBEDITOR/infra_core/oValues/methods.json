@@ -1,8 +1,19 @@
 [
 	{
+		"name": "--- COPYRIGHT ---",
+		"ident": 31,
+		"order": 1,
+		"pvardefs": [
+
+		],
+		"lvardefs": [
+
+		]
+	},
+	{
 		"name": "$construct",
 		"ident": 1,
-		"order": 1,
+		"order": 2,
 		"pvardefs": [
 
 		],
@@ -13,7 +24,7 @@
 	{
 		"name": "$init",
 		"ident": 4,
-		"order": 2,
+		"order": 3,
 		"pvardefs": [
 			{
 				"name": "pcREF_CLASS",
@@ -46,7 +57,7 @@
 	{
 		"name": "--- Reference",
 		"ident": 16,
-		"order": 3,
+		"order": 4,
 		"pvardefs": [
 
 		],
@@ -58,7 +69,7 @@
 	{
 		"name": "$initGlobal",
 		"ident": 3,
-		"order": 4,
+		"order": 5,
 		"pvardefs": [
 			{
 				"name": "pcREF_CLASS",
@@ -146,7 +157,7 @@
 	{
 		"name": "$initLocal",
 		"ident": 0,
-		"order": 5,
+		"order": 6,
 		"pvardefs": [
 			{
 				"name": "pcREF_CLASS",
@@ -234,7 +245,7 @@
 	{
 		"name": "$initOrg",
 		"ident": 6,
-		"order": 6,
+		"order": 7,
 		"pvardefs": [
 			{
 				"name": "pcREF_CLASS",
@@ -338,7 +349,7 @@
 	{
 		"name": "$initInherited",
 		"ident": 30,
-		"order": 7,
+		"order": 8,
 		"pvardefs": [
 			{
 				"name": "pcREF_CLASS",

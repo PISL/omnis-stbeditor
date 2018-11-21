@@ -1,6 +1,6 @@
 {
 	"classtype": "kSystemtable",
-	"internalversion": 4,
+	"internalversion": 5,
 	"iconversion": 10,
 	"nextident": 3,
 	"properties": {
@@ -8,7 +8,7 @@
 		"createdate": "2017-05-03 12:02:17",
 		"desc": "",
 		"external": false,
-		"moddate": "2015-07-02 15:11:02",
+		"moddate": "2018-11-21 08:53:36",
 		"showascheckedout": false,
 		"userinfo": "",
 		"version": "1.01"

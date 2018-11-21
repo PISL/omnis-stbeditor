@@ -1,6 +1,6 @@
 {
 	"classtype": "kSchema",
-	"internalversion": 5,
+	"internalversion": 6,
 	"nextident": 32038,
 	"properties": {
 		"componenticon": 0,
@@ -11,7 +11,7 @@
 		"editor": "",
 		"editordata": "",
 		"external": true,
-		"moddate": "2017-08-25 09:21:18",
+		"moddate": "2018-11-21 08:53:37",
 		"servertablename": "infra.sysreferencelocal",
 		"showascheckedout": false,
 		"userinfo": "",

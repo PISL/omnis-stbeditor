@@ -9,7 +9,7 @@
 		"align": "kCenterJst",
 		"alpha": 255,
 		"backcolor": "RGB(238,238,238)",
-		"backgroundtheme": "kBGThemeNone",
+		"backgroundtheme": "kBGThemeParent",
 		"backpattern": 0,
 		"bordercolor": "RGB(0,0,128)",
 		"buttonmode": "kBMcancel",
@@ -51,7 +51,10 @@
 			"calc": "&Quit"
 		},
 		"textcolor": "RGB(0,0,0)",
-		"tooltip": "",
+		"tooltip": {
+			"type": 0,
+			"calc": "Hold down the SHIFT key to open the libini database editor"
+		},
 		"top": 192,
 		"userinfo": "",
 		"visible": true,

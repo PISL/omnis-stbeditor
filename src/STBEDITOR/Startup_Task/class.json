@@ -1,6 +1,6 @@
 {
 	"classtype": "kTask",
-	"internalversion": 21,
+	"internalversion": 28,
 	"superclass": "tkSuper",
 	"tvardefs": [
 		{
@@ -92,6 +92,14 @@
 	],
 	"ivardefs": [
 		{
+			"name": "ibEditInitParams",
+			"order": 1,
+			"type": "kBoolean",
+			"subtype": 0,
+			"sublen": 0,
+			"initval": "kFalse"
+		},
+		{
 			"name": "ibLibraryHasBeenUpdated",
 			"order": 17,
 			"type": "kBoolean",
@@ -130,7 +138,7 @@
 		"editordata": "",
 		"external": false,
 		"issupercomponent": false,
-		"moddate": "2018-11-20 15:26:29",
+		"moddate": "2018-11-21 15:02:05",
 		"showascheckedout": false,
 		"userinfo": "",
 		"version": "2"

@@ -3,3 +3,8 @@ Do ilHeaders.$define(lcHeaderName,lcHeaderValue)
 Do ilHeaders.$add("content-type","application/json")
 
 Do $objects.oRest.$newref() Returns iorefRest
+
+Do toValues.$initGlobal("GOOGLE","TRANSLATION_KEY") Returns lrReference
+If lrReference.RFG_SEQ>0
+	Calculate icAPIKey as lrReference.RFG_CHAR
+End If

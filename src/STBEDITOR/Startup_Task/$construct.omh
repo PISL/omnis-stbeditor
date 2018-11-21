@@ -1,3 +1,4 @@
+
 Calculate ibLibraryHasBeenUpdated as pLibraryHasBeenUpdated
 Calculate trEnvironment as prEnvironment
 
@@ -12,20 +13,4 @@ Do toConfig.$GetSysPrefs($clib().$name()) Returns ilSysPrefs
 
 Do $cinst.$Read_db_config     ;; tlDatabases
 
-
 Do method Startup_2
-
-;  there is a bug in Studio 8.1.6, logged as ST/AD/124, when importing from JSON
-;  a window data grid's columns lose their $columndatacol property
-;  fingers crossed that this will be fixed in Studio 10 but in the meantime..
-If left(sys(1),pos(".",sys(1))-1)<10     ;; Omnis version less than 10
-	Set reference lrefObj to $windows.wEditStringTables.$objs.ilStrings     ;; get a pointer to the editor data grid
-	;  and set the $columndatacol values for the two starter columns
-	Calculate lrefObj.$currentcolumn as 1
-	Do $schemas.somStrings.$objs.$findname("STRINGID") Returns lrefCol
-	Calculate lrefObj.$columndatacol as lrefCol.$order
-	Calculate lrefObj.$currentcolumn as 2
-	Do $schemas.somStrings.$objs.$findname("en") Returns lrefCol
-	Calculate lrefObj.$columndatacol as lrefCol.$order
-	Save class {wEditStringTables}
-End If

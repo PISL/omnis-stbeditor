@@ -1,6 +1,6 @@
 {
 	"classtype": "kTable",
-	"internalversion": 3,
+	"internalversion": 4,
 	"superclass": "tMasterApp",
 	"designtaskname": "Startup_Task",
 	"cvardefs": [
@@ -31,7 +31,7 @@
 		"editordata": "",
 		"external": true,
 		"issupercomponent": false,
-		"moddate": "2016-08-02 11:12:21",
+		"moddate": "2018-11-21 08:53:37",
 		"showascheckedout": false,
 		"sqlclassname": "suaLogAccess",
 		"userinfo": "",

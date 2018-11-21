@@ -1,8 +1,19 @@
 [
 	{
+		"name": "--- COPYRIGHT ---",
+		"ident": 2,
+		"order": 1,
+		"pvardefs": [
+
+		],
+		"lvardefs": [
+
+		]
+	},
+	{
 		"name": "$construct",
 		"ident": 0,
-		"order": 1,
+		"order": 2,
 		"pvardefs": [
 			{
 				"name": "pLibraryHasBeenUpdated",
@@ -49,7 +60,7 @@
 	{
 		"name": "Startup_2",
 		"ident": 25,
-		"order": 2,
+		"order": 3,
 		"pvardefs": [
 
 		],
@@ -60,7 +71,7 @@
 	{
 		"name": "$DatabaseSelected",
 		"ident": 24,
-		"order": 5,
+		"order": 4,
 		"pvardefs": [
 			{
 				"name": "pList",
@@ -112,7 +123,7 @@
 	{
 		"name": "$DatabaseNotSelected",
 		"ident": 35,
-		"order": 6,
+		"order": 5,
 		"pvardefs": [
 
 		],
@@ -129,7 +140,7 @@
 	{
 		"name": "$ValidUser",
 		"ident": 20,
-		"order": 7,
+		"order": 6,
 		"pvardefs": [
 
 		],
@@ -140,7 +151,7 @@
 	{
 		"name": "$SetContextSite",
 		"ident": 30,
-		"order": 8,
+		"order": 7,
 		"pvardefs": [
 			{
 				"name": "pList",
@@ -158,7 +169,7 @@
 	{
 		"name": "$destruct",
 		"ident": 1,
-		"order": 9,
+		"order": 8,
 		"pvardefs": [
 
 		],
@@ -217,7 +228,7 @@
 	{
 		"name": "$GetPref",
 		"ident": 6,
-		"order": 11,
+		"order": 9,
 		"pvardefs": [
 			{
 				"name": "pcKEY",

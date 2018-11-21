@@ -1,3 +1,8 @@
+If isclear(icAPIKey)
+	Calculate pcError as "Google translation requires an API key"
+	Quit method kFalse
+End If
+
 ;  this method is to be used for translating snippets of text, eg. string table entires
 ;  expects a three column list, col1 = unique id, col2 =  source text, col3 is empty to receive translations
 ;  if col1 is already URL encoded, pass pbPreEncoded as kTrue

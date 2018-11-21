@@ -26,7 +26,7 @@ If llData.$linecount
 			End If
 		End While
 	Else
-		OK message Translation Eror {[lcErrorText]}
+		OK message Translation Error {[lcErrorText]}
 	End If
 	
 	Do $cinst.$behaviour()

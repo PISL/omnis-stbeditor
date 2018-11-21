@@ -1,3 +1,8 @@
+If isclear(icAPIKey)
+	Calculate pcTranslation as "Google translation needs an API key"
+	Quit method kFalse
+End If
+
 ;  this method is to be used for translating HTML blocks only
 Do toStrings.$separateHTML(pcOriginalText) Returns llSplitText
 

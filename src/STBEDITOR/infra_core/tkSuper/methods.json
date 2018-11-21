@@ -1,8 +1,19 @@
 [
 	{
+		"name": "--- COPYRIGHT ---",
+		"ident": 2,
+		"order": 1,
+		"pvardefs": [
+
+		],
+		"lvardefs": [
+
+		]
+	},
+	{
 		"name": "$construct",
 		"ident": 0,
-		"order": 1,
+		"order": 2,
 		"pvardefs": [
 
 		],
@@ -19,7 +30,7 @@
 	{
 		"name": "$destruct",
 		"ident": 35,
-		"order": 2,
+		"order": 3,
 		"pvardefs": [
 
 		],
@@ -50,7 +61,7 @@
 	{
 		"name": "$loadErrorHandler",
 		"ident": 16,
-		"order": 3,
+		"order": 4,
 		"pvardefs": [
 
 		],
@@ -61,7 +72,7 @@
 	{
 		"name": "$buildStringTable",
 		"ident": 71,
-		"order": 4,
+		"order": 5,
 		"pvardefs": [
 
 		],
@@ -169,7 +180,7 @@
 	{
 		"name": "$initStatistics",
 		"ident": 72,
-		"order": 5,
+		"order": 6,
 		"pvardefs": [
 
 		],
@@ -186,7 +197,7 @@
 	{
 		"name": "===============",
 		"ident": 20,
-		"order": 22,
+		"order": 7,
 		"pvardefs": [
 
 		],
@@ -198,7 +209,7 @@
 	{
 		"name": "*** from MDM.Startup_Task",
 		"ident": 21,
-		"order": 23,
+		"order": 8,
 		"pvardefs": [
 
 		],
@@ -210,7 +221,7 @@
 	{
 		"name": "$init",
 		"ident": 22,
-		"order": 24,
+		"order": 9,
 		"pvardefs": [
 
 		],
@@ -276,7 +287,7 @@
 	{
 		"name": "$setServerPort",
 		"ident": 77,
-		"order": 31,
+		"order": 10,
 		"pvardefs": [
 			{
 				"name": "pServerPort",
@@ -321,7 +332,7 @@
 	{
 		"name": "-------------",
 		"ident": 28,
-		"order": 32,
+		"order": 11,
 		"pvardefs": [
 
 		],
@@ -333,7 +344,7 @@
 	{
 		"name": "$Read_db_config",
 		"ident": 86,
-		"order": 33,
+		"order": 12,
 		"pvardefs": [
 
 		],
@@ -351,7 +362,7 @@
 	{
 		"name": "$AsyncEmails",
 		"ident": 31,
-		"order": 35,
+		"order": 13,
 		"pvardefs": [
 			{
 				"name": "pLocalSession",
@@ -520,7 +531,7 @@
 	{
 		"name": "$SendEmail",
 		"ident": 32,
-		"order": 36,
+		"order": 14,
 		"pvardefs": [
 			{
 				"name": "pTo",
@@ -698,7 +709,7 @@
 	{
 		"name": "$SendEmailBackground",
 		"ident": 54,
-		"order": 37,
+		"order": 15,
 		"pvardefs": [
 			{
 				"name": "pTo",
@@ -865,7 +876,7 @@
 	{
 		"name": "$getEmailStructures",
 		"ident": 70,
-		"order": 38,
+		"order": 16,
 		"pvardefs": [
 			{
 				"name": "pretAttributes",
@@ -926,7 +937,7 @@
 	{
 		"name": "$getConfig",
 		"ident": 78,
-		"order": 39,
+		"order": 17,
 		"pvardefs": [
 			{
 				"name": "pColName",
@@ -944,7 +955,7 @@
 	{
 		"name": "-----Sessions------",
 		"ident": 34,
-		"order": 40,
+		"order": 18,
 		"pvardefs": [
 
 		],
@@ -956,7 +967,7 @@
 	{
 		"name": "$DynamicSession",
 		"ident": 51,
-		"order": 41,
+		"order": 19,
 		"pvardefs": [
 			{
 				"name": "pSessObj",
@@ -1025,7 +1036,7 @@
 	{
 		"name": "$ReleaseSession",
 		"ident": 52,
-		"order": 42,
+		"order": 20,
 		"pvardefs": [
 			{
 				"name": "pSession",
@@ -1071,7 +1082,7 @@
 	{
 		"name": "$ResurrectSessionPool",
 		"ident": 53,
-		"order": 43,
+		"order": 21,
 		"pvardefs": [
 			{
 				"name": "pSource",
@@ -1104,7 +1115,7 @@
 	{
 		"name": "$ConnectToDb",
 		"ident": 19,
-		"order": 44,
+		"order": 22,
 		"pvardefs": [
 			{
 				"name": "pWhichDatabase",
@@ -1317,7 +1328,7 @@
 	{
 		"name": "$OpenSessionPool",
 		"ident": 55,
-		"order": 45,
+		"order": 23,
 		"pvardefs": [
 			{
 				"name": "pPoolName",
@@ -1431,7 +1442,7 @@
 	{
 		"name": "$CloseSessionPool",
 		"ident": 36,
-		"order": 46,
+		"order": 24,
 		"pvardefs": [
 			{
 				"name": "pPoolName",
@@ -1455,7 +1466,7 @@
 	{
 		"name": "$getPool",
 		"ident": 1,
-		"order": 47,
+		"order": 25,
 		"pvardefs": [
 
 		],
@@ -1472,7 +1483,7 @@
 	{
 		"name": "SetDB",
 		"ident": 56,
-		"order": 48,
+		"order": 26,
 		"pvardefs": [
 			{
 				"name": "pSessionObjRef",
@@ -1503,7 +1514,7 @@
 	{
 		"name": "checkDbVersion",
 		"ident": 73,
-		"order": 49,
+		"order": 27,
 		"pvardefs": [
 			{
 				"name": "pSessVersion",
@@ -1541,7 +1552,7 @@
 	{
 		"name": "$DbVersionMismatch",
 		"ident": 94,
-		"order": 50,
+		"order": 28,
 		"pvardefs": [
 			{
 				"name": "pnDbCurrentVersion",
@@ -1567,7 +1578,7 @@
 	{
 		"name": "----------",
 		"ident": 37,
-		"order": 51,
+		"order": 29,
 		"pvardefs": [
 
 		],
@@ -1579,7 +1590,7 @@
 	{
 		"name": "$AppError",
 		"ident": 38,
-		"order": 52,
+		"order": 30,
 		"pvardefs": [
 			{
 				"name": "pMessage",
@@ -1655,7 +1666,7 @@
 	{
 		"name": "$ServerMessage",
 		"ident": 39,
-		"order": 53,
+		"order": 31,
 		"pvardefs": [
 			{
 				"name": "pMessage",
@@ -1740,7 +1751,7 @@
 	{
 		"name": "$LogWebError",
 		"ident": 40,
-		"order": 54,
+		"order": 32,
 		"pvardefs": [
 			{
 				"name": "pSubject",
@@ -1766,7 +1777,7 @@
 	{
 		"name": "$LogEvent",
 		"ident": 41,
-		"order": 55,
+		"order": 33,
 		"pvardefs": [
 			{
 				"name": "pCode",
@@ -1827,7 +1838,7 @@
 	{
 		"name": "$LogError",
 		"ident": 42,
-		"order": 56,
+		"order": 34,
 		"pvardefs": [
 			{
 				"name": "pCode",
@@ -1888,7 +1899,7 @@
 	{
 		"name": "------------",
 		"ident": 43,
-		"order": 57,
+		"order": 35,
 		"pvardefs": [
 
 		],
@@ -1900,7 +1911,7 @@
 	{
 		"name": "$Loop",
 		"ident": 44,
-		"order": 59,
+		"order": 36,
 		"pvardefs": [
 			{
 				"name": "pList",
@@ -1927,7 +1938,7 @@
 	{
 		"name": "$DefineList",
 		"ident": 45,
-		"order": 60,
+		"order": 37,
 		"pvardefs": [
 			{
 				"name": "pListOrRow",
@@ -1953,7 +1964,7 @@
 	{
 		"name": "$NullToEmpty",
 		"ident": 46,
-		"order": 61,
+		"order": 38,
 		"pvardefs": [
 			{
 				"name": "pValue",
@@ -1971,7 +1982,7 @@
 	{
 		"name": "$Token",
 		"ident": 47,
-		"order": 62,
+		"order": 39,
 		"pvardefs": [
 			{
 				"name": "pString",
@@ -2025,7 +2036,7 @@
 	{
 		"name": "$Surround",
 		"ident": 48,
-		"order": 63,
+		"order": 40,
 		"pvardefs": [
 			{
 				"name": "pValue",
@@ -2052,7 +2063,7 @@
 	{
 		"name": "$cell",
 		"ident": 49,
-		"order": 64,
+		"order": 41,
 		"pvardefs": [
 			{
 				"name": "plList",
@@ -2114,7 +2125,7 @@
 	{
 		"name": "$NextSeqNo",
 		"ident": 50,
-		"order": 65,
+		"order": 42,
 		"pvardefs": [
 			{
 				"name": "P_TABLE",
@@ -2182,7 +2193,7 @@
 	{
 		"name": "$OpenStringTable",
 		"ident": 57,
-		"order": 66,
+		"order": 43,
 		"pvardefs": [
 			{
 				"name": "pHostDirectory",
@@ -2223,7 +2234,7 @@
 	{
 		"name": "$GetPref",
 		"ident": 91,
-		"order": 67,
+		"order": 44,
 		"pvardefs": [
 			{
 				"name": "pcKEY",
@@ -2255,7 +2266,7 @@
 	{
 		"name": "$GetVar",
 		"ident": 58,
-		"order": 68,
+		"order": 45,
 		"pvardefs": [
 			{
 				"name": "pVarName",
@@ -2273,7 +2284,7 @@
 	{
 		"name": "$SetVar",
 		"ident": 59,
-		"order": 69,
+		"order": 46,
 		"pvardefs": [
 			{
 				"name": "pVarName",
@@ -2299,7 +2310,7 @@
 	{
 		"name": "$addColumnToListOrRow",
 		"ident": 29,
-		"order": 70,
+		"order": 47,
 		"desc": "adds a column to the passed list or row if it does not already exist",
 		"pvardefs": [
 			{
@@ -2358,7 +2369,7 @@
 	{
 		"name": "$columnExists",
 		"ident": 33,
-		"order": 71,
+		"order": 48,
 		"desc": "checkes the list or row variable, pListOrRow, for the existence of pcColName and returns True/False",
 		"pvardefs": [
 			{
@@ -2391,7 +2402,7 @@
 	{
 		"name": "$SetSelectedDB",
 		"ident": 88,
-		"order": 72,
+		"order": 49,
 		"pvardefs": [
 			{
 				"name": "lrSelected",
@@ -2409,7 +2420,7 @@
 	{
 		"name": "$RunTimeError",
 		"ident": 60,
-		"order": 73,
+		"order": 50,
 		"pvardefs": [
 
 		],
@@ -2482,7 +2493,7 @@
 	{
 		"name": "$DummyErrorHandler",
 		"ident": 61,
-		"order": 74,
+		"order": 51,
 		"pvardefs": [
 
 		],
@@ -2494,7 +2505,7 @@
 	{
 		"name": "$SequencesConstruct",
 		"ident": 62,
-		"order": 75,
+		"order": 52,
 		"pvardefs": [
 			{
 				"name": "pSessObj",
@@ -2520,7 +2531,7 @@
 	{
 		"name": "$SequencesDestruct",
 		"ident": 63,
-		"order": 76,
+		"order": 53,
 		"pvardefs": [
 			{
 				"name": "pSessObj",
@@ -2546,7 +2557,7 @@
 	{
 		"name": "$ServerTime",
 		"ident": 64,
-		"order": 77,
+		"order": 54,
 		"pvardefs": [
 			{
 				"name": "pbFetchFromDB",
@@ -2579,7 +2590,7 @@
 	{
 		"name": "$AboutNow",
 		"ident": 65,
-		"order": 78,
+		"order": 55,
 		"pvardefs": [
 
 		],
@@ -2596,7 +2607,7 @@
 	{
 		"name": "$ProcedureStack",
 		"ident": 66,
-		"order": 79,
+		"order": 56,
 		"pvardefs": [
 
 		],
@@ -2641,7 +2652,7 @@
 	{
 		"name": "CorrectWindowsToTop",
 		"ident": 67,
-		"order": 80,
+		"order": 57,
 		"pvardefs": [
 
 		],
@@ -2658,7 +2669,7 @@
 	{
 		"name": "WebDevSetError",
 		"ident": 68,
-		"order": 81,
+		"order": 58,
 		"pvardefs": [
 
 		],
@@ -2689,7 +2700,7 @@
 	{
 		"name": "$MailProtocolLog",
 		"ident": 69,
-		"order": 82,
+		"order": 59,
 		"pvardefs": [
 
 		],
@@ -2700,7 +2711,7 @@
 	{
 		"name": "-- SQL builder public methods --",
 		"ident": 74,
-		"order": 83,
+		"order": 60,
 		"pvardefs": [
 
 		],
@@ -2712,7 +2723,7 @@
 	{
 		"name": "$BuildLinks",
 		"ident": 75,
-		"order": 84,
+		"order": 61,
 		"pvardefs": [
 
 		],
@@ -2729,7 +2740,7 @@
 	{
 		"name": "$BuildForeignLinks",
 		"ident": 76,
-		"order": 85,
+		"order": 62,
 		"pvardefs": [
 			{
 				"name": "pcTable",
@@ -2753,7 +2764,7 @@
 	{
 		"name": "$GetChildTables",
 		"ident": 79,
-		"order": 86,
+		"order": 63,
 		"pvardefs": [
 			{
 				"name": "pcTable",
@@ -2777,7 +2788,7 @@
 	{
 		"name": "$FindLink",
 		"ident": 80,
-		"order": 87,
+		"order": 64,
 		"pvardefs": [
 			{
 				"name": "pcFromTable",
@@ -2824,7 +2835,7 @@
 	{
 		"name": "$FindSchema",
 		"ident": 81,
-		"order": 88,
+		"order": 65,
 		"pvardefs": [
 			{
 				"name": "pcColumn",
@@ -2848,7 +2859,7 @@
 	{
 		"name": "$FindTable",
 		"ident": 82,
-		"order": 89,
+		"order": 66,
 		"pvardefs": [
 			{
 				"name": "pcColumn",
@@ -2872,7 +2883,7 @@
 	{
 		"name": "BuildTables",
 		"ident": 83,
-		"order": 90,
+		"order": 67,
 		"pvardefs": [
 
 		],
@@ -2883,7 +2894,7 @@
 	{
 		"name": "BuildColumns",
 		"ident": 84,
-		"order": 91,
+		"order": 68,
 		"pvardefs": [
 
 		],
@@ -2894,7 +2905,7 @@
 	{
 		"name": "BuildForeignKeys",
 		"ident": 85,
-		"order": 92,
+		"order": 69,
 		"pvardefs": [
 
 		],
@@ -2911,7 +2922,7 @@
 	{
 		"name": "$debugMessage",
 		"ident": 87,
-		"order": 93,
+		"order": 70,
 		"pvardefs": [
 			{
 				"name": "pcMessage",
@@ -2929,7 +2940,7 @@
 	{
 		"name": "$postDbConnectOptions",
 		"ident": 92,
-		"order": 94,
+		"order": 71,
 		"pvardefs": [
 
 		],

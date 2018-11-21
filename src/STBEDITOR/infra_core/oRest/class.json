@@ -1,6 +1,6 @@
 {
 	"classtype": "kObjectclass",
-	"internalversion": 3,
+	"internalversion": 4,
 	"superclass": ".OWEB.Web Worker Objects\\HTTPClientWorker",
 	"designtaskname": "Startup_Task",
 	"cvardefs": [
@@ -46,7 +46,7 @@
 		"editordata": "",
 		"external": true,
 		"issupercomponent": false,
-		"moddate": "2015-12-01 16:40:39",
+		"moddate": "2018-11-21 08:53:38",
 		"selfcontained": false,
 		"showascheckedout": false,
 		"userinfo": "",

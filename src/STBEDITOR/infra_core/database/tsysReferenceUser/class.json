@@ -1,6 +1,6 @@
 {
 	"classtype": "kTable",
-	"internalversion": 5,
+	"internalversion": 6,
 	"superclass": "tsysReferenceSuper",
 	"designtaskname": "Startup_Task",
 	"cvardefs": [
@@ -31,7 +31,7 @@
 		"editordata": "",
 		"external": true,
 		"issupercomponent": false,
-		"moddate": "2017-05-05 11:36:55",
+		"moddate": "2018-11-21 08:53:37",
 		"showascheckedout": false,
 		"sqlclassname": "ssysReferenceUser",
 		"userinfo": "",

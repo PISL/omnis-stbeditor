@@ -1,6 +1,6 @@
 {
 	"classtype": "kTable",
-	"internalversion": 6,
+	"internalversion": 7,
 	"superclass": "tMasterApp",
 	"designtaskname": "Startup_Task",
 	"cvardefs": [
@@ -39,7 +39,7 @@
 		"editordata": "",
 		"external": true,
 		"issupercomponent": false,
-		"moddate": "2017-05-05 11:36:54",
+		"moddate": "2018-11-21 08:53:37",
 		"showascheckedout": false,
 		"sqlclassname": "",
 		"userinfo": "",

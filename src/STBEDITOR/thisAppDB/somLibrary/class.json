@@ -1,6 +1,6 @@
 {
 	"classtype": "kSchema",
-	"internalversion": 3,
+	"internalversion": 4,
 	"nextident": 32005,
 	"properties": {
 		"componenticon": 0,
@@ -11,7 +11,7 @@
 		"editor": "",
 		"editordata": "",
 		"external": false,
-		"moddate": "2017-04-26 14:04:23",
+		"moddate": "2018-11-21 08:53:37",
 		"servertablename": "translate.omlibrary",
 		"showascheckedout": false,
 		"userinfo": "",

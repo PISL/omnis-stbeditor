@@ -1,5 +1,5 @@
 
-Calculate lcURI as con('https://translation.googleapis.com/language/translate/v2/languages?key=',cAPIKey)
+Calculate lcURI as con('https://translation.googleapis.com/language/translate/v2/languages?key=',icAPIKey)
 
 Do iorefRest.$init(lcURI,kOWEBhttpMethodGet,ilHeaders,'') Returns lbOK
 

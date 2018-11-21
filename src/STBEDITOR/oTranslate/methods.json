@@ -1,8 +1,19 @@
 [
 	{
+		"name": "--- COPYRIGHT ---",
+		"ident": 10,
+		"order": 1,
+		"pvardefs": [
+
+		],
+		"lvardefs": [
+
+		]
+	},
+	{
 		"name": "$construct",
 		"ident": 1,
-		"order": 1,
+		"order": 2,
 		"pvardefs": [
 
 		],
@@ -20,13 +31,20 @@
 				"type": "kCharacter",
 				"subtype": "kSimplechar",
 				"sublen": 100000000
+			},
+			{
+				"name": "lrReference",
+				"order": 3,
+				"type": "kRow",
+				"subtype": "",
+				"sublen": 0
 			}
 		]
 	},
 	{
 		"name": "$destruct",
 		"ident": 2,
-		"order": 2,
+		"order": 3,
 		"pvardefs": [
 
 		],
@@ -37,7 +55,7 @@
 	{
 		"name": "=== init methods ===",
 		"ident": 4,
-		"order": 3,
+		"order": 4,
 		"pvardefs": [
 
 		],
@@ -49,7 +67,7 @@
 	{
 		"name": "$setSource",
 		"ident": 3,
-		"order": 4,
+		"order": 5,
 		"pvardefs": [
 			{
 				"name": "pcSource",
@@ -67,7 +85,7 @@
 	{
 		"name": "$setTarget",
 		"ident": 6,
-		"order": 5,
+		"order": 6,
 		"pvardefs": [
 			{
 				"name": "pcTarget",
@@ -85,7 +103,7 @@
 	{
 		"name": "================",
 		"ident": 5,
-		"order": 6,
+		"order": 7,
 		"pvardefs": [
 
 		],
@@ -97,7 +115,7 @@
 	{
 		"name": "$getTranslation",
 		"ident": 0,
-		"order": 7,
+		"order": 8,
 		"pvardefs": [
 			{
 				"name": "pcOriginalText",
@@ -199,7 +217,7 @@
 	{
 		"name": "$getLanguages",
 		"ident": 7,
-		"order": 8,
+		"order": 9,
 		"pvardefs": [
 			{
 				"name": "pcLangs",
@@ -314,7 +332,7 @@
 	{
 		"name": "$getTextTranslations",
 		"ident": 8,
-		"order": 9,
+		"order": 10,
 		"desc": ";  expects a three column list, col1 = unique id, col2 = text to be translated, col3 is empty to receive translations\r;  if col2 is already URL encoded, pass pbPreEncoded as kTrue",
 		"pvardefs": [
 			{
@@ -440,7 +458,7 @@
 	{
 		"name": "decodeEscapedChar",
 		"ident": 9,
-		"order": 10,
+		"order": 11,
 		"pvardefs": [
 			{
 				"name": "pcEscapeString",

@@ -1,6 +1,6 @@
 {
 	"classtype": "kSchema",
-	"internalversion": 7,
+	"internalversion": 8,
 	"nextident": 32022,
 	"properties": {
 		"componenticon": 0,
@@ -11,7 +11,7 @@
 		"editor": "",
 		"editordata": "",
 		"external": true,
-		"moddate": "2017-08-24 16:00:21",
+		"moddate": "2018-11-21 08:53:37",
 		"servertablename": "infra.sysasyncemails",
 		"showascheckedout": false,
 		"userinfo": "",
