@@ -9,12 +9,12 @@ The database entries can be extracted to create an in-memory string table when y
 ## Dependencies
 Omnis Studio version 8.1 or later.
 
-STBEDITOR requires a PostgreSQL database to store the string table entries in.  The database can be created from [stb.sql](db/stb.sql) [^note1] but will require that your Postgres instance has the following two group roles created first: 
-[^note1]: The database includes the entries for the [CONFERENCE app](https://github.com/PISL/omnis-conference) to get you started.
+STBEDITOR requires a PostgreSQL database to store the string table entries in.  The database can be created from [stb.sql](db/stb.sql) but will require that your Postgres instance has the following two group roles created first: 
 
 1. "_developer" which owns the objects and 
 2. "regular" which must be granted to the login role you wish to use to connect from Omnis.
 
+NB. The database includes the entries for the [CONFERENCE app](https://github.com/PISL/omnis-conference) to get you started.
 
 ## Installation
 Clone this repository.
