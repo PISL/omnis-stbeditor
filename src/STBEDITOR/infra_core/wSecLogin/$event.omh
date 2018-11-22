@@ -24,7 +24,7 @@ On evOK
 	Close window instance $cinst
 	
 On evCancel
-	If #SHIFT
+	If shift()
 		Do $windows.wConfig.$openonce('*')
 		Do $cinst.$close()
 	Else
