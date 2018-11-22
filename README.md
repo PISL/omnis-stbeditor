@@ -1,14 +1,18 @@
 # omnis-stbeditor
 
-stbEditor.lbs is an [Omnis Studio](http://www.omnis.net) library and PostgreSQL database to store the Omnis string table entries for all your applications.  The library includes an interface to the Google Translate API so basic translations can be obtained for your string tables.
+STBEDITOR.lbs is an [Omnis Studio](http://www.omnis.net) library and PostgreSQL database to store the Omnis string table entries for all your applications.  The library includes an interface to the Google Translate API so basic translations can be obtained for your string tables.
 
-The database entries can be extracted to create an in-memory string table when your application starts up by including a call to the method $buildStringTable which can be copied from the task class stbeditor.tkSuper
+The database entries can be extracted to create an in-memory string table when your application starts up by including a call to the method $buildStringTable, which can be copied from the task class tkSuper.
 
 
 
 ## Dependencies
-Omnis Studio version 8.1 or later
-stbEditor requires a PostgreSQL database to store the string table entries in.  The database can be created from [stb.sql](db/stb.sql) but will require that your Postgres instance has the following two group roles created: 1. "_developer" which owns the objects and 2. "regular" which must be granted to the login role you wish to use to connect from Omnis.
+Omnis Studio version 8.1 or later.
+
+STBEDITOR requires a PostgreSQL database to store the string table entries in.  The database can be created from [stb.sql](db/stb.sql) but will require that your Postgres instance has the following two group roles created first: 
+
+1. "_developer" which owns the objects and 
+2. "regular" which must be granted to the login role you wish to use to connect from Omnis.
 
 
 ## Installation
@@ -35,9 +39,15 @@ Create the stb database from the stb.sql script (replacing dBserver/port/tq2dbTo
 ![Instances](images/wConfig.png)
 
 4. Select "database connection info" from the drop list
-5. Enter your Postgres server parameters: Host and port.  (The "validif" value is used in an Omnis eval() to decide if this each connection can be used.  If you enter multiple databases and more than "validif" evaluates to kTrue, the login window will display them in a drop list to be selected by the user.)
+5. Enter your Postgres server parameters: Host and port.  (The "validif" value is used in an Omnis eval() to decide if this connection can be used.  If you enter multiple databases and more than one "validif" evaluates to kTrue, the login window will display them in a drop list to be selected by the user.)
 6. Save your changes and close the library.
 7. Reopen the library and you should be able to connect to your stb database.
 
 ## Note
 The editor includes an object class, oTranslate, which interfaces to Google's Translation API.  To use this functionality, an API key must be obtained from [Google](https://console.cloud.google.com/freetrial?page=0) and entered in the global reference table.
+
+1. Select "reference global" from the String Table Editor menu.
+2. Select GOOGLE from the class drop list.
+3. Select the TRANSLATION_KEY line and enter your API key in the character box to the right.  The change will save when you close the window.
+
+![Instances](images/wRefGlobal.png)
