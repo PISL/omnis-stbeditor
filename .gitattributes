@@ -5,4 +5,5 @@
 *.png binary
 *.jpg binary
 *.lbs binary
+*.pdf binary
 *.libini binary
