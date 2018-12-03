@@ -23,7 +23,7 @@ Copy [stbeditor.lbs](lib/STBEDITOR.lbs) to a directory of your choice or open Om
 
 Copy the SQLite initialisation DB [STBEDITOR.libini](lib/STBEDITOR.libini) to the same directory as the library.
 
-Create the stb database from the stb.sql script (replacing dBserver/port/tq2dbToConnectTo/userName with your own values):
+Create the stb database from the stb.sql script (replacing dBserver/port/dbToConnectTo/userName with your own values):
 
 `psql -h dbServer -p port -d dbToConnectTo -U userName -a -f /path/to/stb.sql`
 

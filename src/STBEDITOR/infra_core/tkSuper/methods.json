@@ -92,6 +92,20 @@
 				"sublen": 10
 			},
 			{
+				"name": "lcPassword",
+				"order": 16,
+				"type": "kCharacter",
+				"subtype": "kSimplechar",
+				"sublen": 50
+			},
+			{
+				"name": "lcUserName",
+				"order": 15,
+				"type": "kCharacter",
+				"subtype": "kSimplechar",
+				"sublen": 50
+			},
+			{
 				"name": "llAllStrings",
 				"order": 11,
 				"type": "kList",

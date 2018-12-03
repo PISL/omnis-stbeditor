@@ -5,7 +5,11 @@
 Do toConfig.$GetDatabases() Returns llDBList
 Do llDBList.$search($ref.Name='StringTable',1,0,0,0) Returns lnLine
 If lnLine
-	Do method $ConnectToDb (llDBList.Host,'stringsonly','61veM3theT@ble5',,llDBList.DAM,llDBList.DB,llDBList.port,loSession,loStatement,0) Returns lbOK
+	
+	Calculate lcUserName as "Enter a postgres login role that has read only access to the stb database"
+	Calculate lcPassword as "Enter the password for lcUserName here"
+	
+	Do method $ConnectToDb (llDBList.Host,lcUserName,lcPassword,,llDBList.DAM,llDBList.DB,llDBList.port,loSession,loStatement,0) Returns lbOK
 	Do $DefineList(llStrings,'tomStrings')
 	Do llStrings.$SetSession(loSession,loStatement)
 	Do llStrings.$fetchForLibrary()
